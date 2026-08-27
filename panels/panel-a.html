@@ -7,431 +7,374 @@
   <link rel="stylesheet" href="../css/main.css" />
   <link rel="stylesheet" href="../css/layout.css" />
   <link rel="stylesheet" href="../css/components.css" />
-  <style>
-    /* ── Estilos específicos del Panel A ── */
+  <link rel="stylesheet" href="../css/panels.css" />
 
-    /* Sección de postulados */
-    .postulates-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-lg);
-      margin-bottom: var(--space-xl);
-    }
-    @media (max-width: 640px) {
-      .postulates-grid { grid-template-columns: 1fr; }
-    }
-
-    /* Animación principal */
-    #anim-canvas {
-      width: 100%;
-      height: 280px;
-      background: #09111e;
-      display: block;
-      cursor: default;
-    }
-
-    /* Controles de la animación */
-    .anim-controls {
-      display: flex;
-      align-items: center;
-      gap: var(--space-md);
-      padding: var(--space-md) var(--space-md);
-      background: var(--color-surface-2);
-      border-top: 1px solid var(--color-border);
-      flex-wrap: wrap;
-    }
-
-    .anim-label {
-      font-size: 0.8rem;
-      color: var(--color-text-dim);
-    }
-
-    .speed-slider {
-      flex: 1;
-      min-width: 120px;
-      -webkit-appearance: none;
-      height: 4px;
-      background: var(--color-border);
-      border-radius: 2px;
-      outline: none;
-      cursor: pointer;
-    }
-    .speed-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      background: var(--color-accent);
-      cursor: pointer;
-      transition: transform 0.1s;
-    }
-    .speed-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
-
-    /* Observador info */
-    .observers-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-      margin-top: var(--space-md);
-    }
-    @media (max-width: 580px) {
-      .observers-row { grid-template-columns: 1fr; }
-    }
-
-    .observer-box {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      padding: var(--space-md);
-    }
-    .observer-box h4 {
-      font-size: 0.85rem;
-      margin-bottom: var(--space-xs);
-    }
-    .obs-s  { border-color: rgba(79,158,255,0.35); }
-    .obs-sp { border-color: rgba(167,139,250,0.35); }
-    .obs-s  h4 { color: var(--color-accent); }
-    .obs-sp h4 { color: var(--color-accent-2); }
-
-    .obs-value {
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      color: var(--color-text);
-      margin: var(--space-xs) 0;
-    }
-    .obs-sub {
-      font-size: 0.75rem;
-      color: var(--color-muted);
-    }
-    .obs-c-value {
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      color: var(--color-success);
-      font-weight: 600;
-    }
-
-    /* Galileo vs Lorentz */
-    .comparison-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-    }
-    @media (max-width: 580px) {
-      .comparison-grid { grid-template-columns: 1fr; }
-    }
-
-    .transform-box {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      padding: var(--space-md);
-      text-align: center;
-    }
-    .transform-box h4 {
-      font-size: 0.8rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: var(--space-sm);
-    }
-    .galileo h4   { color: var(--color-muted); }
-    .lorentz-box h4 { color: var(--color-accent); }
-
-    .transform-eq {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      color: var(--color-text-dim);
-      line-height: 1.8;
-      text-align: left;
-      display: inline-block;
-    }
-    .lorentz-box .transform-eq { color: var(--color-text); }
-
-    .transform-problem {
-      margin-top: var(--space-sm);
-      font-size: 0.8rem;
-      color: var(--color-warn);
-      background: rgba(251,191,36,0.06);
-      border-radius: var(--radius-sm);
-      padding: var(--space-xs) var(--space-sm);
-    }
-
-    /* Resumen físico */
-    .summary-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-    .summary-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.9rem;
-      color: var(--color-text-dim);
-    }
-    .summary-list li::before {
-      content: '→';
-      color: var(--color-accent);
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    /* Pregunta de transición */
-    .transition-box {
-      background: linear-gradient(135deg,
-        rgba(79,158,255,0.06) 0%,
-        rgba(167,139,250,0.06) 100%);
-      border: 1px solid rgba(79,158,255,0.2);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      text-align: center;
-      margin-top: var(--space-xl);
-    }
-    .transition-box p {
-      font-size: 1rem;
-      color: var(--color-text);
-      font-style: italic;
-    }
-    .transition-box .next-link {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--space-xs);
-      margin-top: var(--space-md);
-      color: var(--color-accent);
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-    .transition-box .next-link::after { content: ' →'; }
-  </style>
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════
-       CABECERA
-  ═══════════════════════════════════════════ -->
-  <header class="site-header">
-    <div class="header-inner">
-      <h1 class="site-title">Laboratorio de Relatividad Especial</h1>
-      <p class="site-subtitle">¿Cómo cambia la descripción de un mismo fenómeno cuando cambia el sistema de referencia?</p>
+<header class="site-header">
+  <div class="header-inner">
+    <h1 class="site-title">Laboratorio de Relatividad Especial</h1>
+    <p class="site-subtitle">¿Cómo cambia la descripción de un mismo fenómeno cuando cambia el sistema de referencia?</p>
+  </div>
+</header>
+
+<main class="panel-page">
+
+  <a href="../index.html" class="panel-back-link">Volver al índice</a>
+
+  <div class="panel-header">
+    <div class="panel-heading">
+      <span class="panel-tag">Panel A</span>
+      <h2 class="panel-title-large">Postulados de Einstein</h2>
     </div>
-  </header>
-
-  <!-- ═══════════════════════════════════════════
-       CONTENIDO PRINCIPAL
-  ═══════════════════════════════════════════ -->
-  <main class="panel-page">
-
-    <!-- Navegación -->
-    <a href="../index.html" class="panel-back-link">Volver al índice</a>
-
-    <!-- Encabezado del panel -->
-    <div class="panel-header">
-      <div class="panel-heading">
-        <span class="panel-tag">Panel A</span>
-        <h2 class="panel-title-large">Postulados de Einstein</h2>
-      </div>
-      <p class="panel-question">
-        Si todos los observadores inerciales miden la misma velocidad de la luz,
-        ¿cómo deben relacionarse sus medidas de espacio y tiempo?
-      </p>
-    </div>
-
-    <!-- ────────────────────────────────────────
-         SECCIÓN 1: Sistemas de referencia
-    ──────────────────────────────────────── -->
-    <h3 class="section-heading">1. Sistemas de referencia inerciales</h3>
-
-    <div class="info-box accent-left" style="margin-bottom: var(--space-md);">
-      <h3>¿Qué es un sistema de referencia inercial?</h3>
-      <p>
-        Un sistema de referencia inercial es aquel en el que la primera ley de Newton es válida:
-        un objeto libre de fuerzas permanece en reposo o en movimiento rectilíneo uniforme.
-        Dos sistemas de referencia inerciales se mueven uno respecto al otro con velocidad constante.
-      </p>
-    </div>
-
-    <div class="info-box accent-purple">
-      <h3>Principio de relatividad (Galileo → Einstein)</h3>
-      <p>
-        Las leyes de la física tienen la misma forma en todos los sistemas de referencia inerciales.
-        No existe un sistema de referencia absoluto en reposo: el movimiento sólo tiene sentido
-        de manera relativa entre dos sistemas.
-      </p>
-    </div>
-
-    <!-- ────────────────────────────────────────
-         SECCIÓN 2: Los dos postulados
-    ──────────────────────────────────────── -->
-    <hr class="divider" />
-    <h3 class="section-heading">2. Los dos postulados de la relatividad especial</h3>
-
-    <div class="postulates-grid">
-
-      <div class="postulate-card p1">
-        <div class="postulate-number">Primer postulado — Principio de relatividad</div>
-        <h3>Las leyes de la física son las mismas en todos los sistemas de referencia inerciales.</h3>
-        <p>
-          No hay ningún experimento físico que permita determinar si un sistema inercial
-          está "en reposo absoluto" o en "movimiento absoluto".
-          El movimiento es relativo.
-        </p>
-      </div>
-
-      <div class="postulate-card p2">
-        <div class="postulate-number">Segundo postulado — Invariancia de la velocidad de la luz</div>
-        <h3>La velocidad de la luz en el vacío es la misma para todos los observadores inerciales.</h3>
-        <p>
-          La velocidad de la luz es <strong style="color:var(--color-success)">c ≈ 3×10⁸ m/s</strong>
-          independientemente del movimiento de la fuente o del observador.
-          Este postulado contradice directamente la suma de velocidades clásica.
-        </p>
-        <span class="consequence">⚡ Consecuencia: la simultaneidad no es absoluta</span>
-      </div>
-
-    </div>
-
-    <!-- ────────────────────────────────────────
-         SECCIÓN 3: Animación interactiva
-    ──────────────────────────────────────── -->
-    <hr class="divider" />
-    <h3 class="section-heading">3. Visualización: dos observadores y una señal luminosa</h3>
-
-    <p style="margin-bottom: var(--space-md); font-size: 0.9rem;">
-      El sistema <strong style="color:var(--color-accent)">S</strong> está en reposo.
-      El sistema <strong style="color:var(--color-accent-2)">S'</strong> se mueve con velocidad
-      <span id="beta-display" class="readout">v/c = 0.00</span>.
-      Ambos observadores miden la misma velocidad para la señal de luz.
+    <p class="panel-question">
+      Si todos los observadores inerciales miden la misma velocidad de la luz,
+      ¿cómo deben relacionarse sus medidas de espacio y tiempo?
+      La respuesta matemática está en <a href="panel-b.html" style="color:var(--color-accent);">Panel B</a>;
+      la respuesta visual en <a href="panel-c.html" style="color:var(--color-accent-2);">Panel C</a>.
     </p>
+  </div>
 
-    <div class="canvas-wrapper">
-      <div class="canvas-title">Señal luminosa observada desde dos sistemas de referencia</div>
-      <canvas id="anim-canvas"></canvas>
-      <div class="anim-controls">
-        <span class="anim-label">Velocidad de S' :</span>
-        <input type="range" id="speed-slider" class="speed-slider"
-               min="0" max="0.95" step="0.01" value="0" />
-        <span id="beta-readout" class="readout">v/c = 0.00</span>
-        <button id="btn-play" class="btn btn-primary">
-          <span class="btn-icon">▶</span> Emitir señal
-        </button>
-        <button id="btn-reset" class="btn btn-secondary">
-          <span class="btn-icon">↺</span> Reiniciar
-        </button>
-      </div>
-    </div>
+  <!-- ═══════════════════════════════════════════════════════
+       SECCIÓN 0 — CRISIS DE LA FÍSICA CLÁSICA
+  ═══════════════════════════════════════════════════════ -->
+  <h3 class="section-heading">0. La crisis de la física clásica — ¿qué motivó a Einstein?</h3>
 
-    <!-- Lecturas de los observadores -->
-    <div class="observers-row">
-      <div class="observer-box obs-s">
-        <h4>Sistema S (en reposo)</h4>
-        <div class="obs-value" id="obs-s-pos">x = —</div>
-        <div class="obs-sub">posición del frente de luz</div>
-        <div class="obs-c-value" id="obs-s-speed">c<sub>medida</sub> = c</div>
-        <div class="obs-sub">velocidad medida de la luz</div>
-      </div>
-      <div class="observer-box obs-sp">
-        <h4>Sistema S' (en movimiento)</h4>
-        <div class="obs-value" id="obs-sp-pos">x' = —</div>
-        <div class="obs-sub">posición del frente de luz</div>
-        <div class="obs-c-value" id="obs-sp-speed">c<sub>medida</sub> = c</div>
-        <div class="obs-sub">velocidad medida de la luz (¡siempre c!)</div>
-      </div>
-    </div>
-
-    <!-- ────────────────────────────────────────
-         SECCIÓN 4: Galileo vs Lorentz
-    ──────────────────────────────────────── -->
-    <hr class="divider" />
-    <h3 class="section-heading">4. El problema con las transformaciones de Galileo</h3>
-
-    <p style="margin-bottom: var(--space-md); font-size: 0.9rem;">
-      Las transformaciones de Galileo predicen que la velocidad de la luz <em>sí depende</em>
-      del sistema de referencia, en contradicción con el segundo postulado.
-      Se necesitan nuevas transformaciones.
+  <div class="crisis-banner">
+    <h3>Incompatibilidad teórica (c. 1900) — RE.pdf, diaps. 9–15; Clase 01</h3>
+    <p style="font-size:0.9rem;">
+      Hacia 1900, la física descansaba sobre dos pilares incompatibles:
+      la <strong>Mecánica Newtoniana</strong> (invariante bajo Galileo, con tiempo absoluto)
+      y la <strong>Electrodinámica de Maxwell</strong> (predice ondas EM a velocidad fija
+      <code>c = 1/√(ε₀μ₀) ≈ 2.998×10⁸ m/s</code> sin referencia a ningún sistema).
+      Si se aplica la adición de velocidades galileana a la luz:
+      <code>u' = c − v</code>, la velocidad depende del observador — contradiciendo las ecuaciones de Maxwell.
     </p>
+  </div>
 
-    <div class="comparison-grid">
-      <div class="transform-box galileo">
-        <h4>Transformaciones de Galileo (clásicas)</h4>
-        <div class="transform-eq">
-          x' = x − v·t<br/>
-          t' = t<br/>
-          u' = u − v
-        </div>
-        <div class="transform-problem">
-          ⚠ Si u = c, entonces u' = c − v ≠ c.<br/>
-          Viola el 2° postulado.
-        </div>
-      </div>
-      <div class="transform-box lorentz-box">
-        <h4>Transformaciones de Lorentz (relativistas)</h4>
-        <div class="transform-eq">
-          x' = γ(x − βct)<br/>
-          t' = γ(t − βx/c)<br/>
-          γ = 1/√(1−β²)
-        </div>
-        <div class="consequence" style="margin-top: var(--space-sm); display:block; text-align:center;">
-          ✓ Si u = c, entonces u' = c para todo β.
-        </div>
-      </div>
-    </div>
-
-    <!-- ────────────────────────────────────────
-         SECCIÓN 5: Consecuencias e invarianza
-    ──────────────────────────────────────── -->
-    <hr class="divider" />
-    <h3 class="section-heading">5. Consecuencias de los postulados</h3>
-
-    <div class="two-col">
-      <div>
-        <div class="info-box" style="margin-bottom: var(--space-md);">
-          <h3>Lo que cambia con el sistema de referencia</h3>
-          <ul class="summary-list">
-            <li>Las coordenadas de posición y tiempo de un evento</li>
-            <li>El orden temporal de ciertos eventos</li>
-            <li>La simultaneidad de eventos en lugares distintos</li>
-            <li>La longitud medida de un objeto en movimiento</li>
-            <li>El tiempo transcurrido entre dos eventos</li>
-          </ul>
-        </div>
-      </div>
-      <div>
-        <div class="info-box accent-green">
-          <h3>Lo que permanece invariante</h3>
-          <ul class="summary-list">
-            <li>La velocidad de la luz: c en todo sistema inercial</li>
-            <li>El intervalo espacio-temporal: Δs² = Δt² − Δx²/c²</li>
-            <li>Las leyes de la física</li>
-            <li>La relación causal entre eventos causalmente conectados</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- ────────────────────────────────────────
-         TRANSICIÓN AL PANEL B
-    ──────────────────────────────────────── -->
-    <div class="transition-box">
+  <div class="two-col" style="margin-bottom:var(--space-lg);">
+    <div class="info-box" style="margin-bottom:0;">
+      <h3>Experimento de Michelson–Morley (1887)</h3>
       <p>
-        Los postulados imponen una nueva forma de relacionar espacio y tiempo.
-        La pregunta ahora es: ¿cuáles son exactamente esas nuevas transformaciones?
+        Diseñado para detectar el <em>viento de éter</em> (movimiento de la Tierra a
+        <code>v ≈ 30 km/s</code> respecto al medio portador de la luz).
+        El corrimiento de franjas predicho fue <strong>ΔN = 0.373 franjas</strong>.
+        El resultado observado: <strong>ΔN &lt; 0.01 franjas</strong> — prácticamente nulo.
+        (Michelson &amp; Morley, <em>Am. J. Sci.</em> 34, 333, 1887.)
       </p>
-      <a href="#" class="next-link">Panel B — Transformaciones de Lorentz</a>
+    </div>
+    <div class="mm-result">
+      <div class="mm-bar-wrap">
+        <div class="mm-bar-label">Corrimiento predicho (ΔN = 0.373)</div>
+        <div class="mm-bar-track"><div class="mm-bar-fill predicted"></div></div>
+        <div class="mm-verdict" style="color:#f87171;">Predicción clásica: ΔN = 0.373 ✗</div>
+
+        <div class="mm-bar-label" style="margin-top:var(--space-sm);">Corrimiento observado (ΔN &lt; 0.01)</div>
+        <div class="mm-bar-track"><div class="mm-bar-fill observed"></div></div>
+        <div class="mm-verdict" style="color:var(--color-success);">Resultado real: ΔN ≈ 0 ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box accent-left">
+    <h3>Solución de Einstein (1905) — <em>Zur Elektrodynamik bewegter Körper</em></h3>
+    <p>
+      Einstein no propuso un mecanismo para explicar el resultado nulo: simplemente elevó
+      la constancia experimental de <code>c</code> a la categoría de <strong>principio</strong>.
+      Abolió el éter y el tiempo absoluto, reformulando toda la cinemática desde sus cimientos.
+    </p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECCIÓN 1 — LOS DOS POSTULADOS
+  ═══════════════════════════════════════════════════════ -->
+  <hr class="divider" />
+  <h3 class="section-heading">1. Los dos postulados de la relatividad especial (1905)</h3>
+
+  <div class="postulates-grid">
+    <div class="postulate-card p1">
+      <div class="postulate-number">Primer postulado — Principio de Relatividad</div>
+      <h3>Las leyes de la física son idénticas en todos los sistemas de referencia inerciales.</h3>
+      <p class="postulate-body">
+        Ningún experimento físico interno puede determinar si un sistema inercial
+        está "en reposo absoluto" o en "movimiento absoluto". El movimiento es siempre
+        <em>relativo</em> entre dos sistemas. Este principio hereda y generaliza el principio
+        de Galileo (1632), extendiéndolo de la mecánica a <strong>todas</strong> las leyes físicas
+        — incluyendo el electromagnetismo.
+      </p>
+      <p class="postulate-source">
+        Fuente: Einstein (1905), § 1; RE.pdf, diap. 27; Clase 01, §7.
+      </p>
     </div>
 
-  </main>
+    <div class="postulate-card p2">
+      <div class="postulate-number">Segundo postulado — Invariancia de la velocidad de la luz</div>
+      <h3>La luz se propaga en el vacío con rapidez <code>c</code>, independiente del movimiento de la fuente o el receptor.</h3>
+      <p class="postulate-body">
+        <code>c ≈ 2.998 × 10⁸ m/s</code> es la misma para todos los observadores inerciales.
+        Esto contradice directamente la adición de velocidades galileana (<code>u' = u − v</code>)
+        y exige una nueva relación entre el espacio y el tiempo.
+        Como consecuencia directa: <strong>la simultaneidad deja de ser absoluta</strong>.
+      </p>
+      <span class="consequence" style="margin-top:var(--space-md);">⚡ Consecuencia: la simultaneidad no es absoluta</span>
+      <p class="postulate-source">
+        Fuente: Einstein (1905), § 2; RE.pdf, diap. 28; Clase 01, §8.
+      </p>
+    </div>
+  </div>
 
-  <!-- ═══════════════════════════════════════════
-       PIE DE PÁGINA
-  ═══════════════════════════════════════════ -->
-  <footer class="site-footer">
-    <p>Laboratorio de Relatividad Especial · Panel A — Postulados de Einstein</p>
-  </footer>
+  <!-- ═══════════════════════════════════════════════════════
+       SECCIÓN 2 — ANIMACIÓN INTERACTIVA (DUAL LANE)
+  ═══════════════════════════════════════════════════════ -->
+  <hr class="divider" />
+  <h3 class="section-heading">2. Visualización interactiva: invariancia de c</h3>
 
-  <!-- ═══════════════════════════════════════════
-       JAVASCRIPT — Animación del Panel A
-  ═══════════════════════════════════════════ -->
-  <script src="../js/physics/lorentz.js"></script>
-  <script src="../js/panels/panel-a.js"></script>
+  <p style="font-size:0.9rem;margin-bottom:var(--space-md);">
+    La animación muestra <strong>dos perspectivas simultáneas</strong> del mismo pulso de luz.
+    Arriba: lo que mide el sistema <strong style="color:var(--color-accent)">S</strong> (en reposo).
+    Abajo: lo que mide <strong style="color:var(--color-accent-2)">S'</strong> (en movimiento).
+    La línea punteada roja es la <em>predicción galileana incorrecta</em> (c − v).
+    La línea sólida amarilla es la luz real (siempre c en ambos sistemas).
+  </p>
+
+  <div class="canvas-wrapper">
+    <div class="canvas-title">
+      Perspectiva S (arriba) y S' (abajo) — mismo pulso de luz
+      <span style="float:right;font-size:0.7rem;font-weight:400;color:var(--color-muted);">
+        - - - predicción galileana &nbsp;|&nbsp; ─── luz real (Einstein)
+      </span>
+    </div>
+    <canvas id="anim-canvas"></canvas>
+    <div class="anim-controls">
+      <span class="anim-label">Velocidad S':</span>
+      <input type="range" id="speed-slider" class="speed-slider"
+             min="0" max="0.95" step="0.01" value="0.6" />
+      <span id="beta-readout" class="readout">β = 0.60</span>
+      <span id="gamma-readout" class="gamma-badge">γ = <span id="gamma-val">1.2500</span></span>
+      <button id="btn-play"  class="btn btn-primary"><span class="btn-icon">▶</span> Emitir pulso</button>
+      <button id="btn-pause" class="btn btn-secondary" disabled><span class="btn-icon">⏸</span> Pausar</button>
+      <button id="btn-reset" class="btn btn-secondary"><span class="btn-icon">↺</span> Reiniciar</button>
+    </div>
+  </div>
+
+  <!-- Tarjetas de lectura de cada observador -->
+  <div class="obs-grid">
+    <div class="obs-card s-card">
+      <h4>Sistema S — en reposo</h4>
+      <div class="obs-row">
+        <span class="obs-key">x<sub>luz</sub></span>
+        <span class="obs-val" id="obs-s-x">—</span>
+      </div>
+      <div class="obs-row">
+        <span class="obs-key">t</span>
+        <span class="obs-val" id="obs-s-t">—</span>
+      </div>
+      <div class="obs-row">
+        <span class="obs-key">x/t</span>
+        <span class="obs-val" id="obs-s-speed">—</span>
+      </div>
+      <div class="obs-speed-row" id="obs-s-verdict">—</div>
+    </div>
+    <div class="obs-card sp-card">
+      <h4>Sistema S' — en movimiento</h4>
+      <div class="obs-row">
+        <span class="obs-key">x'<sub>luz</sub></span>
+        <span class="obs-val" id="obs-sp-x">—</span>
+      </div>
+      <div class="obs-row">
+        <span class="obs-key">t'</span>
+        <span class="obs-val" id="obs-sp-t">—</span>
+      </div>
+      <div class="obs-row">
+        <span class="obs-key">x'/t'</span>
+        <span class="obs-val" id="obs-sp-speed">—</span>
+      </div>
+      <div class="obs-speed-row" id="obs-sp-verdict">—</div>
+    </div>
+  </div>
+
+  <div class="insight-box" style="margin-top:var(--space-lg);">
+    <div class="insight-title">💡 ¿Por qué la luz va a c en ambos sistemas?</div>
+    <p>
+      En S: la luz recorre <code>x = c·t</code>. En S': el tiempo propio transcurrido es
+      <code>t' = γ(1−β)·t</code> (dilatación temporal) y la posición transformada es
+      <code>x' = γ(1−β)·c·t = c·t'</code>. La razón <code>x'/t' = c</code> siempre.
+      El segundo postulado no es un accidente — es una consecuencia de la geometría del espaciotiempo.
+    </p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECCIÓN 3 — ADICIÓN DE VELOCIDADES
+  ═══════════════════════════════════════════════════════ -->
+  <hr class="divider" />
+  <h3 class="section-heading">3. Adición de velocidades: Galileo falla, Lorentz acierta</h3>
+
+  <div class="info-box accent-left" style="margin-bottom:var(--space-md);">
+    <h3>El problema con la adición clásica</h3>
+    <p>
+      Galileo predice: si un objeto va a velocidad <code>u</code> en S,
+      entonces en S' (que se aleja a <code>v = β·c</code>) va a <code>u' = u − v</code>.
+      Para la luz (<code>u = c</code>): <code>u' = c − v ≠ c</code>. <strong>Viola el 2.º postulado</strong>.
+      La ley relativista de composición de velocidades resuelve esto:
+    </p>
+  </div>
+
+  <div class="two-col" style="margin-bottom:var(--space-md);">
+    <div class="formula-box">
+      <div class="formula-label">Galileo (clásica — INCORRECTA para v → c)</div>
+      u' = u − v<br/>
+      <span style="font-size:0.8rem;color:#f87171;">Si u = c: u' = c − v &lt; c ✗</span>
+    </div>
+    <div class="formula-box" style="border-color:rgba(52,211,153,0.3);">
+      <div class="formula-label">Lorentz (relativista — CORRECTA)</div>
+      u' = (u − v) / (1 − u·v/c²)<br/>
+      <span style="font-size:0.8rem;color:var(--color-success);">Si u = c: u' = c para todo v ✓</span>
+    </div>
+  </div>
+
+  <!-- Calculadora interactiva -->
+  <div class="info-box" style="padding:var(--space-lg);margin-bottom:var(--space-lg);">
+    <h3 style="margin-bottom:var(--space-md);">Calculadora — velocidad del objeto en S:</h3>
+
+    <div class="slider-row">
+      <span class="anim-label">u/c =</span>
+      <input type="range" id="u-slider" class="slider-generic" min="0" max="1.0" step="0.01" value="0.8" />
+      <span id="u-readout" class="readout">u = 0.80c</span>
+    </div>
+
+    <div class="vadd-grid">
+      <div class="vadd-card galileo">
+        <div class="vadd-label">Galileo (clásico) ✗</div>
+        <div class="vadd-formula">u' = u − v = u − β·c</div>
+        <div class="vadd-result" id="vadd-galileo">—</div>
+        <div class="vadd-bar-track"><div class="vadd-bar-fill" id="vadd-bar-g" style="width:0%"></div></div>
+        <div class="vadd-warning" id="vadd-g-warn"></div>
+      </div>
+      <div class="vadd-card lorentz">
+        <div class="vadd-label">Einstein (relativista) ✓</div>
+        <div class="vadd-formula">u' = (u − v)/(1 − uv/c²)</div>
+        <div class="vadd-result" id="vadd-lorentz">—</div>
+        <div class="vadd-bar-track"><div class="vadd-bar-fill" id="vadd-bar-l" style="width:80%"></div></div>
+        <div class="vadd-warning" id="vadd-l-note"></div>
+      </div>
+    </div>
+
+    <p style="font-size:0.8rem;color:var(--color-muted);margin-top:var(--space-sm);">
+      Ajusta <strong>u</strong> (velocidad del objeto en S) y observa qué predice cada teoría.
+      Cuando <strong>u = c</strong>, Galileo da <em>c − v &lt; c</em> mientras Lorentz da siempre <em>c</em>.
+      Los valores de β se toman del slider de velocidad de la animación.
+    </p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECCIÓN 4 — GALILEO VS LORENTZ (tabla)
+  ═══════════════════════════════════════════════════════ -->
+  <hr class="divider" />
+  <h3 class="section-heading">4. Transformaciones: Galileo vs. Lorentz</h3>
+
+  <div class="comparison-grid" style="margin-bottom:var(--space-lg);">
+    <div class="transform-box galileo">
+      <h4>Galileo (Clásicas)</h4>
+      <div class="transform-eq">
+        x' = x − v·t<br/>
+        t' = t &nbsp;&nbsp;&nbsp;&nbsp;← tiempo absoluto<br/>
+        u' = u − v
+      </div>
+      <div class="transform-problem">
+        ⚠ Predice u'_luz = c − v ≠ c.<br/>
+        Viola el 2.° postulado.
+      </div>
+    </div>
+    <div class="transform-box lorentz-box">
+      <h4>Lorentz (Relativistas)</h4>
+      <div class="transform-eq">
+        x' = γ(x − βct)<br/>
+        t' = γ(t − βx/c)<br/>
+        γ = 1/√(1 − β²) ≥ 1
+      </div>
+      <div class="consequence" style="display:block;text-align:center;margin-top:var(--space-sm);">
+        ✓ Si u = c → u' = c para todo β.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECCIÓN 5 — CONSECUENCIAS
+  ═══════════════════════════════════════════════════════ -->
+  <hr class="divider" />
+  <h3 class="section-heading">5. Consecuencias de los postulados</h3>
+
+  <div class="two-col" style="margin-bottom:var(--space-lg);">
+    <div class="info-box" style="margin-bottom:0;">
+      <h3>Lo que cambia entre observadores</h3>
+      <ul class="summary-list">
+        <li>Las coordenadas (x, t) de un mismo evento</li>
+        <li>La simultaneidad de eventos separados espacialmente</li>
+        <li>El orden temporal de eventos no causalmente conectados</li>
+        <li>La longitud medida de un objeto en movimiento (contracción)</li>
+        <li>El tiempo transcurrido entre dos eventos (dilatación)</li>
+      </ul>
+    </div>
+    <div class="info-box accent-green" style="margin-bottom:0;">
+      <h3>Lo que permanece invariante</h3>
+      <ul class="summary-list">
+        <li>La velocidad de la luz: c en todo sistema inercial</li>
+        <li>El intervalo espacio-temporal: Δs² = c²Δt² − Δx²</li>
+        <li>Las leyes físicas (forma de las ecuaciones)</li>
+        <li>El orden causal de eventos causalmente conectados</li>
+        <li>La carga eléctrica, la masa en reposo, la entropía</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECCIÓN 6 — EVIDENCIA EXPERIMENTAL
+  ═══════════════════════════════════════════════════════ -->
+  <hr class="divider" />
+  <h3 class="section-heading">6. Confirmaciones experimentales</h3>
+
+  <div class="evidence-grid">
+    <div class="evidence-card">
+      <div class="ev-year">1938 — Ives &amp; Stilwell</div>
+      <div class="ev-title">Efecto Doppler de segundo orden</div>
+      <div class="ev-body">Midieron el redshift transverso de átomos rápidos de hidrógeno, confirmando la dilatación temporal con precisión 1%.</div>
+    </div>
+    <div class="evidence-card">
+      <div class="ev-year">1941 — Rossi &amp; Hall</div>
+      <div class="ev-title">Muones atmosféricos</div>
+      <div class="ev-body">Muones creados a 10 km de altitud (τ₀ = 2.2 μs) llegan al suelo. Sin dilatación: deberían desintegrarse en ~660 m. Con γ ≈ 10: recorren varios km. ✓</div>
+    </div>
+    <div class="evidence-card">
+      <div class="ev-year">1971 — Hafele &amp; Keating</div>
+      <div class="ev-title">Relojes en aviones</div>
+      <div class="ev-body">Relojes atómicos en vuelo regresaron con un desfase de ~200 ns respecto a los del suelo — exactamente lo predicho por RE (más relatividad general). ✓</div>
+    </div>
+    <div class="evidence-card">
+      <div class="ev-year">Permanente — GPS</div>
+      <div class="ev-title">Sistema de Posicionamiento Global</div>
+      <div class="ev-body">Los satélites GPS requieren correcciones relativistas diarias de +38.4 μs (RE + RG). Sin ellas, el error acumulado sería >10 km/día. ✓</div>
+    </div>
+  </div>
+
+  <!-- Transición -->
+  <div class="transition-box">
+    <p>
+      Los postulados imponen una nueva geometría del espaciotiempo.
+      La pregunta ahora es: ¿cuál es exactamente la regla de transformación?
+    </p>
+    <a href="panel-b.html" class="next-link">Panel B — Transformaciones de Lorentz</a>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <p>Laboratorio de Relatividad Especial · Panel A — Postulados de Einstein</p>
+  <p class="footer-credit">Powered by <a href="https://github.com/georaiser/" target="_blank" rel="noopener">github.com/georaiser</a></p>
+</footer>
+
+<script src="../js/physics/lorentz.js"></script>
+<script src="../js/panels/panel-a.js"></script>
 
 </body>
 </html>

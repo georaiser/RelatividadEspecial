@@ -140,3 +140,23 @@
   font-size: 0.85rem;
   margin-top: var(--space-2xl);
 }
+
+.footer-credit {
+  margin-top: var(--space-xs);
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  opacity: 0.7;
+}
+
+.footer-credit a {
+  color: var(--color-muted);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--color-border);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.footer-credit a:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  text-decoration: none;
+}

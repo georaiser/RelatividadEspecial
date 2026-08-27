@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel C — Diagrama de Minkowski</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/panels.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <h1 class="site-title">Laboratorio de Relatividad Especial</h1>
+    <p class="site-subtitle">El espacio-tiempo como geometría: el mapa completo de lo que puede verse y conocerse</p>
+  </div>
+</header>
+
+<main class="panel-page">
+
+  <a href="../index.html" class="panel-back-link">Volver al índice</a>
+
+  <div class="panel-header">
+    <div class="panel-heading">
+      <span class="panel-tag">Panel C</span>
+      <h2 class="panel-title-large">Diagrama de Minkowski</h2>
+    </div>
+    <p class="panel-question">
+      En <a href="panel-b.html" style="color:var(--color-accent);">Panel B</a> viste las ecuaciones: x' = γ(x − βct), Δt' = γ(Δt − βΔx), Δs².
+      Aquí esa misma física se convierte en <strong>geometría</strong>:
+      cada evento es un punto arrastrable, las transformaciones son inclinaciones de ejes,
+      la causalidad es el cono de luz. <em>La misma física — dos formas de verla.</em>
+    </p>
+  </div>
+
+  <!-- Info box contextual -->
+  <div class="info-box accent-left" style="margin-bottom:var(--space-md);">
+    <h3>¿Qué es el Diagrama de Minkowski? (RE.pdf, diaps. 29–34; Clase 02, §3–4)</h3>
+    <p>
+      Un <strong>evento</strong> es un punto en el espacio-tiempo: un lugar y un instante simultáneamente.
+      El diagrama de Minkowski lo representa con
+      <strong style="color:var(--color-accent)">x</strong> en el eje horizontal y
+      <strong style="color:var(--color-accent)">ct</strong> en el eje vertical.
+      Los rayos de luz forman el <strong style="color:#fde047">cono de luz</strong> (±45°).
+      El sistema K' en movimiento tiene sus ejes <em>inclinados</em> hacia el cono;
+      cuanto mayor es β, mayor la inclinación. Cuando β → 1, los ejes colapsan sobre el cono.
+    </p>
+  </div>
+
+  <!-- Referencia de ejes y convenciones -->
+  <div class="two-col formula-header">
+    <div class="formula-box">
+      <div class="formula-label">Eje ct' (línea de mundo de K')</div>
+      x = β·ct &ensp;→&ensp; pendiente Δx/Δ(ct) = β
+    </div>
+    <div class="formula-box" style="border-color:rgba(167,139,250,0.3);">
+      <div class="formula-label">Eje x' (líneas de simultaneidad de K')</div>
+      ct = β·x &ensp;→&ensp; pendiente Δ(ct)/Δx = β
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       BARRA STICKY: TABS + SLIDER β
+  ══════════════════════════════════════ -->
+  <div class="tab-control-bar">
+    <div class="tab-bar-inline">
+      <button class="tab-btn active" data-tab="tab-events">C.1 · Eventos</button>
+      <button class="tab-btn"        data-tab="tab-causal">C.2 · Cono de Luz</button>
+      <button class="tab-btn"        data-tab="tab-simul" >C.3 · Simultaneidad</button>
+    </div>
+    <div class="beta-inline-ctrl">
+      <label for="global-beta-slider">β</label>
+      <input type="range" id="global-beta-slider" class="beta-slider"
+             min="0" max="0.95" step="0.005" value="0.6" />
+      <span class="readout" id="beta-label">β = 0.600</span>
+      <span class="gamma-badge">γ = <span id="gamma-label">1.2500</span></span>
+      <span class="readout k-readout" id="k-label">k = 2.000</span>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       TAB C.1 — EVENTOS Y LÍNEAS DE MUNDO
+  ══════════════════════════════════════ -->
+  <div id="tab-events" class="tab-panel active">
+    <div class="tab-split">
+
+      <!-- LEFT -->
+      <div class="tab-left">
+        <h3 class="section-heading sm-heading">Eventos y líneas de mundo</h3>
+        <p class="mk-desc">
+          Un <strong>evento</strong> = lugar + instante. Arrástralo en el diagrama o edita sus coordenadas.
+          La línea de mundo de K' (violeta) pasa por el origen con pendiente Δx/Δ(ct) = β.
+        </p>
+
+        <!-- Presets -->
+        <div class="preset-section">
+          <span class="preset-label">Escenarios:</span>
+          <div class="preset-row" id="presets-c1">
+            <button class="preset-btn" data-ax="0"  data-act="3" >En reposo (x=0)</button>
+            <button class="preset-btn" data-ax="3"  data-act="4" >Cuadrante I</button>
+            <button class="preset-btn" data-ax="2"  data-act="2" >Cono de luz</button>
+            <button class="preset-btn" data-ax="-3" data-act="1" >Pasado izq.</button>
+            <button class="preset-btn" data-ax="0"  data-act="0" >Origen</button>
+          </div>
+        </div>
+
+        <!-- Evento A -->
+        <div class="mk-event-card ea-card">
+          <div class="mk-event-title">● Evento A <span class="drag-hint">(arrastra en el diagrama)</span></div>
+          <div class="mk-event-inputs">
+            <div class="mk-event-row">
+              <span class="mk-key">x<sub>A</sub></span>
+              <input type="number" id="c1-ax" class="coord-input mk-input" value="-2" step="0.5" />
+              <span class="tc-unit">u.n.</span>
+            </div>
+            <div class="mk-event-row">
+              <span class="mk-key">ct<sub>A</sub></span>
+              <input type="number" id="c1-act" class="coord-input mk-input" value="1" step="0.5" />
+              <span class="tc-unit">u.n.</span>
+            </div>
+          </div>
+          <div class="mk-readout-grid">
+            <div class="mk-readout-cell">
+              <div class="mk-readout-label" style="color:var(--color-accent);">En K</div>
+              <div class="mk-readout-val">(<span id="c1-ax-k">−2.000</span>, <span id="c1-act-k">1.000</span>)</div>
+            </div>
+            <div class="mk-readout-cell">
+              <div class="mk-readout-label" style="color:var(--color-accent-2);">En K'</div>
+              <div class="mk-readout-val">(<span id="c1-axp-k">—</span>, <span id="c1-actp-k">—</span>)</div>
+            </div>
+          </div>
+          <div class="mk-ds2-row">
+            <span class="mk-key">Δs²(O→A)</span>
+            <span id="c1-ds2" class="readout" style="font-size:0.78rem;">—</span>
+            <span id="c1-type" class="annotation annotation-blue">—</span>
+          </div>
+        </div>
+
+        <!-- Tabla β, γ, k -->
+        <div class="info-box" style="padding:0;overflow:hidden;">
+          <table class="formula-table">
+            <thead><tr><th>Factor</th><th>Fórmula</th><th>Valor</th></tr></thead>
+            <tbody>
+              <tr><td>β</td><td>v/c</td><td id="c1-beta">0.600</td></tr>
+              <tr><td>γ</td><td>1/√(1−β²)</td><td id="c1-gamma">—</td></tr>
+              <tr><td>k (Bondi)</td><td>√((1+β)/(1−β))</td><td id="c1-k">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div><!-- /tab-left -->
+
+      <!-- RIGHT: canvas -->
+      <div class="tab-right">
+        <div class="canvas-wrapper canvas-minkowski">
+          <div class="canvas-title">
+            Diagrama de Minkowski
+            <span class="canvas-subtitle">
+              Azul = K &nbsp;·&nbsp; Violeta = K' &nbsp;·&nbsp; Amarillo = cono de luz · Arrastra el evento A
+            </span>
+          </div>
+          <canvas id="c1-canvas" style="cursor:default;"></canvas>
+          <div class="controls-bar">
+            Los ejes de K' (violeta) se inclinan simétricamente hacia las diagonales a medida que β → 1.
+            La línea sólida violeta es la línea de mundo del origen de K' en el sistema K.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-split -->
+
+    <!-- Full-width -->
+    <div class="insight-box">
+      <div class="insight-title">💡 Líneas de mundo</div>
+      <p>
+        La <strong>línea de mundo</strong> de un objeto es su historia completa en el espacio-tiempo.
+        Un objeto en reposo en K tiene línea de mundo <em>vertical</em> (x = const).
+        Un objeto moviéndose a velocidad β tiene línea de mundo inclinada con Δx/Δ(ct) = β.
+        La luz viaja sobre las diagonales a ±45°. <em>Ningún objeto material puede cruzar el cono de luz.</em>
+      </p>
+    </div>
+
+  </div><!-- /tab-events -->
+
+
+  <!-- ══════════════════════════════════════
+       TAB C.2 — CONO DE LUZ Y CAUSALIDAD
+  ══════════════════════════════════════ -->
+  <div id="tab-causal" class="tab-panel">
+    <div class="tab-split">
+
+      <!-- LEFT -->
+      <div class="tab-left">
+        <h3 class="section-heading sm-heading">Cono de luz y causalidad</h3>
+
+        <div class="info-box accent-left compact-box" style="margin:0;">
+          <h3>Estructura causal (RE.pdf, diaps. 64–67)</h3>
+          <p>
+            El <strong>cono de luz</strong> de A divide el espacio-tiempo en tres regiones invariantes.
+            Arrastra B y observa cómo cambia la clasificación del intervalo A→B.
+            Varía β: el tipo causal <em>no cambia</em> — es invariante de Lorentz.
+          </p>
+        </div>
+
+        <!-- Presets de pares de eventos -->
+        <div class="preset-section">
+          <span class="preset-label">Escenarios de pares A→B:</span>
+          <div class="preset-row" id="presets-c2">
+            <button class="preset-btn" data-ax="0" data-act="0" data-bx="1" data-bct="3">Temporal (B en futuro)</button>
+            <button class="preset-btn" data-ax="0" data-act="0" data-bx="3" data-bct="3">Nulo (cono de luz)</button>
+            <button class="preset-btn" data-ax="0" data-act="0" data-bx="4" data-bct="1">Espacial (B lateral)</button>
+            <button class="preset-btn" data-ax="-2" data-act="1" data-bx="3" data-bct="4">General</button>
+          </div>
+        </div>
+
+        <!-- Eventos A y B -->
+        <div class="mk-two-events">
+          <div class="mk-event-card ea-card compact-event">
+            <div class="mk-event-title">● Evento A</div>
+            <div class="mk-event-inputs">
+              <div class="mk-event-row">
+                <span class="mk-key">x<sub>A</sub></span>
+                <input type="number" id="c2-ax" class="coord-input mk-input" value="0" step="0.5" />
+              </div>
+              <div class="mk-event-row">
+                <span class="mk-key">ct<sub>A</sub></span>
+                <input type="number" id="c2-act" class="coord-input mk-input" value="0" step="0.5" />
+              </div>
+            </div>
+          </div>
+          <div class="mk-event-card eb-card compact-event">
+            <div class="mk-event-title">● Evento B</div>
+            <div class="mk-event-inputs">
+              <div class="mk-event-row">
+                <span class="mk-key">x<sub>B</sub></span>
+                <input type="number" id="c2-bx" class="coord-input mk-input" value="1" step="0.5" />
+              </div>
+              <div class="mk-event-row">
+                <span class="mk-key">ct<sub>B</sub></span>
+                <input type="number" id="c2-bct" class="coord-input mk-input" value="3" step="0.5" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resultados del intervalo -->
+        <div class="mk-interval-result">
+          <div class="mk-interval-row">
+            <span class="mk-key">Δx</span>
+            <span id="c2-dx" class="readout" style="font-size:0.8rem;">—</span>
+          </div>
+          <div class="mk-interval-row">
+            <span class="mk-key">Δ(ct)</span>
+            <span id="c2-dct" class="readout" style="font-size:0.8rem;">—</span>
+          </div>
+          <div class="mk-interval-row">
+            <span class="mk-key">Δs²</span>
+            <span id="c2-ds2" class="readout" style="font-size:0.8rem;">—</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta de clasificación causal -->
+        <div id="c2-causal-card" class="causal-badge-card">
+          <div class="causal-badge-icon" id="c2-causal-icon">●</div>
+          <div>
+            <div class="causal-badge-type" id="c2-causal-type">—</div>
+            <div class="causal-badge-desc" id="c2-causal-desc">—</div>
+          </div>
+        </div>
+
+        <!-- Nota sobre invariancia -->
+        <p class="mk-note" id="c2-invariant-note">
+          La clasificación causal es invariante de Lorentz: cambia β y observa que el tipo no varía.
+        </p>
+
+      </div><!-- /tab-left -->
+
+      <!-- RIGHT: canvas -->
+      <div class="tab-right">
+        <div class="canvas-wrapper canvas-minkowski">
+          <div class="canvas-title">
+            Cono de luz y clasificación causal
+            <span class="canvas-subtitle">Cono de A (amarillo punteado) · Línea A→B coloreada por tipo</span>
+          </div>
+          <canvas id="c2-canvas" style="cursor:default;"></canvas>
+          <div class="controls-bar">
+            Arrastra A o B. La línea A→B es azul (temporal), amarilla (luz) o violeta (espacial).
+            El cono de luz de A separa futuro, pasado y región no causal.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-split -->
+
+    <!-- Full-width: tabla de clasificación -->
+    <div class="info-box" style="padding:0;overflow:hidden;margin-bottom:var(--space-lg);">
+      <table class="formula-table">
+        <thead>
+          <tr><th>Δs²</th><th>Tipo</th><th>Región</th><th>Significado físico</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Δs² &gt; 0</td>
+            <td><span style="color:var(--color-accent);">● Temporal</span></td>
+            <td>Interior del cono</td>
+            <td>Causal (v &lt; c). Orden temporal absoluto. Tiempo propio Δτ = √Δs².</td>
+          </tr>
+          <tr>
+            <td>Δs² = 0</td>
+            <td><span style="color:#fde047;">● Nulo (luz)</span></td>
+            <td>Superficie del cono</td>
+            <td>Conectados por señal luminosa. Tiempo propio nulo (los fotones no envejecen).</td>
+          </tr>
+          <tr>
+            <td>Δs² &lt; 0</td>
+            <td><span style="color:var(--color-accent-2);">● Espacial</span></td>
+            <td>Exterior del cono</td>
+            <td>No causal. El orden temporal puede invertirse. Existe K'' donde son simultáneos.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="insight-box">
+      <div class="insight-title">💡 Invariancia causal</div>
+      <p>
+        Varía β con el slider: aunque las coordenadas de A y B cambien,
+        el signo de Δs² no cambia. El tipo causal es un hecho objetivo del universo,
+        no depende del observador. Esto garantiza que la causalidad está protegida
+        por la estructura geométrica del espacio-tiempo de Minkowski.
+      </p>
+    </div>
+
+  </div><!-- /tab-causal -->
+
+
+  <!-- ══════════════════════════════════════
+       TAB C.3 — SIMULTANEIDAD
+  ══════════════════════════════════════ -->
+  <div id="tab-simul" class="tab-panel">
+    <div class="tab-split">
+
+      <!-- LEFT -->
+      <div class="tab-left">
+        <h3 class="section-heading sm-heading">Simultaneidad y ejes de K'</h3>
+
+        <div class="info-box accent-green compact-box" style="margin:0;">
+          <h3>Líneas de simultaneidad (RE.pdf, diap. 51–53)</h3>
+          <p>
+            Las líneas horizontales (K) unen eventos con el mismo tiempo <em>t</em>.
+            Las líneas inclinadas (K') unen eventos con el mismo tiempo <em>t'</em>.
+            Si A y B caen en la misma línea → son simultáneos en ese sistema.
+          </p>
+        </div>
+
+        <!-- Presets -->
+        <div class="preset-section">
+          <span class="preset-label">Escenarios:</span>
+          <div class="preset-row" id="presets-c3">
+            <button class="preset-btn" data-ax="-3" data-act="0" data-bx="3" data-bct="0">Simultáneos en K</button>
+            <button class="preset-btn" data-ax="-2" data-act="1" data-bx="2" data-bct="1">Simult. en K (ct=1)</button>
+            <button class="preset-btn" data-ax="-2" data-act="-1" data-bx="3" data-bct="2">No simultáneos</button>
+            <button class="preset-btn" data-ax="0" data-act="0" data-bx="4" data-bct="2">B en futuro de K</button>
+          </div>
+        </div>
+
+        <!-- Eventos A y B -->
+        <div class="mk-two-events">
+          <div class="mk-event-card ea-card compact-event">
+            <div class="mk-event-title">● Evento A</div>
+            <div class="mk-event-inputs">
+              <div class="mk-event-row">
+                <span class="mk-key">x<sub>A</sub></span>
+                <input type="number" id="c3-ax" class="coord-input mk-input" value="-3" step="0.5" />
+              </div>
+              <div class="mk-event-row">
+                <span class="mk-key">ct<sub>A</sub></span>
+                <input type="number" id="c3-act" class="coord-input mk-input" value="0" step="0.5" />
+              </div>
+            </div>
+          </div>
+          <div class="mk-event-card eb-card compact-event">
+            <div class="mk-event-title">● Evento B</div>
+            <div class="mk-event-inputs">
+              <div class="mk-event-row">
+                <span class="mk-key">x<sub>B</sub></span>
+                <input type="number" id="c3-bx" class="coord-input mk-input" value="3" step="0.5" />
+              </div>
+              <div class="mk-event-row">
+                <span class="mk-key">ct<sub>B</sub></span>
+                <input type="number" id="c3-bct" class="coord-input mk-input" value="0" step="0.5" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resultados de simultaneidad -->
+        <div class="sim-results-row" style="margin-top:0;">
+          <div class="sim-result-frame s-frame">
+            <div class="sim-frame-label">En K (horizontal)</div>
+            <div class="sim-deltas">
+              Δt = <span id="c3-dt-k" style="color:var(--color-accent);font-weight:700;">0.000</span>
+            </div>
+            <div id="c3-verdict-k" class="sim-verdict simultaneous">Simultáneos ✓</div>
+          </div>
+          <div class="sim-result-frame sp-frame">
+            <div class="sim-frame-label">En K' (inclinada)</div>
+            <div class="sim-deltas">
+              Δt' = <span id="c3-dt-kp" style="color:var(--color-accent-2);font-weight:700;">—</span>
+            </div>
+            <div id="c3-verdict-kp" class="sim-verdict not-simultaneous">—</div>
+          </div>
+        </div>
+
+        <div class="formula-box" style="font-size:0.83rem;margin-top:0;">
+          <div class="formula-label">Fórmula de simultaneidad</div>
+          Δt' = γ(Δt − β·Δx) &ensp;→&ensp;
+          si Δt = 0: Δt' = −γ·β·Δx
+        </div>
+
+      </div><!-- /tab-left -->
+
+      <!-- RIGHT: canvas -->
+      <div class="tab-right">
+        <div class="canvas-wrapper canvas-minkowski">
+          <div class="canvas-title">
+            Líneas de simultaneidad en K y K'
+            <span class="canvas-subtitle">— K (azul horizontal) &nbsp;·&nbsp; - - - K' (violeta inclinada)</span>
+          </div>
+          <canvas id="c3-canvas" style="cursor:default;"></canvas>
+          <div class="controls-bar">
+            Arrastra A o B. Varía β: las líneas de simultaneidad de K' se inclinan.
+            Si A y B caen en la misma línea punteada violeta → simultáneos en K'.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-split -->
+
+    <!-- Full-width -->
+    <div class="two-col" style="gap:var(--space-md);margin-bottom:var(--space-lg);">
+      <div class="info-box accent-purple compact-box">
+        <h3>Simultaneidad relativa — implicación geométrica</h3>
+        <p>
+          Las líneas de simultaneidad de K' tienen pendiente Δ(ct)/Δx = β.
+          Para β = 0: son horizontales (idénticas a K). Para β → 1: colapsan sobre el cono de luz.
+          Dos eventos en la misma línea horizontal son simultáneos en K;
+          en la misma línea inclinada, en K'.
+        </p>
+      </div>
+      <div class="info-box accent-left compact-box">
+        <h3>Inversión del orden temporal</h3>
+        <p>
+          Si el intervalo A→B es de tipo espacial (Δs² &lt; 0), existe un valor de β
+          para el cual A y B son simultáneos en K' (Δt' = 0).
+          Para otros valores de β, el orden temporal puede invertirse: B ocurre "antes" de A en K'.
+          Esto solo es posible para intervalos espaciales — ¡nunca causales!
+        </p>
+      </div>
+    </div>
+
+    <div class="transition-box">
+      <p>
+        El diagrama de Minkowski es el mapa completo del espacio-tiempo. Desde él, la dilatación
+        temporal y la contracción de longitud se leen directamente como consecuencias geométricas.
+      </p>
+      <a href="panel-d.html" class="next-link">Panel D — Dilatación Temporal</a>
+    </div>
+
+  </div><!-- /tab-simul -->
+
+</main>
+
+<footer class="site-footer">
+  <p>Laboratorio de Relatividad Especial · Panel C — Diagrama de Minkowski</p>
+  <p class="footer-credit">Powered by <a href="https://github.com/georaiser/" target="_blank" rel="noopener">github.com/georaiser</a></p>
+</footer>
+
+<script src="../js/physics/lorentz.js"></script>
+<script src="../js/panels/panel-c.js"></script>
+
+</body>
+</html>
