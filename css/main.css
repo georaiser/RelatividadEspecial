@@ -1,0 +1,104 @@
+/* ============================================================
+   main.css — Variables globales, reset y tipografía
+   ============================================================ */
+
+:root {
+  /* Paleta principal */
+  --color-bg:        #0d0f14;
+  --color-surface:   #161a24;
+  --color-surface-2: #1e2435;
+  --color-border:    #2a3050;
+  --color-accent:    #4f9eff;
+  --color-accent-2:  #a78bfa;
+  --color-success:   #34d399;
+  --color-warn:      #fbbf24;
+  --color-muted:     #6b7280;
+  --color-text:      #e2e8f0;
+  --color-text-dim:  #94a3b8;
+
+  /* Tipografía */
+  --font-sans: 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Consolas', 'Fira Mono', monospace;
+
+  /* Espaciado */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+
+  /* Bordes */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* Sombras */
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 20px rgba(79,158,255,0.15);
+}
+
+/* ── Reset ──────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1, h2, h3, h4 {
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+p {
+  color: var(--color-text-dim);
+}
+
+code, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: var(--color-surface); }
+::-webkit-scrollbar-thumb  { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+
+/* ── Utilidades ─────────────────────────────────────────── */
+.text-accent   { color: var(--color-accent); }
+.text-dim      { color: var(--color-text-dim); }
+.text-muted    { color: var(--color-muted); }
+.text-success  { color: var(--color-success); }
+.text-center   { text-align: center; }
+.font-mono     { font-family: var(--font-mono); }
+
+.mt-sm  { margin-top: var(--space-sm); }
+.mt-md  { margin-top: var(--space-md); }
+.mt-lg  { margin-top: var(--space-lg); }
+.mt-xl  { margin-top: var(--space-xl); }
+
+.mb-md  { margin-bottom: var(--space-md); }
+.mb-lg  { margin-bottom: var(--space-lg); }

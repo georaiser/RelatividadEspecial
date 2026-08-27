@@ -1,0 +1,142 @@
+/* ============================================================
+   layout.css — Estructura de página: header, footer, grids
+   ============================================================ */
+
+/* ── Site Header ────────────────────────────────────────── */
+.site-header {
+  background: linear-gradient(135deg, #0d1b2e 0%, #101827 60%, #0d0f14 100%);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-xl) var(--space-lg);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 50% -10%, rgba(79,158,255,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.header-inner {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.site-title {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff 30%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-sm);
+}
+
+.site-subtitle {
+  font-size: 1rem;
+  color: var(--color-text-dim);
+  font-style: italic;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ── Panel Grid (index) ─────────────────────────────────── */
+.panel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  max-width: 1200px;
+  margin: var(--space-xl) auto;
+  padding: 0 var(--space-lg);
+}
+
+/* ── Panel Layout (inside a panel page) ─────────────────── */
+.panel-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.panel-header {
+  margin-bottom: var(--space-xl);
+}
+
+.panel-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-text-dim);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-lg);
+  transition: color 0.2s;
+}
+
+.panel-back-link:hover {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.panel-back-link::before {
+  content: '←';
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.panel-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: rgba(79,158,255,0.1);
+  border: 1px solid rgba(79,158,255,0.25);
+  border-radius: var(--radius-sm);
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+
+.panel-title-large {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--color-text);
+}
+
+.panel-question {
+  font-size: 1rem;
+  color: var(--color-text-dim);
+  border-left: 3px solid var(--color-accent);
+  padding-left: var(--space-md);
+  margin-top: var(--space-md);
+  font-style: italic;
+}
+
+/* ── Two-column section ──────────────────────────────────── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+@media (max-width: 640px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+
+/* ── Site Footer ─────────────────────────────────────────── */
+.site-footer {
+  text-align: center;
+  padding: var(--space-xl) var(--space-lg);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  margin-top: var(--space-2xl);
+}
