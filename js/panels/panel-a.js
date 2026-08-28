@@ -394,12 +394,12 @@
     ctx.fillText('Origen emisión (x=0)', xOrigS, yS - halfHS - 16);
     ctx.restore();
 
-    // Vagón contraído moviéndose hacia la derecha
-    drawWagon(xCenterS, yS, L, halfHS, true, `Vagón S' contraído (L = L₀/γ)`, β);
+    // Vagón en movimiento hacia la derecha
+    drawWagon(xCenterS, yS, L0, halfHS, true, `Vagón S' (en movimiento a +${β.toFixed(2)}c)`, β);
 
     // Detectores A (trasero) y B (delantero) en el vagón móvil
-    const xDetSA = xCenterS - L;
-    const xDetSB = xCenterS + L;
+    const xDetSA = xCenterS - L0;
+    const xDetSB = xCenterS + L0;
 
     // Tiempos físicos de impacto en S
     const tImpactSA = T_EMIT / k;       // Impacta antes: t_A = 1 / k

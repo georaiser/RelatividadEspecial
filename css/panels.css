@@ -1574,3 +1574,150 @@
   }
 }
 
+
+/* ══════════════════════════════════════════════════════════
+   PANEL D — DILATACIÓN TEMPORAL Y CONTRACCIÓN DE LONGITUD
+══════════════════════════════════════════════════════════ */
+#canvas-light-clock {
+  width: 100%;
+  min-height: 380px;
+  background: #09111e;
+  display: block;
+  cursor: default;
+}
+@media (max-width: 600px) {
+  #canvas-light-clock {
+    min-height: 320px;
+  }
+}
+
+#canvas-contraction {
+  width: 100%;
+  min-height: 280px;
+  background: #09111e;
+  display: block;
+  cursor: default;
+}
+
+/* Tarjeta de deducción de Pitágoras */
+.pythagoras-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  position: relative;
+  overflow: hidden;
+}
+.pythagoras-card.py-highlight {
+  border-color: rgba(253, 224, 71, 0.35);
+  background: rgba(253, 224, 71, 0.03);
+}
+
+.py-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.py-step-num {
+  background: rgba(79, 158, 255, 0.15);
+  color: var(--color-accent);
+  border: 1px solid rgba(79, 158, 255, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 1px 6px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Grid de casos de estudio (Muones y Granero) */
+.case-study-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+@media (max-width: 768px) {
+  .case-study-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.case-study-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+}
+.case-study-card.cs-muon {
+  border-color: rgba(52, 211, 153, 0.3);
+}
+.case-study-card.cs-barn {
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.cs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xs);
+}
+.cs-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.cs-badge.badge-green {
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--color-success);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+.cs-badge.badge-amber {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.cs-perspective-box {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  margin-top: var(--space-xs);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.cs-perspective-box strong {
+  font-family: var(--font-mono);
+}
+
+/* Calculadora Panel D */
+.d-calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+@media (max-width: 700px) {
+  .d-calc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.d-calc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+.d-calc-card.d-time  { border-color: rgba(79, 158, 255, 0.35); }
+.d-calc-card.d-space { border-color: rgba(167, 139, 250, 0.35); }
+
+

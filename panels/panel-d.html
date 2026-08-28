@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel D — Dilatación Temporal y Contracción de Longitud | Laboratorio de Relatividad Especial</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/panels.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="../index.html" class="back-link">← Volver al inicio</a>
+    <span class="panel-badge-top">Panel D</span>
+    <h1 class="panel-main-title">Dilatación Temporal y Contracción de Longitud</h1>
+    <p class="panel-tagline">
+      Las dos consecuencias cinemáticas fundamentales: el tiempo propio se dilata (<span class="formula">Δt = γ·Δt₀</span>) y la longitud se contrae (<span class="formula">L = L₀/γ</span>).
+    </p>
+  </div>
+</header>
+
+<!-- Navegación entre paneles -->
+<nav class="panel-nav">
+  <a href="panel-a.html" class="pnav-btn">Panel A — Postulados</a>
+  <a href="panel-b.html" class="pnav-btn">Panel B — Lorentz</a>
+  <a href="panel-c.html" class="pnav-btn">Panel C — Minkowski</a>
+  <a href="panel-d.html" class="pnav-btn active">Panel D — Dilatación y Contracción</a>
+</nav>
+
+<main class="panel-container">
+
+  <!-- ═══════════════════════════════════════════════════════
+       HERO 1 — SIMULACIÓN INTERACTIVA: EL RELOJ DE LUZ
+  ═══════════════════════════════════════════════════════ -->
+  <div class="canvas-wrapper">
+    <div class="canvas-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span>El Reloj de Luz (Light Clock) — Dilatación Temporal</span>
+      <span style="font-size:0.75rem;font-weight:400;color:var(--color-muted);">
+        🟡 Fotón a rapidez c &nbsp;|&nbsp; ── Espejos reflectantes separados por altura L
+      </span>
+    </div>
+
+    <!-- Canvas 2D del reloj de luz -->
+    <canvas id="canvas-light-clock"></canvas>
+
+    <!-- Controles de la animación -->
+    <div class="anim-controls">
+      <span class="anim-label">Velocidad del reloj móvil (β):</span>
+      <div class="preset-row" id="presets-d-beta" style="margin-bottom:0;">
+        <button class="preset-btn" data-beta="0.10">0.10c</button>
+        <button class="preset-btn active-preset" data-beta="0.60">0.60c</button>
+        <button class="preset-btn" data-beta="0.80">0.80c</button>
+        <button class="preset-btn" data-beta="0.95">0.95c</button>
+      </div>
+      <input type="range" id="d-speed-slider" class="speed-slider"
+             min="0" max="0.98" step="0.01" value="0.6" />
+      <span id="d-beta-readout" class="readout">β = 0.60</span>
+      <span id="d-gamma-readout" class="gamma-badge">γ = <span id="d-gamma-val">1.2500</span></span>
+      <button id="btn-clock-play"  class="btn btn-primary"><span class="btn-icon">▶</span> Iniciar fotones</button>
+      <button id="btn-clock-pause" class="btn btn-secondary" disabled><span class="btn-icon">⏸</span> Pausar</button>
+      <button id="btn-clock-reset" class="btn btn-secondary"><span class="btn-icon">↺</span> Reiniciar</button>
+    </div>
+  </div>
+
+  <!-- Tarjetas de lectura de los dos relojes -->
+  <div class="obs-grid">
+    <!-- Reloj en reposo S' -->
+    <div class="obs-card sp-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xs);">
+        <h4>⏱ Reloj S' (En reposo propio con el observador)</h4>
+        <span class="cs-badge badge-green" id="badge-clock-sp">Tiempo Propio (Δt₀)</span>
+      </div>
+      <div class="obs-row">
+        <span class="obs-key">Trayectoria del fotón</span>
+        <span class="obs-val">Vertical pura (2L)</span>
+      </div>
+      <div class="obs-row">
+        <span class="obs-key">Tiempo propio acumulado (t')</span>
+        <span class="obs-val" id="clock-sp-t">0.00 s</span>
+      </div>
+      <div class="obs-row">
+        <span class="obs-key">Ciclos / Ticks completados</span>
+        <span class="obs-val" id="clock-sp-ticks">0 ticks</span>
+      </div>
+      <div class="obs-speed-row" id="clock-sp-verdict" style="color:var(--color-accent-2);background:rgba(167,139,250,0.1);">
+        Reloj propio: 1 tick = 2L / c
+      </div>
+    </div>
+
+    <!-- Reloj en movimiento S -->
+    <div class="obs-card s-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xs);">
+        <h4>⏱ Reloj S (Visto desde el laboratorio a velocidad v)</h4>
+        <span class="cs-badge badge-amber" id="badge-clock-s">Tiempo Dilatado (Δt = γ·Δt₀)</span>
+      </div>
+      <div class="obs-row">
+        <span class="obs-key">Trayectoria del fotón</span>
+        <span class="obs-val">Diagonal / Triangular (más larga)</span>
+      </div>
+      <div class="obs-row">
+        <span class="obs-key">Tiempo medido en reposo (t)</span>
+        <span class="obs-val" id="clock-s-t">0.00 s</span>
+      </div>
+      <div class="obs-row">
+        <span class="obs-key">Relación de tiempos (t / t')</span>
+        <span class="obs-val" id="clock-s-ratio">γ = 1.2500</span>
+      </div>
+      <div class="obs-speed-row" id="clock-s-verdict" style="color:#fbbf24;background:rgba(251,191,36,0.1);">
+        El reloj en movimiento ATRASA por el factor γ
+      </div>
+    </div>
+  </div>
+
+  <!-- Deducción geométrica de Pitágoras -->
+  <div class="pythagoras-card py-highlight" style="margin-top:var(--space-md);margin-bottom:var(--space-xl);">
+    <div class="insight-title" style="margin-bottom:var(--space-sm);">
+      📐 Deducción Geométrica de la Dilatación del Tiempo (Teorema de Pitágoras)
+    </div>
+    <div class="py-step">
+      <span class="py-step-num">1</span>
+      <div>
+        <strong>En reposo (S'):</strong> El fotón sube y baja verticalmente una altura <code>L</code> a rapidez <code>c</code>. El tiempo para un viaje completo es:
+        <br/><code>Δt₀ = 2L / c  ⟹  L = c·Δt₀ / 2</code>
+      </div>
+    </div>
+    <div class="py-step">
+      <span class="py-step-num">2</span>
+      <div>
+        <strong>En movimiento (S):</strong> El reloj avanza horizontalmente una distancia <code>v·Δt</code> mientras el fotón viaja en diagonal a la misma rapidez <code>c</code> recorriendo <code>c·Δt</code>. Se forma un triángulo rectángulo:
+        <br/>• Hipotenusa: <code>c·Δt / 2</code> &nbsp;|&nbsp; • Base: <code>v·Δt / 2</code> &nbsp;|&nbsp; • Altura: <code>L = c·Δt₀ / 2</code>
+      </div>
+    </div>
+    <div class="py-step">
+      <span class="py-step-num">3</span>
+      <div>
+        <strong>Aplicando Pitágoras:</strong>
+        <br/><code>(c·Δt / 2)² = (v·Δt / 2)² + L²  ⟹  c²·Δt² = v²·Δt² + c²·Δt₀²</code>
+        <br/><code>(c² − v²)·Δt² = c²·Δt₀²  ⟹  Δt²·(1 − β²) = Δt₀²  ⟹  <strong>Δt = Δt₀ / √(1 − β²) = γ·Δt₀</strong> ✓</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       HERO 2 — ESCÁNER DE CONTRACCIÓN DE LONGITUD
+  ═══════════════════════════════════════════════════════ -->
+  <hr class="divider" />
+  <h3 class="section-heading">Contracción de Longitud de Lorentz (L = L₀ / γ)</h3>
+  <p class="section-subheading" style="margin-bottom:var(--space-md);color:var(--color-text-dim);font-size:0.9rem;">
+    La longitud de un objeto se mide máxima en su sistema de reposo propio (<span class="formula">L₀</span>). En cualquier sistema donde se mueva a velocidad <span class="formula">v</span>, su longitud en la dirección del movimiento se contrae por <span class="formula">1/γ</span>.
+  </p>
+
+  <div class="canvas-wrapper">
+    <div class="canvas-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span>Escáner Relativista de Contracción de Longitud</span>
+      <span style="font-size:0.75rem;font-weight:400;color:var(--color-muted);">
+        Las dimensiones transversales (y, z) NO cambian · Solo se contrae la dimensión paralela a v (x)
+      </span>
+    </div>
+
+    <!-- Canvas de contracción -->
+    <canvas id="canvas-contraction"></canvas>
+
+    <!-- Barra de control del escáner -->
+    <div class="anim-controls">
+      <span class="anim-label">Velocidad de la nave (β):</span>
+      <input type="range" id="c-speed-slider" class="speed-slider"
+             min="0" max="0.99" step="0.01" value="0.6" />
+      <span id="c-beta-readout" class="readout">β = 0.60</span>
+      <span class="gamma-badge">γ = <span id="c-gamma-val">1.2500</span></span>
+      <span class="readout" style="color:var(--color-success);" id="c-ratio-val">L = 80.0% de L₀</span>
+    </div>
+  </div>
+
+  <!-- Tarjeta de mediciones del escáner -->
+  <div class="d-calc-grid" style="margin-top:var(--space-md);margin-bottom:var(--space-xl);">
+    <div class="d-calc-card d-time">
+      <h4>📏 Longitud Propia (En reposo en la nave)</h4>
+      <div class="obs-row">
+        <span class="obs-key">Longitud longitudinal propia (L₀)</span>
+        <span class="obs-val" id="scan-l0">100.0 m</span>
+      </div>
+      <div class="obs-row">
+        <span class="obs-key">Altura transversal (H₀)</span>
+        <span class="obs-val">20.0 m (Invariante)</span>
+      </div>
+      <div class="obs-speed-row" style="color:var(--color-accent);background:rgba(79,158,255,0.08);">
+        Medida por observadores que viajan con el objeto
+      </div>
+    </div>
+
+    <div class="d-calc-card d-space">
+      <h4>📐 Longitud Contraída (Medida desde el laboratorio)</h4>
+      <div class="obs-row">
+        <span class="obs-key">Longitud longitudinal observada (L)</span>
+        <span class="obs-val" id="scan-l" style="color:#fbbf24;font-weight:700;">80.0 m</span>
+      </div>
+      <div class="obs-row">
+        <span class="obs-key">Porcentaje de compresión</span>
+        <span class="obs-val" id="scan-pct" style="color:#fbbf24;">-20.0%</span>
+      </div>
+      <div class="obs-speed-row" style="color:var(--color-accent-2);background:rgba(167,139,250,0.08);">
+        Fórmula: L = L₀ · √(1 − β²) = L₀ / γ
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       CASOS DE ESTUDIO Y PARADOJAS
+  ═══════════════════════════════════════════════════════ -->
+  <hr class="divider" />
+  <h3 class="section-heading">Casos de Estudio y Paradojas Relativistas</h3>
+
+  <div class="case-study-grid" style="margin-bottom:var(--space-xl);">
+    <!-- Caso 1: Muones Atmosféricos -->
+    <div class="case-study-card cs-muon">
+      <div class="cs-header">
+        <h4>🔬 Muones Atmosféricos (Evidencia Real)</h4>
+        <span class="cs-badge badge-green">Confirmado experimentalmente</span>
+      </div>
+      <p style="font-size:0.84rem;line-height:1.5;color:var(--color-text-dim);margin-bottom:var(--space-xs);">
+        Los muones se crean a <code>10 km</code> de altura y tienen una vida media en reposo de solo <code>τ₀ = 2.2 μs</code>. Clásicamente solo recorrerían <code>660 m</code> y se desintegrarían antes de llegar al suelo. ¿Por qué se detectan a nivel del mar?
+      </p>
+      <div class="cs-perspective-box">
+        <strong style="color:var(--color-accent);">Perspectiva Tierra (Dilatación del tiempo):</strong>
+        <br/>Para nosotros, el muón viaja a <code>v = 0.998c (γ ≈ 15.8)</code>. Su reloj atrasa: vive <code>t = γ·τ₀ ≈ 34.8 μs</code>, tiempo suficiente para recorrer <code>d = v·t ≈ 10.4 km</code> y alcanzar la superficie.
+      </div>
+      <div class="cs-perspective-box" style="margin-top:6px;">
+        <strong style="color:var(--color-accent-2);">Perspectiva Muón (Contracción de la longitud):</strong>
+        <br/>Para el muón, su vida es de solo <code>2.2 μs</code>, pero la atmósfera de <code>10 km</code> se contrae a <code>D = 10 km / γ ≈ 630 m</code>, por lo que llega al suelo en su propia vida.
+      </div>
+      <p style="font-size:0.78rem;color:var(--color-success);margin-top:var(--space-xs);font-weight:600;">
+        ✓ Ambas explicaciones son perfectamente equivalentes y coherentes.
+      </p>
+    </div>
+
+    <!-- Caso 2: Paradoja del Granero y la Pértiga -->
+    <div class="case-study-card cs-barn">
+      <div class="cs-header">
+        <h4>🎪 La Paradoja del Granero y la Pértiga</h4>
+        <span class="cs-badge badge-amber">Paradoja Clásica</span>
+      </div>
+      <p style="font-size:0.84rem;line-height:1.5;color:var(--color-text-dim);margin-bottom:var(--space-xs);">
+        Un corredor con una pértiga de <code>10 m</code> corre a <code>β = 0.866c (γ = 2)</code> hacia un granero de <code>5 m</code> con puertas delantera y trasera. ¿Cabe la pértiga dentro con ambas puertas cerradas?
+      </p>
+      <div class="cs-perspective-box">
+        <strong style="color:var(--color-accent);">Perspectiva Granero:</strong>
+        <br/>La pértiga en movimiento se contrae a <code>10 m / 2 = 5 m</code>. Por tanto, cabe exactamente y ambas puertas pueden cerrarse al mismo tiempo.
+      </div>
+      <div class="cs-perspective-box" style="margin-top:6px;">
+        <strong style="color:var(--color-accent-2);">Perspectiva Corredor:</strong>
+        <br/>El granero se contrae a <code>5 m / 2 = 2.5 m</code>. ¿Cómo cabe la pértiga de 10 m?
+        <br/><strong>Solución:</strong> Las puertas <em>NO se cierran simultáneamente</em> (simultaneidad relativa). La puerta trasera se cierra y se abre antes de que la delantera se cierre.
+      </div>
+      <p style="font-size:0.78rem;color:#fbbf24;margin-top:var(--space-xs);font-weight:600;">
+        ✓ La simultaneidad relativa resuelve la aparente contradicción.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       CALCULADORA DE TRANSFORMACIONES CINEMÁTICAS
+  ═══════════════════════════════════════════════════════ -->
+  <hr class="divider" />
+  <h3 class="section-heading">Calculadora Relativista de Tiempo y Longitud</h3>
+
+  <div class="info-box" style="padding:var(--space-lg);margin-bottom:var(--space-xl);">
+    <div class="slider-row">
+      <span class="anim-label">Velocidad relativa (v/c):</span>
+      <div class="preset-row" id="presets-d-calc" style="margin-bottom:0;">
+        <button class="preset-btn" data-b="0.10">0.10c</button>
+        <button class="preset-btn" data-b="0.50">0.50c</button>
+        <button class="preset-btn active-preset" data-b="0.80">0.80c</button>
+        <button class="preset-btn" data-b="0.99">0.99c</button>
+        <button class="preset-btn" data-b="0.999">0.999c</button>
+      </div>
+      <input type="range" id="calc-b-slider" class="slider-generic" min="0" max="0.999" step="0.001" value="0.80" />
+      <span id="calc-b-readout" class="readout" style="min-width:100px;">β = 0.8000</span>
+      <span class="gamma-badge" style="min-width:110px;">γ = <span id="calc-g-val">1.6667</span></span>
+    </div>
+
+    <div class="d-calc-grid" style="margin-top:var(--space-md);">
+      <div class="d-calc-card d-time">
+        <h4>⏱ Transformación de Tiempo</h4>
+        <div style="margin-bottom:var(--space-xs);font-size:0.8rem;color:var(--color-text-dim);">
+          Introduce el tiempo propio (en reposo):
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:var(--space-sm);">
+          <input type="number" id="input-t0" value="10" min="0.01" step="any"
+                 style="background:var(--color-surface-2);border:1px solid var(--color-border);color:var(--color-text);padding:6px 10px;border-radius:var(--radius-sm);width:120px;font-family:var(--font-mono);" />
+          <select id="unit-t0" style="background:var(--color-surface-2);border:1px solid var(--color-border);color:var(--color-text);padding:6px 10px;border-radius:var(--radius-sm);font-family:var(--font-mono);">
+            <option value="s">segundos (s)</option>
+            <option value="min">minutos</option>
+            <option value="h">horas</option>
+            <option value="años" selected>años</option>
+          </select>
+        </div>
+        <div class="obs-row">
+          <span class="obs-key">Tiempo medido (Δt = γ·Δt₀):</span>
+          <span class="obs-val" id="res-t" style="color:var(--color-accent);font-weight:700;">16.667 años</span>
+        </div>
+        <div class="obs-row">
+          <span class="obs-key">Desfase temporal acumulado:</span>
+          <span class="obs-val" id="res-dt-diff">+6.667 años</span>
+        </div>
+      </div>
+
+      <div class="d-calc-card d-space">
+        <h4>📏 Transformación de Longitud</h4>
+        <div style="margin-bottom:var(--space-xs);font-size:0.8rem;color:var(--color-text-dim);">
+          Introduce la longitud propia (en reposo):
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:var(--space-sm);">
+          <input type="number" id="input-l0" value="100" min="0.01" step="any"
+                 style="background:var(--color-surface-2);border:1px solid var(--color-border);color:var(--color-text);padding:6px 10px;border-radius:var(--radius-sm);width:120px;font-family:var(--font-mono);" />
+          <select id="unit-l0" style="background:var(--color-surface-2);border:1px solid var(--color-border);color:var(--color-text);padding:6px 10px;border-radius:var(--radius-sm);font-family:var(--font-mono);">
+            <option value="m" selected>metros (m)</option>
+            <option value="km">kilómetros (km)</option>
+            <option value="al">años luz (al)</option>
+          </select>
+        </div>
+        <div class="obs-row">
+          <span class="obs-key">Longitud observada (L = L₀/γ):</span>
+          <span class="obs-val" id="res-l" style="color:var(--color-accent-2);font-weight:700;">60.000 m</span>
+        </div>
+        <div class="obs-row">
+          <span class="obs-key">Porcentaje contraído:</span>
+          <span class="obs-val" id="res-l-pct">-40.00%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transición a Panel B y C -->
+  <div class="transition-box">
+    <p>
+      ¿Cómo se representan la dilatación temporal y la contracción de longitud de forma matemática y geométrica?
+    </p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="panel-b.html" class="next-link">Panel B — Álgebra de Lorentz</a>
+      <a href="panel-c.html" class="next-link">Panel C — Diagrama de Minkowski</a>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <p>Laboratorio de Relatividad Especial · Panel D — Dilatación Temporal y Contracción de Longitud</p>
+  <p class="footer-credit">Powered by <a href="https://github.com/georaiser/" target="_blank" rel="noopener">github.com/georaiser</a></p>
+</footer>
+
+<script src="../js/physics/lorentz.js"></script>
+<script src="../js/panels/panel-d.js"></script>
+
+</body>
+</html>
