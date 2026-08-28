@@ -201,54 +201,52 @@
   <hr class="divider" />
   <h3 class="section-heading">Fundamento teórico: Galileo vs. Lorentz</h3>
 
-  <div class="two-col" style="margin-bottom:var(--space-lg);">
-    <!-- Transformaciones comparadas -->
-    <div class="comparison-grid">
-      <div class="transform-box galileo" style="padding:var(--space-md);">
-        <h4>Galileo</h4>
-        <div class="transform-eq" style="font-size:0.8rem;line-height:1.6;">
-          x' = x − v·t<br/>
-          t' = t (absoluto)<br/>
-          u' = u − v
-        </div>
-        <div class="transform-problem" style="font-size:0.75rem;margin-top:6px;">
-          ⚠ u'_luz = c − v ≠ c (falla)
-        </div>
+  <!-- Transformaciones comparadas -->
+  <div class="comparison-grid" style="margin-bottom:var(--space-md);">
+    <div class="transform-box galileo" style="padding:var(--space-md);">
+      <h4>Galileo (Clásico)</h4>
+      <div class="transform-eq" style="font-size:0.8rem;line-height:1.6;">
+        x' = x − v·t<br/>
+        t' = t (tiempo absoluto)<br/>
+        u = u' + v
       </div>
-
-      <div class="transform-box lorentz-box" style="padding:var(--space-md);">
-        <h4>Lorentz</h4>
-        <div class="transform-eq" style="font-size:0.8rem;line-height:1.6;">
-          x' = γ(x − βct)<br/>
-          t' = γ(t − βx/c)<br/>
-          γ = 1/√(1 − β²)
-        </div>
-        <div class="consequence" style="font-size:0.75rem;margin-top:6px;">
-          ✓ Si u = c → u' = c siempre
-        </div>
+      <div class="transform-problem" style="font-size:0.75rem;margin-top:6px;">
+        ⚠ u_luz = c + v ≠ c (falla físico)
       </div>
     </div>
 
-    <!-- Resumen: Cambios vs Invariantes -->
-    <div style="display:flex;flex-direction:column;gap:var(--space-sm);">
-      <div class="info-box compact-box" style="margin-bottom:0;">
-        <h3>Lo que cambia entre observadores</h3>
-        <ul class="summary-list" style="font-size:0.84rem;gap:4px;">
-          <li>Coordenadas (x, t) de un evento</li>
-          <li>Simultaneidad espacial</li>
-          <li>Duración de intervalos temporales (dilatación)</li>
-          <li>Longitud medida de objetos (contracción)</li>
-        </ul>
+    <div class="transform-box lorentz-box" style="padding:var(--space-md);">
+      <h4>Lorentz / Einstein (Relativista)</h4>
+      <div class="transform-eq" style="font-size:0.8rem;line-height:1.6;">
+        x' = γ(x − βct)<br/>
+        t' = γ(t − βx/c)<br/>
+        u = (u' + v) / (1 + u'·v/c²)
       </div>
-      <div class="info-box accent-green compact-box" style="margin-bottom:0;">
-        <h3>Lo que permanece invariante</h3>
-        <ul class="summary-list" style="font-size:0.84rem;gap:4px;">
-          <li>Rapidez de la luz: c en todo sistema inercial</li>
-          <li>Intervalo espacio-temporal: Δs² = c²Δt² − Δx²</li>
-          <li>Leyes físicas y orden causal</li>
-          <li>Carga eléctrica y masa en reposo</li>
-        </ul>
+      <div class="consequence" style="font-size:0.75rem;margin-top:6px;">
+        ✓ Si u' = c → u = c siempre (invariante)
       </div>
+    </div>
+  </div>
+
+  <!-- Resumen: Cambios vs Invariantes (En una sola línea / dos columnas) -->
+  <div class="two-col" style="margin-bottom:var(--space-lg);">
+    <div class="info-box compact-box" style="margin-bottom:0;">
+      <h3>Lo que cambia entre observadores</h3>
+      <ul class="summary-list" style="font-size:0.84rem;gap:4px;">
+        <li>Coordenadas (x, t) de un evento</li>
+        <li>Simultaneidad espacial</li>
+        <li>Duración de intervalos temporales (dilatación)</li>
+        <li>Longitud medida de objetos (contracción)</li>
+      </ul>
+    </div>
+    <div class="info-box accent-green compact-box" style="margin-bottom:0;">
+      <h3>Lo que permanece invariante</h3>
+      <ul class="summary-list" style="font-size:0.84rem;gap:4px;">
+        <li>Rapidez de la luz: c en todo sistema inercial</li>
+        <li>Intervalo espacio-temporal: Δs² = c²Δt² − Δx²</li>
+        <li>Leyes físicas y orden causal</li>
+        <li>Carga eléctrica y masa en reposo</li>
+      </ul>
     </div>
   </div>
 

@@ -524,12 +524,14 @@
     const simTime = (state.timeReal / SECONDS_REAL) * maxSimTime;
     const hasEmitted = simTime > 0.001;
 
+    const γ = Lorentz.gamma(β);
     const vWagon = β * SPEED_C;
     const wagonX = vWagon * simTime;
 
-    // Posición del vagón
+    // Posición y escala física del vagón (Contracción de Lorentz L = L₀/γ en S)
     if (wagonGroup) {
       wagonGroup.position.set(wagonX, 0, 0);
+      wagonGroup.scale.set((state.camMode === 's') ? (1.0 / γ) : 1.0, 1.0, 1.0);
     }
 
     // ── 1. MODO DESTELLO DE LUZ (Simultaneidad) ───────────
