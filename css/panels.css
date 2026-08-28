@@ -462,18 +462,46 @@
   .postulates-grid { grid-template-columns: 1fr; }
 }
 
-/* Canvas principal del Panel A */
+/* ══════════════════════════════════════════════════════════
+   PANEL A — EXPERIMENTO DEL VAGÓN DE EINSTEIN (CANVAS 2D)
+══════════════════════════════════════════════════════════ */
 #anim-canvas {
   width: 100%;
-  min-height: 380px;
+  min-height: 400px;
   background: #09111e;
   display: block;
   cursor: default;
 }
 @media (max-width: 600px) {
   #anim-canvas {
-    min-height: 320px;
+    min-height: 340px;
   }
+}
+
+.train-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.train-status-badge.waiting {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-dim);
+  border: 1px solid var(--color-border);
+}
+.train-status-badge.simultaneous {
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--color-success);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+}
+.train-status-badge.non-simultaneous {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.35);
 }
 
 /* Controles debajo del canvas */
@@ -639,7 +667,7 @@
 ══════════════════════════════════════════════════════════ */
 .postulate-card {
   border-radius: var(--radius-md);
-  padding: var(--space-xl);
+  padding: var(--space-md) var(--space-lg);
   position: relative;
   overflow: hidden;
 }
