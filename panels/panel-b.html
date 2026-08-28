@@ -36,7 +36,7 @@
     </p>
   </div>
 
-  <!-- Fórmulas rápidas de referencia -->
+  <!-- Fórmulas de referencia -->
   <div class="two-col formula-header">
     <div class="formula-box">
       <div class="formula-label">Forma general</div>
@@ -48,7 +48,7 @@
     </div>
   </div>
 
-  <!-- Contexto: deducción de Bondi (restaurado) -->
+  <!-- Bondi context box -->
   <div class="info-box accent-left" style="margin-bottom:var(--space-md);">
     <h3>Origen de las transformaciones — deducción de Bondi (RE.pdf, diaps. 45–48)</h3>
     <p>
@@ -63,12 +63,12 @@
   </div>
 
   <!-- ══════════════════════════════════════════════
-       BARRA STICKY: TABS + SLIDER β (compacta)
+       BARRA STICKY: TABS + SLIDER β
   ══════════════════════════════════════════════ -->
   <div class="tab-control-bar">
     <div class="tab-bar-inline">
-      <button class="tab-btn active" data-tab="tab-coords">B.1 · Coordenadas</button>
-      <button class="tab-btn"        data-tab="tab-simul" >B.2 · Simultaneidad</button>
+      <button class="tab-btn active" data-tab="tab-coords"  >B.1 · Coordenadas</button>
+      <button class="tab-btn"        data-tab="tab-simul"   >B.2 · Simultaneidad</button>
       <button class="tab-btn"        data-tab="tab-interval">B.3 · Intervalo Δs²</button>
     </div>
     <div class="beta-inline-ctrl">
@@ -88,18 +88,17 @@
   <div id="tab-coords" class="tab-panel active">
     <div class="tab-split">
 
-      <!-- LEFT: controles compactos -->
+      <!-- LEFT: controles -->
       <div class="tab-left">
 
         <h3 class="section-heading sm-heading">El mismo evento, distintas coordenadas</h3>
-        <p style="font-size:0.84rem;color:var(--color-text-dim);margin:0 0 var(--space-xs);">
+        <p class="mk-desc">
           Define un evento E en <strong style="color:var(--color-accent)">K</strong> con coordenadas <code>(x, t)</code>.
           El sistema <strong style="color:var(--color-accent-2)">K'</strong> se mueve a <code>β·c</code>.
           Ambas descripciones corresponden al <em>mismo</em> evento físico.
         </p>
 
-        <!-- Presets -->
-
+        <!-- Presets primero -->
         <div class="preset-section">
           <span class="preset-label">Escenarios rápidos:</span>
           <div class="preset-row" id="presets-b1">
@@ -111,10 +110,8 @@
           </div>
         </div>
 
-        <!-- K inputs + K' outputs compactos en una sola tarjeta -->
+        <!-- Tarjeta transform K → K' -->
         <div class="transform-card">
-
-          <!-- Sistema K -->
           <div class="tc-system s-system">
             <div class="tc-sys-label">K — en reposo</div>
             <div class="tc-inputs">
@@ -136,13 +133,11 @@
             </div>
           </div>
 
-          <!-- Separador con fórmula -->
           <div class="tc-arrow">
             <span>⟶</span>
             <code>γ(x−βt) / γ(t−βx)</code>
           </div>
 
-          <!-- Sistema K' -->
           <div class="tc-system sp-system">
             <div class="tc-sys-label">K' — en movimiento</div>
             <div class="tc-inputs">
@@ -158,34 +153,29 @@
               </div>
             </div>
             <div class="tc-meta">
-              <span id="sp-event-label" style="color:var(--color-accent-2);">E = (?, ?)</span>
-              &ensp;<span id="sp-ds2-display" class="readout" style="font-size:0.78rem;color:var(--color-accent-2);">—</span>
-              <span id="inv-check" style="font-size:0.75rem;margin-left:4px;color:var(--color-success);">✓</span>
+              <span id="sp-event-label">E' = (—, —)</span>
             </div>
           </div>
+        </div>
 
-        </div><!-- /transform-card -->
-
-        <!-- Tabla de valores compacta -->
+        <!-- Tabla β γ k -->
         <div class="info-box" style="padding:0;overflow:hidden;">
           <table class="formula-table">
-            <thead><tr><th>Magnitud</th><th>Fórmula</th><th>Valor</th></tr></thead>
+            <thead><tr><th>Factor</th><th>Fórmula</th><th>Valor</th></tr></thead>
             <tbody>
-              <tr><td>β</td><td>parámetro</td><td id="tbl-beta">—</td></tr>
-              <tr><td>γ</td><td>1/√(1−β²)</td><td id="tbl-gamma">—</td></tr>
-              <tr><td>k</td><td>√((1+β)/(1−β))</td><td id="tbl-k">—</td></tr>
-              <tr><td>x'</td><td>γ(x − βt)</td><td id="tbl-xp">—</td></tr>
-              <tr><td>t'</td><td>γ(t − βx)</td><td id="tbl-tp">—</td></tr>
-              <tr><td>Δs²</td><td>t² − x²</td><td id="tbl-ds2">—</td></tr>
+              <tr><td>β</td><td>v/c</td><td id="b1-beta">0.600</td></tr>
+              <tr><td>γ</td><td>1/√(1−β²)</td><td id="b1-gamma">—</td></tr>
+              <tr><td>γβ</td><td>γ·β</td><td id="b1-gammabeta">—</td></tr>
+              <tr><td>k</td><td>√((1+β)/(1−β))</td><td id="b1-k">—</td></tr>
             </tbody>
           </table>
         </div>
 
       </div><!-- /tab-left -->
 
-      <!-- RIGHT: canvas (sticky) -->
+      <!-- RIGHT: canvas (más alto) -->
       <div class="tab-right">
-        <div class="canvas-wrapper canvas-tall">
+        <div class="canvas-wrapper canvas-tall-b">
           <div class="canvas-title">
             Diagrama de Minkowski — Vista algebraica
             <span class="canvas-subtitle">Ejes K (azul) y K' (violeta inclinado) · Cono de luz (45°) · Ilustración del resultado numérico</span>
@@ -198,14 +188,15 @@
         </div>
       </div>
 
-
     </div><!-- /tab-split -->
 
-    <!-- FULL-WIDTH: debajo del split -->
+    <!-- Full-width insight -->
     <div class="insight-box">
       <div class="insight-title">💡 Idea clave</div>
       <p>
-        Las coordenadas <code>x</code> y <code>t</code> son relativas al sistema, como la sombra de un objeto depende del ángulo del sol. El evento E es único e invariante. Cuando β → 0, γ → 1 y las Lorentz se reducen a Galileo: <code>x' = x − vt</code>, <code>t' = t</code>.
+        Las coordenadas <code>x</code> y <code>t</code> son relativas al sistema, como la sombra de un objeto depende del ángulo del sol.
+        El evento E es único e invariante. Cuando β → 0, γ → 1 y las Lorentz se reducen a Galileo:
+        <code>x' = x − vt</code>, <code>t' = t</code>.
       </p>
     </div>
 
@@ -218,11 +209,23 @@
   <div id="tab-simul" class="tab-panel">
     <div class="tab-split">
 
-      <!-- LEFT -->
+      <!-- LEFT: solo presets + info (lean) -->
       <div class="tab-left">
 
         <h3 class="section-heading sm-heading">Relatividad de la simultaneidad</h3>
 
+        <!-- Presets primero y prominentes -->
+        <div class="preset-section">
+          <span class="preset-label">Escenarios:</span>
+          <div class="preset-row" id="presets-b2">
+            <button class="preset-btn" data-ax="-2" data-at="0"  data-bx="2" data-bt="0">Simultáneos en K</button>
+            <button class="preset-btn" data-ax="-3" data-at="-1" data-bx="3" data-bt="1">No simultáneos</button>
+            <button class="preset-btn" data-ax="0"  data-at="0"  data-bx="4" data-bt="2">Tipo temporal</button>
+            <button class="preset-btn" data-ax="0"  data-at="0"  data-bx="3" data-bt="3">Cono de luz</button>
+          </div>
+        </div>
+
+        <!-- Info box -->
         <div class="info-box accent-left compact-box" style="margin:0;">
           <h3>¿Qué significa que dos eventos sean simultáneos?</h3>
           <p>
@@ -234,22 +237,40 @@
           </p>
         </div>
 
-        <!-- Presets -->
+        <!-- Explicación dinámica -->
+        <div class="sim-explanation" id="sim-explanation">—</div>
 
-        <div class="preset-section">
-          <span class="preset-label">Escenarios:</span>
-          <div class="preset-row" id="presets-b2">
-            <button class="preset-btn" data-ax="-2" data-at="0"  data-bx="2" data-bt="0">Simultáneos en K</button>
-            <button class="preset-btn" data-ax="-3" data-at="-1" data-bx="3" data-bt="1">No simultáneos</button>
-            <button class="preset-btn" data-ax="0"  data-at="0"  data-bx="4" data-bt="2">Tipo temporal</button>
-            <button class="preset-btn" data-ax="0"  data-at="0"  data-bx="3" data-bt="3">Cono de luz</button>
+      </div><!-- /tab-left -->
+
+      <!-- RIGHT: canvas (más alto) -->
+      <div class="tab-right">
+        <div class="canvas-wrapper canvas-tall-b">
+          <div class="canvas-title">
+            Simultaneidad — Resultado numérico
+            <span class="canvas-subtitle">Líneas K (horizontal) · Líneas K' (inclinadas) · Foco: calcular Δt y Δt'</span>
+          </div>
+          <canvas id="sim-canvas"></canvas>
+          <div class="controls-bar">
+            A y B en la misma línea → simultáneos en ese sistema. Varía β para ver cómo cambia Δt'.
+            <a href="panel-c.html" style="color:var(--color-accent-2);margin-left:8px;">Ver geometría completa → Panel C.3</a>
           </div>
         </div>
+      </div>
 
-        <!-- Inputs A y B compactos -->
+    </div><!-- /tab-split -->
+
+    <!-- ══ BOTTOM GRID: Eventos (izq.) + Resultados (der.) ══ -->
+    <div class="b-bottom-grid">
+
+      <!-- Izquierda: inputs de eventos A y B -->
+      <div class="b-bottom-events">
+        <div class="b-bottom-frame-header">
+          <span class="b-frame-badge bfb-k">EN K</span>
+          <span class="b-frame-badge bfb-kp">EN K'</span>
+        </div>
         <div class="sim-events-grid">
           <div class="event-input-box event-a-box">
-            <div class="frame-title">Evento A</div>
+            <div class="frame-title">EVENTO A</div>
             <div class="coord-input-group">
               <div class="coord-row">
                 <label>x<sub style="font-size:.65em">A</sub></label>
@@ -262,7 +283,7 @@
             </div>
           </div>
           <div class="event-input-box event-b-box">
-            <div class="frame-title">Evento B</div>
+            <div class="frame-title">EVENTO B</div>
             <div class="coord-input-group">
               <div class="coord-row">
                 <label>x<sub style="font-size:.65em">B</sub></label>
@@ -275,14 +296,16 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Resultados -->
-        <div class="sim-results-row">
+      <!-- Derecha: resultados K y K' -->
+      <div class="b-bottom-results">
+        <div class="sim-results-row" style="margin-top:0;">
           <div class="sim-result-frame s-frame">
             <div class="sim-frame-label">En K</div>
             <div class="sim-deltas">
-              Δt = <span id="sim-dt-s" style="color:var(--color-accent);font-weight:700;">0.0000</span><br/>
-              Δx = <span id="sim-dx-s" style="color:var(--color-accent);">4.0000</span>
+              Δt = <span id="sim-dt-s"  style="color:var(--color-accent);font-weight:700;">0.0000</span><br/>
+              Δx = <span id="sim-dx-s"  style="color:var(--color-accent);">4.0000</span>
             </div>
             <div id="sim-verdict-s" class="sim-verdict simultaneous">Simultáneos ✓</div>
           </div>
@@ -295,31 +318,11 @@
             <div id="sim-verdict-sp" class="sim-verdict not-simultaneous">—</div>
           </div>
         </div>
-
-        <!-- Explicación dinámica -->
-        <div class="sim-explanation" id="sim-explanation">—</div>
-
-      </div><!-- /tab-left -->
-
-      <!-- RIGHT: canvas -->
-      <div class="tab-right">
-        <div class="canvas-wrapper canvas-tall">
-          <div class="canvas-title">
-            Simultaneidad — Resultado numérico
-            <span class="canvas-subtitle">Líneas K (horizontal) · Líneas K' (inclinadas) · Foco: calcular Δt y Δt'</span>
-          </div>
-          <canvas id="sim-canvas"></canvas>
-          <div class="controls-bar">
-            A y B en la misma línea → simultáneos en ese sistema. Varía β para ver cómo cambia Δt'.
-            <a href="panel-c.html#tab-simul" style="color:var(--color-accent-2);margin-left:8px;">Ver geometría completa → Panel C.3</a>
-          </div>
-        </div>
       </div>
 
+    </div><!-- /b-bottom-grid -->
 
-    </div><!-- /tab-split -->
-
-    <!-- FULL-WIDTH -->
+    <!-- Full-width fórmulas -->
     <div class="two-col" style="gap:var(--space-md);margin-bottom:var(--space-lg);">
       <div class="info-box accent-purple compact-box">
         <h3>Fórmula (RE.pdf, diap. 53)</h3>
@@ -351,16 +354,23 @@
 
         <h3 class="section-heading sm-heading">Intervalo Δs² — invariante de Lorentz</h3>
 
+        <!-- Nota sobre eventos -->
+        <p class="mk-desc" style="margin:0 0 var(--space-xs);">
+          Usa los eventos A y B definidos en la pestaña B.2.
+          Varía β: el intervalo Δs² no cambia de signo ni de valor.
+        </p>
+
+        <!-- Info box -->
         <div class="info-box accent-green compact-box" style="margin:0;">
           <h3>Invariancia del intervalo (RE.pdf, diap. 49–50; Clase 04, §3)</h3>
           <p>
             Aunque <code>Δx ≠ Δx'</code> y <code>Δt ≠ Δt'</code>, existe una combinación que
             <strong>todos los observadores inerciales miden igual</strong> — el intervalo
             espacio-temporal <code>Δs²</code>, base de la métrica de Minkowski (η<sub>μν</sub> = diag(+1,−1,−1,−1)).
-            Cambia β con el slider: <code>Δs²</code> no varía.
           </p>
         </div>
 
+        <!-- Fórmulas -->
         <div class="two-col" style="gap:var(--space-sm);">
           <div class="formula-box" style="font-size:0.83rem;padding:var(--space-sm) var(--space-md);">
             <div class="formula-label">Con c</div>
@@ -372,32 +382,20 @@
           </div>
         </div>
 
-        <!-- Tarjetas de resultado: Δs² en K, Δs² en K', Invariancia -->
-        <div class="interval-grid">
-          <div class="interval-card ic-s">
-            <div class="ic-label">Δs² en K</div>
-            <div class="ic-value" id="int-ds2-s">—</div>
-            <div class="ic-type"  id="int-type-s">—</div>
-          </div>
-          <div class="interval-card ic-sp">
-            <div class="ic-label">Δs² en K'</div>
-            <div class="ic-value" id="int-ds2-sp">—</div>
-            <div class="ic-type"  id="int-type-sp">—</div>
-          </div>
-          <div class="interval-card ic-inv">
-            <div class="ic-label">Invariancia</div>
-            <div class="ic-value" id="int-invariant">✓</div>
-            <div class="ic-type"  id="int-invariant-label">Δs² = Δs'²</div>
+        <!-- Presets de B.3 (reutiliza los eventos de B.2) -->
+        <div class="preset-section">
+          <span class="preset-label">Escenarios de intervalo:</span>
+          <div class="preset-row" id="presets-b3">
+            <button class="preset-btn" data-ax="-2" data-at="0"  data-bx="2"  data-bt="0">Espacial puro</button>
+            <button class="preset-btn" data-ax="0"  data-at="0"  data-bx="4"  data-bt="2">Temporal</button>
+            <button class="preset-btn" data-ax="0"  data-at="0"  data-bx="3"  data-bt="3">Tipo luz</button>
+            <button class="preset-btn" data-ax="-2" data-at="1"  data-bx="3"  data-bt="4">General</button>
           </div>
         </div>
 
-        <p style="font-size:0.78rem;color:var(--color-muted);margin:0;">
-          Se usan los eventos A, B de la pestaña B.2.
-        </p>
-
       </div><!-- /tab-left -->
 
-      <!-- RIGHT: canvas -->
+      <!-- RIGHT: gráfica Δs²(β) -->
       <div class="tab-right">
         <div class="canvas-wrapper">
           <div class="canvas-title">
@@ -414,8 +412,27 @@
 
     </div><!-- /tab-split -->
 
-    <!-- FULL-WIDTH: tabla de clasificación causal -->
-    <div class="info-box" style="padding:0;overflow:hidden;margin-bottom:var(--space-lg);">
+    <!-- ══ BOTTOM: tarjetas de resultado ══ -->
+    <div class="interval-grid" style="margin-top:var(--space-sm);">
+      <div class="interval-card ic-s">
+        <div class="ic-label">Δs² en K</div>
+        <div class="ic-value" id="int-ds2-s">—</div>
+        <div class="ic-type"  id="int-type-s">—</div>
+      </div>
+      <div class="interval-card ic-sp">
+        <div class="ic-label">Δs² en K'</div>
+        <div class="ic-value" id="int-ds2-sp">—</div>
+        <div class="ic-type"  id="int-type-sp">—</div>
+      </div>
+      <div class="interval-card ic-inv">
+        <div class="ic-label">Invariancia</div>
+        <div class="ic-value" id="int-invariant">✓</div>
+        <div class="ic-type"  id="int-invariant-label">Δs² = Δs'²</div>
+      </div>
+    </div>
+
+    <!-- Full-width tabla de clasificación -->
+    <div class="info-box" style="padding:0;overflow:hidden;margin-top:var(--space-md);margin-bottom:var(--space-lg);">
       <table class="formula-table">
         <thead>
           <tr><th>Condición</th><th>Tipo de intervalo</th><th>Significado físico</th></tr>

@@ -90,17 +90,18 @@
   const sLbl    = document.getElementById('s-event-label');
   const spLbl   = document.getElementById('sp-event-label');
   const sDs2El  = document.getElementById('s-ds2-display');
-  const spDs2El = document.getElementById('sp-ds2-display');
-  const invChk  = document.getElementById('inv-check');
+  const spDs2El = null; // eliminado del nuevo layout
+  const invChk  = null; // eliminado del nuevo layout
   const sCausal = document.getElementById('s-causal-type');
 
-  // Tabla
-  const tblBeta  = document.getElementById('tbl-beta');
-  const tblGamma = document.getElementById('tbl-gamma');
-  const tblK     = document.getElementById('tbl-k');
-  const tblXp    = document.getElementById('tbl-xp');
-  const tblTp    = document.getElementById('tbl-tp');
-  const tblDs2   = document.getElementById('tbl-ds2');
+  // Tabla de factores B.1 (nuevos IDs)
+  const tblBeta      = document.getElementById('b1-beta');
+  const tblGamma     = document.getElementById('b1-gamma');
+  const tblGammaBeta = document.getElementById('b1-gammabeta');
+  const tblK         = document.getElementById('b1-k');
+  const tblXp        = null; // eliminado del nuevo layout
+  const tblTp        = null; // eliminado del nuevo layout
+  const tblDs2       = null; // eliminado del nuevo layout
 
   sXInput.addEventListener('input', () => { state.E.x = parseFloat(sXInput.value) || 0; updateCoords(); drawMinkowski(); });
   sTInput.addEventListener('input', () => { state.E.t = parseFloat(sTInput.value) || 0; updateCoords(); drawMinkowski(); });
@@ -138,22 +139,22 @@
     spLbl.textContent  = `E = (${fmt(xp, 3)}, ${fmt(tp, 3)})`;
 
     sDs2El.textContent = fmt(ds2, 4);
-    spDs2El.textContent = fmt(ds2p, 4);
+    if (spDs2El) { spDs2El.textContent = fmt(ds2p, 4); spDs2El.style.color = ct.color; }
     sDs2El.style.color  = ct.color;
-    spDs2El.style.color = ct.color;
     sCausal.textContent = ct.label;
     sCausal.style.background = ct.color + '22';
     sCausal.style.color      = ct.color;
-    invChk.textContent = inv ? '✓ invariante' : '✗ error';
-    invChk.style.color = inv ? '#34d399' : '#f87171';
+    if (invChk) { invChk.textContent = inv ? '✓ invariante' : '✗ error'; invChk.style.color = inv ? '#34d399' : '#f87171'; }
 
-    tblBeta.textContent  = β.toFixed(4);
-    tblGamma.textContent = γ.toFixed(4);
-    tblK.textContent     = k.toFixed(4);
-    tblXp.textContent    = fmt(xp);
-    tblTp.textContent    = fmt(tp);
-    tblDs2.textContent   = fmt(ds2);
+    if (tblBeta)      tblBeta.textContent      = β.toFixed(4);
+    if (tblGamma)     tblGamma.textContent     = γ.toFixed(4);
+    if (tblGammaBeta) tblGammaBeta.textContent = (γ * β).toFixed(4);
+    if (tblK)         tblK.textContent         = k.toFixed(4);
+    if (tblXp)        tblXp.textContent        = fmt(xp);
+    if (tblTp)        tblTp.textContent        = fmt(tp);
+    if (tblDs2)       tblDs2.textContent       = fmt(ds2);
   }
+
 
   /* ── Canvas B.1: Diagrama de Minkowski mini ─────────────
      Ejes K: x horizontal, t vertical (c=1 → ct = t)
@@ -167,9 +168,10 @@
 
   function resizeCoordCanvas() {
     coordCanvas.width  = coordCanvas.parentElement.clientWidth;
-    coordCanvas.height = 320;
+    coordCanvas.height = 380;
     drawMinkowski();
   }
+
 
   function drawMinkowski() {
     const W = coordCanvas.width;
@@ -397,7 +399,13 @@
   }
 
   [simAx, simAt, simBx, simBt].forEach(el => {
-    el.addEventListener('input', () => { readSimEvents(); updateSimul(); drawSimulCanvas(); });
+    el.addEventListener('input', () => {
+      readSimEvents();
+      updateSimul();
+      updateInterval();          // B.3 también se actualiza
+      drawSimulCanvas();
+      drawIntervalCanvas();
+    });
   });
 
   // Presets B.2
@@ -412,6 +420,24 @@
       drawSimulCanvas(); drawIntervalCanvas();
     });
   });
+
+  // Presets B.3 (mismos eventos A/B que B.2 — sincroniza inputs y actualiza ambos tabs)
+  const presetsB3El = document.getElementById('presets-b3');
+  if (presetsB3El) {
+    presetsB3El.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        presetsB3El.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active-preset'));
+        btn.classList.add('active-preset');
+        // Sincronizar inputs de B.2 también
+        simAx.value = btn.dataset.ax; simAt.value = btn.dataset.at;
+        simBx.value = btn.dataset.bx; simBt.value = btn.dataset.bt;
+        readSimEvents();
+        updateSimul(); updateInterval();
+        drawSimulCanvas(); drawIntervalCanvas();
+      });
+    });
+  }
+
 
   function updateSimul() {
     const { A, B, beta: β } = state;
@@ -481,9 +507,10 @@
 
   function resizeSimCanvas() {
     simCanvas.width  = simCanvas.parentElement.clientWidth;
-    simCanvas.height = 320;
+    simCanvas.height = 380;
     drawSimulCanvas();
   }
+
 
   function drawSimulCanvas() {
     const W = simCanvas.width;

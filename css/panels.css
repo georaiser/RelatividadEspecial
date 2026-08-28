@@ -1442,4 +1442,102 @@
 }
 
 
+/* ══════════════════════════════════════════════════════════
+   PANEL B — CANVAS MÁS ALTO (B.1 y B.2)
+══════════════════════════════════════════════════════════ */
+.canvas-tall-b {
+  min-height: 380px;
+}
+.canvas-tall-b canvas {
+  width: 100%;
+  display: block;
+  min-height: 380px;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   PANEL B — BOTTOM GRID: eventos (izq) + resultados (der)
+══════════════════════════════════════════════════════════ */
+.b-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  align-items: start;
+}
+
+.b-bottom-events,
+.b-bottom-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+/* Header "EN K" / "EN K'" sobre los inputs */
+.b-bottom-frame-header {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-xs);
+}
+
+.b-frame-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 2px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+.b-frame-badge.bfb-k {
+  color: var(--color-accent);
+  background: rgba(96,165,250,0.08);
+  border-color: rgba(96,165,250,0.25);
+}
+.b-frame-badge.bfb-kp {
+  color: var(--color-accent-2);
+  background: rgba(192,132,252,0.08);
+  border-color: rgba(192,132,252,0.25);
+}
+
+/* Eventos en bottom: 2 columnas lado a lado */
+.b-bottom-events .sim-events-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Resultados en bottom: 2 columnas lado a lado */
+.b-bottom-results .sim-results-row {
+  margin-top: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+}
+
+/* Espaciador para alinear verticalmente resultados con eventos */
+.b-bottom-results::before {
+  content: '';
+  display: block;
+  height: 31px; /* altura de .b-bottom-frame-header */
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   PANEL B — RESPONSIVE
+══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .b-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+  .b-bottom-results::before {
+    display: none;
+  }
+  .canvas-tall-b,
+  .canvas-tall-b canvas {
+    min-height: 280px;
+  }
+}
 
