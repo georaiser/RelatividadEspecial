@@ -168,7 +168,7 @@
 
   function resizeCoordCanvas() {
     coordCanvas.width  = coordCanvas.parentElement.clientWidth;
-    coordCanvas.height = 380;
+    coordCanvas.height = 440;
     drawMinkowski();
   }
 
@@ -307,73 +307,93 @@
     ctx1.textAlign = 'right'; ctx1.fillText('t (=ct)', tx2 + 30, ty2);
     ctx1.restore();
 
-    // ── Projection lines from E to axes ──────────────────
+    // ── Proyecciones de E hacia los ejes de K (Azul) ─────────
     const { px: epx, py: epy } = toPx(Ex, Et);
     const { px: pxAxis }   = toPx(Ex, 0);
     const { py: ptAxis }   = toPx(0, Et);
 
     ctx1.save();
-    ctx1.strokeStyle = 'rgba(79,158,255,0.35)';
-    ctx1.lineWidth = 1; ctx1.setLineDash([4, 3]);
+    ctx1.strokeStyle = 'rgba(79,158,255,0.45)';
+    ctx1.lineWidth = 1.2; ctx1.setLineDash([4, 3]);
     ctx1.beginPath();
-    ctx1.moveTo(epx, epy); ctx1.lineTo(epx, OY); ctx1.stroke();  // down to x-axis
-    ctx1.moveTo(epx, epy); ctx1.lineTo(OX, epy); ctx1.stroke();  // left to t-axis
+    ctx1.moveTo(epx, epy); ctx1.lineTo(epx, OY); ctx1.stroke();  // hacia eje x
+    ctx1.moveTo(epx, epy); ctx1.lineTo(OX, epy); ctx1.stroke();  // hacia eje t
     ctx1.setLineDash([]);
     ctx1.restore();
 
-    // ── Event dot E in K ─────────────────────────────────
+    // ── Proyecciones de E hacia los ejes de K' (Violeta) ──────
+    if (β > EPS) {
+      const γ = Lorentz.gamma(β);
+      // 1. Proyección paralela al eje t' (dirección β, 1) hasta el eje x' (t = β·x)
+      const x_int_xp = γ * Exp;
+      const t_int_xp = β * x_int_xp;
+      const p_xp = toPx(x_int_xp, t_int_xp);
+
+      // 2. Proyección paralela al eje x' (dirección 1, β) hasta el eje t' (x = β·t)
+      const t_int_tp = γ * Etp;
+      const x_int_tp = β * t_int_tp;
+      const p_tp = toPx(x_int_tp, t_int_tp);
+
+      ctx1.save();
+      ctx1.strokeStyle = 'rgba(167,139,250,0.55)';
+      ctx1.lineWidth = 1.2; ctx1.setLineDash([4, 3]);
+      ctx1.beginPath();
+      ctx1.moveTo(epx, epy); ctx1.lineTo(p_xp.px, p_xp.py); ctx1.stroke(); // hacia eje x'
+      ctx1.moveTo(epx, epy); ctx1.lineTo(p_tp.px, p_tp.py); ctx1.stroke(); // hacia eje t'
+      ctx1.setLineDash([]);
+
+      // Puntos de intersección en ejes K'
+      ctx1.fillStyle = '#a78bfa';
+      ctx1.beginPath(); ctx1.arc(p_xp.px, p_xp.py, 3.5, 0, Math.PI * 2); ctx1.fill();
+      ctx1.beginPath(); ctx1.arc(p_tp.px, p_tp.py, 3.5, 0, Math.PI * 2); ctx1.fill();
+
+      // Etiquetas en los ejes K'
+      ctx1.font = 'bold 9px Consolas, monospace';
+      ctx1.textAlign = 'left';
+      ctx1.fillText(`x'=${fmt(Exp, 2)}`, p_xp.px + 5, p_xp.py + 10);
+      ctx1.textAlign = 'right';
+      ctx1.fillText(`t'=${fmt(Etp, 2)}`, p_tp.px - 6, p_tp.py);
+      ctx1.restore();
+    }
+
+    // ── Evento Único E en el Espacio-Tiempo (Invariante) ─────
     ctx1.save();
-    ctx1.fillStyle   = '#4f9eff';
-    ctx1.strokeStyle = '#fff'; ctx1.lineWidth = 2;
-    ctx1.beginPath(); ctx1.arc(epx, epy, 8, 0, Math.PI * 2);
+    ctx1.fillStyle   = '#38bdf8';
+    ctx1.strokeStyle = '#ffffff'; ctx1.lineWidth = 2.5;
+    ctx1.beginPath(); ctx1.arc(epx, epy, 9, 0, Math.PI * 2);
     ctx1.fill(); ctx1.stroke();
-    ctx1.fillStyle = '#fff'; ctx1.font = 'bold 10px Consolas, monospace';
-    ctx1.textAlign = 'center'; ctx1.fillText('E', epx, epy + 4);
+
+    ctx1.fillStyle = '#0f172a'; ctx1.font = 'bold 10px Segoe UI, sans-serif';
+    ctx1.textAlign = 'center'; ctx1.fillText('E', epx, epy + 3.5);
     ctx1.restore();
 
-    // Coordinate labels on axes for K
+    // Coordenadas de K en los ejes
     ctx1.save();
-    ctx1.fillStyle = '#4f9eff'; ctx1.font = '10px Consolas, monospace';
+    ctx1.fillStyle = '#4f9eff'; ctx1.font = 'bold 10px Consolas, monospace';
     ctx1.textAlign = 'center';
-    ctx1.fillText(`x=${fmt(Ex, 1)}`, pxAxis, OY + 25);
+    ctx1.fillText(`x=${fmt(Ex, 1)}`, pxAxis, OY + 22);
     ctx1.textAlign = 'right';
     ctx1.fillText(`t=${fmt(Et, 1)}`, OX - 8, epy + 4);
     ctx1.restore();
 
-    // ── Event dot E in K' ────────────────────────────────
-    if (β > EPS) {
-      const { px: epxp, py: epyp } = toPx(Exp, Etp);
-
-      // Projection along K' axes
-      // Project from E along t'-axis direction (β, 1) to x'-axis
-      // x'-axis: t = β·x → in pixel coords
-      // Line through (Exp, Etp) parallel to t'-axis (direction (β, 1)):
-      //   parametric: (Exp + s·β, Etp + s·1)
-      // Intersect with x'-axis: Etp + s = β·(Exp + s·β) → s(1-β²) = βExp - Etp → s = γ²(βExp - Etp)... complex, skip projection for clarity
-      // Just draw the dot and label
-      ctx1.save();
-      ctx1.fillStyle   = '#a78bfa';
-      ctx1.strokeStyle = '#fff'; ctx1.lineWidth = 2;
-      ctx1.beginPath(); ctx1.arc(epxp, epyp, 8, 0, Math.PI * 2);
-      ctx1.fill(); ctx1.stroke();
-      ctx1.fillStyle = '#fff'; ctx1.font = 'bold 10px Consolas, monospace';
-      ctx1.textAlign = 'center'; ctx1.fillText('E', epxp, epyp + 4);
-      ctx1.restore();
-
-      // Coordinate label for K'
-      ctx1.save();
-      ctx1.fillStyle = '#a78bfa'; ctx1.font = '10px Consolas, monospace';
-      ctx1.textAlign = 'left';
-      ctx1.fillText(`x'=${fmt(Exp, 2)}, t'=${fmt(Etp, 2)}`, epxp + 12, epyp - 4);
-      ctx1.restore();
-    }
-
-    // ── Note: same physical event, both arrows point to it ──
-    // Small annotation
+    // Etiqueta flotante del evento con ambas lecturas
     ctx1.save();
-    ctx1.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx1.fillStyle = '#ffffff'; ctx1.font = 'bold 11px Segoe UI, sans-serif';
+    ctx1.textAlign = 'left';
+    ctx1.fillText(`Evento E`, epx + 14, epy - 10);
+    ctx1.fillStyle = '#4f9eff'; ctx1.font = '10px Consolas, monospace';
+    ctx1.fillText(`K : (${fmt(Ex, 2)}, ${fmt(Et, 2)})`, epx + 14, epy + 4);
+    if (β > EPS) {
+      ctx1.fillStyle = '#a78bfa';
+      ctx1.fillText(`K': (${fmt(Exp, 2)}, ${fmt(Etp, 2)})`, epx + 14, epy + 17);
+    }
+    ctx1.restore();
+
+    // Pie de gráfica
+    ctx1.save();
+    ctx1.fillStyle = 'rgba(255,255,255,0.3)';
     ctx1.font = '10px Segoe UI, sans-serif'; ctx1.textAlign = 'center';
-    ctx1.fillText(`Diagrama de Minkowski · β = ${β.toFixed(2)} · γ = ${Lorentz.gamma(β).toFixed(3)}`, W / 2, H - 8);
+    ctx1.fillText(`Diagrama de Minkowski · Un solo evento E proyectado en K (azul) y K' (violeta) · β = ${β.toFixed(3)}`, W / 2, H - 8);
     ctx1.restore();
   }
 
@@ -507,7 +527,7 @@
 
   function resizeSimCanvas() {
     simCanvas.width  = simCanvas.parentElement.clientWidth;
-    simCanvas.height = 380;
+    simCanvas.height = 440;
     drawSimulCanvas();
   }
 
@@ -688,13 +708,13 @@
     intInvariant.style.color = inv ? '#34d399' : '#f87171';
   }
 
-  /* ── Canvas B.3: Δs² vs β ───────────────────────────── */
+  /* ── Canvas B.3: Componentes vs Invariante Δs² ───────── */
   const intCanvas = document.getElementById('interval-canvas');
   const ctx3      = intCanvas.getContext('2d');
 
   function resizeIntCanvas() {
     intCanvas.width  = intCanvas.parentElement.clientWidth;
-    intCanvas.height = 220;
+    intCanvas.height = 280;
     drawIntervalCanvas();
   }
 
@@ -706,116 +726,185 @@
     const Δt = B.t - A.t;
     const ds2_S = Lorentz.spacetimeInterval(Δx, Δt);
 
-    const ML = 55, MR = 30, MT = 25, MB = 35;
+    const ML = 65, MR = 40, MT = 35, MB = 45;
     const PW = W - ML - MR;
     const PH = H - MT - MB;
 
     ctx3.fillStyle = '#09111e';
     ctx3.fillRect(0, 0, W, H);
 
-    // Compute all Δs'² values
-    const N = 150;
-    const betas = Array.from({ length: N }, (_, i) => i * 0.0065); // 0 .. 0.97
-    const ds2vals = betas.map(b => {
-      if (b >= 1) return ds2_S;
-      const Ap = Lorentz.transform(A.x, A.t, b);
-      const Bp = Lorentz.transform(B.x, B.t, b);
-      return Lorentz.spacetimeInterval(Bp.x - Ap.x, Bp.t - Ap.t);
+    // Muestreo de curvas de 0 a 0.94c
+    const N = 160;
+    const maxB = 0.93;
+    const betas = Array.from({ length: N }, (_, i) => (i / (N - 1)) * maxB);
+
+    const dataDX2 = [];
+    const dataDT2 = [];
+    const dataDS2 = [];
+
+    betas.forEach(b => {
+      const g = 1 / Math.sqrt(Math.max(1e-6, 1 - b * b));
+      const dxp = g * (Δx - b * Δt);
+      const dtp = g * (Δt - b * Δx);
+      const dx2 = dxp * dxp;
+      const dt2 = dtp * dtp;
+      const ds2 = dt2 - dx2;
+      dataDX2.push(dx2);
+      dataDT2.push(dt2);
+      dataDS2.push(ds2);
     });
 
-    // Y-range
-    const yMin = Math.min(ds2_S, ...ds2vals) - Math.max(Math.abs(ds2_S) * 0.3, 1);
-    const yMax = Math.max(ds2_S, ...ds2vals) + Math.max(Math.abs(ds2_S) * 0.3, 1);
+    // Rango dinámico en Y
+    const allVals = [...dataDX2, ...dataDT2, ...dataDS2, 0, ds2_S];
+    let yMin = Math.min(...allVals);
+    let yMax = Math.max(...allVals);
+    const span = Math.max(Math.abs(yMax - yMin), 2);
+    yMin -= span * 0.12;
+    yMax += span * 0.15;
     const yRange = yMax - yMin;
 
-    const toXpx = (b) => ML + (b / 0.99) * PW;
+    const toXpx = (b) => ML + (b / maxB) * PW;
     const toYpx = (v) => MT + PH - ((v - yMin) / yRange) * PH;
 
-    // Grid
+    // ── Cuadrícula suave de fondo ────────────────────────
     ctx3.save();
-    ctx3.strokeStyle = 'rgba(255,255,255,0.05)'; ctx3.lineWidth = 1;
-    const yStep = Math.pow(10, Math.floor(Math.log10(yRange / 4)));
+    ctx3.strokeStyle = 'rgba(255,255,255,0.06)'; ctx3.lineWidth = 1;
+    const approxSteps = 5;
+    const rawStep = yRange / approxSteps;
+    const mag = Math.pow(10, Math.floor(Math.log10(rawStep)));
+    const yStep = Math.ceil(rawStep / mag) * mag;
+
     for (let v = Math.ceil(yMin / yStep) * yStep; v <= yMax; v += yStep) {
       const py = toYpx(v);
       if (py < MT || py > MT + PH) continue;
       ctx3.beginPath(); ctx3.moveTo(ML, py); ctx3.lineTo(ML + PW, py); ctx3.stroke();
+      ctx3.fillStyle = 'rgba(255,255,255,0.3)'; ctx3.font = '9px Consolas, monospace';
+      ctx3.textAlign = 'right'; ctx3.fillText(v.toFixed(1), ML - 6, py + 3);
     }
     ctx3.restore();
 
-    // Zero line
+    // ── Línea Cero (y = 0) ───────────────────────────────
     const y0 = toYpx(0);
     if (y0 >= MT && y0 <= MT + PH) {
       ctx3.save();
-      ctx3.strokeStyle = 'rgba(255,255,255,0.2)'; ctx3.lineWidth = 1; ctx3.setLineDash([4, 3]);
+      ctx3.strokeStyle = 'rgba(255,255,255,0.25)'; ctx3.lineWidth = 1; ctx3.setLineDash([4, 3]);
       ctx3.beginPath(); ctx3.moveTo(ML, y0); ctx3.lineTo(ML + PW, y0); ctx3.stroke();
       ctx3.setLineDash([]);
-      ctx3.fillStyle = 'rgba(255,255,255,0.35)'; ctx3.font = '9px Consolas, monospace';
-      ctx3.textAlign = 'right'; ctx3.fillText('0', ML - 4, y0 + 4);
+      ctx3.fillStyle = 'rgba(255,255,255,0.5)'; ctx3.font = 'bold 9px Consolas, monospace';
+      ctx3.textAlign = 'right'; ctx3.fillText('0.0', ML - 6, y0 + 3);
       ctx3.restore();
     }
 
-    // Δs²(K) reference: horizontal dashed blue line
-    const dyS = toYpx(ds2_S);
+    // ── Curva 1: Separación Espacial Δx'²(β) (Azul celeste) ─
     ctx3.save();
-    ctx3.strokeStyle = 'rgba(79,158,255,0.5)'; ctx3.lineWidth = 1.5; ctx3.setLineDash([6, 4]);
-    ctx3.beginPath(); ctx3.moveTo(ML, dyS); ctx3.lineTo(ML + PW, dyS); ctx3.stroke();
-    ctx3.setLineDash([]);
-    ctx3.fillStyle = '#4f9eff'; ctx3.font = '10px Consolas, monospace';
-    ctx3.textAlign = 'left';
-    ctx3.fillText(`Δs²(K) = ${fmt(ds2_S, 3)}`, ML + 6, dyS - 5);
-    ctx3.restore();
-
-    // Curve Δs²(K') vs β — should be flat, overlapping the blue line
-    ctx3.save();
-    ctx3.lineWidth = 2.5; ctx3.strokeStyle = '#a78bfa';
+    ctx3.strokeStyle = '#38bdf8'; ctx3.lineWidth = 2.2;
     ctx3.beginPath();
-    let first = true;
     betas.forEach((b, i) => {
-      if (b >= 0.99) return;
-      const py = toYpx(ds2vals[i]);
-      const px = toXpx(b);
-      if (first) { ctx3.moveTo(px, py); first = false; }
-      else ctx3.lineTo(px, py);
+      const px = toXpx(b); const py = toYpx(dataDX2[i]);
+      if (i === 0) ctx3.moveTo(px, py); else ctx3.lineTo(px, py);
     });
     ctx3.stroke();
     ctx3.restore();
 
-    // Current β marker
-    const β = state.beta;
-    const Ap = Lorentz.transform(A.x, A.t, β);
-    const Bp = Lorentz.transform(B.x, B.t, β);
-    const ds2_cur = Lorentz.spacetimeInterval(Bp.x - Ap.x, Bp.t - Ap.t);
-    const dotColor = causalType(ds2_cur).color;
-
+    // ── Curva 2: Separación Temporal c²Δt'²(β) (Violeta) ───
     ctx3.save();
-    ctx3.fillStyle   = dotColor;
-    ctx3.strokeStyle = '#fff'; ctx3.lineWidth = 2;
-    ctx3.beginPath(); ctx3.arc(toXpx(β), toYpx(ds2_cur), 8, 0, Math.PI * 2);
-    ctx3.fill(); ctx3.stroke();
+    ctx3.strokeStyle = '#c084fc'; ctx3.lineWidth = 2.2;
+    ctx3.beginPath();
+    betas.forEach((b, i) => {
+      const px = toXpx(b); const py = toYpx(dataDT2[i]);
+      if (i === 0) ctx3.moveTo(px, py); else ctx3.lineTo(px, py);
+    });
+    ctx3.stroke();
     ctx3.restore();
 
-    // Axes
+    // ── Curva 3: Invariante Δs'² = c²Δt'² − Δx'² (Verde Esmeralda) ─
     ctx3.save();
-    ctx3.strokeStyle = 'rgba(255,255,255,0.25)'; ctx3.lineWidth = 1;
+    ctx3.strokeStyle = '#34d399'; ctx3.lineWidth = 3.5;
+    ctx3.shadowColor = 'rgba(52, 211, 153, 0.5)'; ctx3.shadowBlur = 8;
+    ctx3.beginPath();
+    betas.forEach((b, i) => {
+      const px = toXpx(b); const py = toYpx(dataDS2[i]);
+      if (i === 0) ctx3.moveTo(px, py); else ctx3.lineTo(px, py);
+    });
+    ctx3.stroke();
+    ctx3.restore();
+
+    // ── Indicador vertical en β actual ───────────────────
+    const curBeta = Math.min(state.beta, maxB);
+    const curG = 1 / Math.sqrt(Math.max(1e-6, 1 - curBeta * curBeta));
+    const curDXp = curG * (Δx - curBeta * Δt);
+    const curDTp = curG * (Δt - curBeta * Δx);
+    const curDX2 = curDXp * curDXp;
+    const curDT2 = curDTp * curDTp;
+    const curDS2 = curDT2 - curDX2;
+
+    const curXpx = toXpx(curBeta);
+    const pyDX2  = toYpx(curDX2);
+    const pyDT2  = toYpx(curDT2);
+    const pyDS2  = toYpx(curDS2);
+
+    // Línea guía vertical
+    ctx3.save();
+    ctx3.strokeStyle = 'rgba(255,255,255,0.35)'; ctx3.lineWidth = 1.2; ctx3.setLineDash([4, 4]);
+    ctx3.beginPath(); ctx3.moveTo(curXpx, MT); ctx3.lineTo(curXpx, MT + PH); ctx3.stroke();
+    ctx3.restore();
+
+    // Punto en Curva Δx'² (Azul)
+    ctx3.save();
+    ctx3.fillStyle = '#38bdf8'; ctx3.strokeStyle = '#fff'; ctx3.lineWidth = 2;
+    ctx3.beginPath(); ctx3.arc(curXpx, pyDX2, 5.5, 0, Math.PI * 2); ctx3.fill(); ctx3.stroke();
+    ctx3.restore();
+
+    // Punto en Curva c²Δt'² (Violeta)
+    ctx3.save();
+    ctx3.fillStyle = '#c084fc'; ctx3.strokeStyle = '#fff'; ctx3.lineWidth = 2;
+    ctx3.beginPath(); ctx3.arc(curXpx, pyDT2, 5.5, 0, Math.PI * 2); ctx3.fill(); ctx3.stroke();
+    ctx3.restore();
+
+    // Punto en Invariante Δs'² (Verde)
+    ctx3.save();
+    ctx3.fillStyle = '#34d399'; ctx3.strokeStyle = '#fff'; ctx3.lineWidth = 2.5;
+    ctx3.beginPath(); ctx3.arc(curXpx, pyDS2, 7, 0, Math.PI * 2); ctx3.fill(); ctx3.stroke();
+    ctx3.restore();
+
+    // ── Ejes Cartesianos ─────────────────────────────────
+    ctx3.save();
+    ctx3.strokeStyle = 'rgba(255,255,255,0.3)'; ctx3.lineWidth = 1.2;
     ctx3.beginPath();
     ctx3.moveTo(ML, MT); ctx3.lineTo(ML, MT + PH); ctx3.lineTo(ML + PW, MT + PH);
     ctx3.stroke();
-    ctx3.fillStyle = 'rgba(255,255,255,0.4)'; ctx3.font = '10px Consolas, monospace';
-    ctx3.textAlign = 'center'; ctx3.fillText('β = v/c →', ML + PW / 2, MT + PH + 22);
-    ctx3.textAlign = 'right';  ctx3.fillText('Δs²', ML - 4, MT + 10);
-    // β tick at current position
-    ctx3.strokeStyle = dotColor; ctx3.lineWidth = 1;
-    const bx = toXpx(β);
-    ctx3.beginPath(); ctx3.moveTo(bx, MT + PH); ctx3.lineTo(bx, MT + PH + 5); ctx3.stroke();
-    ctx3.fillStyle = dotColor; ctx3.textAlign = 'center';
-    ctx3.fillText(β.toFixed(2), bx, MT + PH + 22);
+
+    // Ticks eje X (β)
+    [0.0, 0.2, 0.4, 0.6, 0.8, 0.9].forEach(b => {
+      const bx = toXpx(b);
+      ctx3.beginPath(); ctx3.moveTo(bx, MT + PH); ctx3.lineTo(bx, MT + PH + 4); ctx3.stroke();
+      ctx3.fillStyle = 'rgba(255,255,255,0.4)'; ctx3.font = '9px Consolas, monospace';
+      ctx3.textAlign = 'center'; ctx3.fillText(b.toFixed(1), bx, MT + PH + 16);
+    });
+
+    ctx3.fillStyle = 'rgba(255,255,255,0.6)'; ctx3.font = 'bold 10px Segoe UI, sans-serif';
+    ctx3.textAlign = 'center'; ctx3.fillText('Velocidad relativa β = v/c →', ML + PW / 2, MT + PH + 32);
+
+    // Marcador de β actual en el eje X
+    ctx3.fillStyle = '#34d399'; ctx3.font = 'bold 10px Consolas, monospace';
+    ctx3.textAlign = 'center'; ctx3.fillText(`β = ${curBeta.toFixed(2)}`, curXpx, MT + PH + 16);
     ctx3.restore();
 
-    // Legend
+    // ── Leyenda Interactiva Superior ──────────────────────
     ctx3.save();
-    ctx3.font = '10px Segoe UI, sans-serif';
-    ctx3.fillStyle = 'rgba(255,255,255,0.25)'; ctx3.textAlign = 'center';
-    ctx3.fillText('— Δs²(K) referencia   ━ Δs²(K\') para cada β   ● β actual', W / 2, H - 4);
+    ctx3.font = 'bold 10px Segoe UI, sans-serif';
+
+    // 1. Δx'²
+    ctx3.fillStyle = '#38bdf8';
+    ctx3.fillText(`━ Δx'²(β) = ${fmt(curDX2, 2)}`, ML + 10, MT - 12);
+
+    // 2. c²Δt'²
+    ctx3.fillStyle = '#c084fc';
+    ctx3.fillText(`━ c²Δt'²(β) = ${fmt(curDT2, 2)}`, ML + 170, MT - 12);
+
+    // 3. Δs'²
+    ctx3.fillStyle = '#34d399';
+    ctx3.fillText(`━ Δs'² = c²Δt'² − Δx'² = ${fmt(curDS2, 2)} (INVARIANTE ✓)`, ML + 350, MT - 12);
     ctx3.restore();
   }
 
