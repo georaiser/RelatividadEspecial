@@ -1,44 +1,29 @@
 /**
- * panel-a.js — Panel A: Postulados de Einstein y Simultaneidad Relativa
+ * panel-a.js — Panel A: Postulados de Einstein y Simultaneidad Relativa en 3D
  *
- * Experimento del Vagón de Einstein (Simultaneidad Relativa):
- *   - Pista 1 (arriba): Perspectiva del Pasajero (Sistema S' en reposo propio).
- *       El vagón está inmóvil; los pulsos viajan a c hacia izquierda y derecha.
- *       Alcanzan el Detector A y el Detector B AL MISMO TIEMPO EXACTO (Δt' = 0).
+ * Simulación 3D del Experimento del Vagón de Einstein (Three.js):
+ *   - Vía férrea y Andén (Sistema S en reposo con observador en x = 0).
+ *   - Vagón de pasajeros con paredes de cristal transparentes (Sistema S').
+ *   - Pasajero en el centro, bombilla de flash y detectores A (trasero) y B (delantero).
+ *   - 3 Modos de cámara interactivos:
+ *       1. 🏢 Cámara Andén S: se observa el paso del tren a +βc y los impactos NO simultáneos.
+ *       2. 🚀 Cámara Dentro del Vagón S': se observa desde el interior los impactos SIMULTÁNEOS a t' = 1.00s.
+ *       3. 🌌 Vista 3D Libre (360°): control orbital libre con OrbitControls.
+ *   - Sincronización en tiempo real con cronómetros y calculadora de adición de velocidades.
  *
- *   - Pista 2 (abajo): Perspectiva del Andén (Sistema S en reposo, vagón a +β·c).
- *       El vagón avanza hacia la derecha. La luz viaja a rapidez c.
- *       El Detector A avanza hacia la luz (impacta antes: t_A = t₀ / k).
- *       El Detector B huye de la luz (impacta después: t_B = k · t₀).
- *       Resultado: NO SON SIMULTÁNEOS (Δt = t_B − t_A > 0).
- *
- * Dependencias: js/physics/lorentz.js
+ * Dependencias: js/lib/three.min.js, js/lib/OrbitControls.js, js/physics/lorentz.js
  */
 
 (function () {
   'use strict';
 
   /* ══════════════════════════════════════════════════════════
-     CONSTANTES FÍSICAS Y DE DIBUJO
+     CONSTANTES FÍSICAS Y DE ESCALA 3D
   ══════════════════════════════════════════════════════════ */
-  const T_EMIT = 1.0;            // tiempo propio del impacto en S' (segundos virtuales)
-  const SECONDS_REAL = 4.0;      // duración en segundos reales de la animación
-
-  const COL = {
-    bg:           '#09111e',
-    grid:         'rgba(255,255,255,0.035)',
-    sep:          'rgba(255,255,255,0.08)',
-    trackS:       '#4f9eff',
-    trackSp:      '#a78bfa',
-    wagonS:       '#1e293b',
-    wagonBorderS: 'rgba(79, 158, 255, 0.6)',
-    wagonSp:      '#241b35',
-    wagonBorderSp:'rgba(167, 139, 250, 0.6)',
-    light:        '#fde047',
-    detectorOff:  '#ef4444',
-    detectorOn:   '#34d399',
-    textMuted:    'rgba(255, 255, 255, 0.55)',
-  };
+  const L0 = 6.0;              // Semilongitud del vagón en reposo (unidades 3D)
+  const T_EMIT = 1.0;          // Tiempo propio de impacto en S' (segundos virtuales)
+  const SPEED_C = L0 / T_EMIT; // Rapidez de la luz (6.0 u/s)
+  const SECONDS_REAL = 4.0;    // Duración de la animación en segundos reales
 
   const bondik = (β) => Math.sqrt((1 + β) / (1 - β));
 
@@ -47,18 +32,26 @@
   ══════════════════════════════════════════════════════════ */
   let state = {
     beta:       0.60,
+    camMode:    's',          // 's' | 'sp' | 'free'
     running:    false,
     paused:     false,
-    timeReal:   0,        // tiempo transcurrido en segundos
+    timeReal:   0,            // tiempo en segundos reales
     lastStamp:  0,
     animReqId:  null,
   };
 
   /* ══════════════════════════════════════════════════════════
-     ELEMENTOS DOM
+     DOM ELEMENTS
   ══════════════════════════════════════════════════════════ */
-  const canvas         = document.getElementById('anim-canvas');
-  const ctx            = canvas.getContext('2d');
+  const container      = document.getElementById('viewport-3d');
+  const btnCamS        = document.getElementById('btn-cam-s');
+  const btnCamSp       = document.getElementById('btn-cam-sp');
+  const btnCamFree     = document.getElementById('btn-cam-free');
+  const hudCamLabel    = document.getElementById('hud-cam-label');
+  const hudCamIcon     = document.getElementById('hud-cam-icon');
+  const hudCamName     = document.getElementById('hud-cam-name');
+  const hudHint        = document.getElementById('hud-hint');
+
   const sliderEl       = document.getElementById('speed-slider');
   const betaRd         = document.getElementById('beta-readout');
   const gammaVal       = document.getElementById('gamma-val');
@@ -94,377 +87,581 @@
   const vaddLNote      = document.getElementById('vadd-l-note');
 
   /* ══════════════════════════════════════════════════════════
-     CANVAS RESIZE
+     THREE.JS ENGINE SETUP
   ══════════════════════════════════════════════════════════ */
-  function resizeCanvas() {
-    if (!canvas || !canvas.parentElement) return;
-    const parentW = canvas.parentElement.clientWidth;
-    if (parentW <= 0) return;
-    canvas.width  = parentW;
-    canvas.height = parentW < 600 ? 360 : 420;
-    draw();
-  }
-  window.addEventListener('resize', () => requestAnimationFrame(resizeCanvas));
+  let scene, camera, renderer, controls;
+  let wagonGroup, bulbMesh, bulbLight;
+  let detectorAMesh, detectorBMesh, shockwaveA, shockwaveB;
+  let pulseLeftMesh, pulseRightMesh, laserBeamLeft, laserBeamRight;
+  let observerSGroup, starfield;
 
-  /* ══════════════════════════════════════════════════════════
-     DIBUJO DE ELEMENTOS
-  ══════════════════════════════════════════════════════════ */
-  function drawWagon(xCenter, yMid, halfW, halfH, isMoving, label, betaVal) {
-    const x0 = xCenter - halfW;
-    const x1 = xCenter + halfW;
-    const y0 = yMid - halfH;
-    const h  = halfH * 2;
+  function initThree() {
+    if (!container) return;
 
-    ctx.save();
+    // Escena
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x060b14);
+    scene.fog = new THREE.FogExp2(0x060b14, 0.010);
 
-    // Sombra del vagón
-    ctx.shadowColor = isMoving ? 'rgba(79,158,255,0.25)' : 'rgba(167,139,250,0.25)';
-    ctx.shadowBlur = 12;
+    // Renderer
+    const w = container.clientWidth || 800;
+    const h = container.clientHeight || 440;
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    container.appendChild(renderer.domElement);
 
-    // Cuerpo del vagón
-    ctx.fillStyle = isMoving ? COL.wagonS : COL.wagonSp;
-    ctx.strokeStyle = isMoving ? COL.wagonBorderS : COL.wagonBorderSp;
-    ctx.lineWidth = 2;
+    // Cámara
+    camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 500);
+    camera.position.set(10, 8, 22);
 
-    // Rectángulo redondeado
-    ctx.beginPath();
-    ctx.roundRect(x0, y0, halfW * 2, h, 6);
-    ctx.fill();
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    // Ventanillas
-    const nWin = 4;
-    const winW = (halfW * 2 - 30) / (nWin + 1);
-    const winH = halfH * 0.45;
-    ctx.fillStyle = 'rgba(255,255,255,0.12)';
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.lineWidth = 1;
-    for (let i = 1; i <= nWin; i++) {
-      const wx = x0 + 15 + (i - 1) * (winW + (halfW * 2 - 30 - nWin * winW) / (nWin - 1));
-      ctx.beginPath();
-      ctx.roundRect(wx, y0 + 6, winW, winH, 3);
-      ctx.fill();
-      ctx.stroke();
+    // OrbitControls
+    if (window.THREE && THREE.OrbitControls) {
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.08;
+      controls.maxDistance = 90;
+      controls.minDistance = 2;
+      controls.target.set(6, 1.2, 0);
+      controls.enabled = true;
     }
 
-    // Ruedas
-    ctx.fillStyle = '#475569';
-    ctx.strokeStyle = '#94a3b8';
-    ctx.lineWidth = 1.5;
-    const rWheel = 6;
-    const wheelY = y0 + h + rWheel - 1;
-    [x0 + 16, x0 + 32, x1 - 32, x1 - 16].forEach(wx => {
-      ctx.beginPath();
-      ctx.arc(wx, wheelY, rWheel, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
+    // Iluminación
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0x4f9eff, 1.1);
+    dirLight.position.set(20, 25, 20);
+    scene.add(dirLight);
+
+    const dirLight2 = new THREE.DirectionalLight(0xa78bfa, 0.5);
+    dirLight2.position.set(-20, 10, -20);
+    scene.add(dirLight2);
+
+    // ── Entorno: Vías, Andén y Estrellas ──────────────────
+    buildStarfield();
+    buildRailwayAndPlatform();
+
+    // ── El Vagón de Einstein (S') ─────────────────────────
+    buildWagon();
+
+    // ── Pulsos de Luz y Efectos de Impacto ────────────────
+    buildLightPulses();
+
+    // Establecer modo de cámara inicial
+    setCameraMode('s');
+
+    // Resize listener
+    window.addEventListener('resize', onWindowResize);
+
+    // Render loop
+    requestAnimationFrame(renderLoop);
+  }
+
+  function onWindowResize() {
+    if (!container || !renderer || !camera) return;
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     CONSTRUCCIÓN DEL ESCENARIO 3D
+  ══════════════════════════════════════════════════════════ */
+  function buildStarfield() {
+    const starGeo = new THREE.BufferGeometry();
+    const count = 500;
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count * 3; i += 3) {
+      pos[i]     = (Math.random() - 0.5) * 200;
+      pos[i + 1] = Math.random() * 80 + 5;
+      pos[i + 2] = (Math.random() - 0.5) * 200;
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const starMat = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 0.9,
+      transparent: true,
+      opacity: 0.5,
+    });
+    starfield = new THREE.Points(starGeo, starMat);
+    scene.add(starfield);
+  }
+
+  function buildRailwayAndPlatform() {
+    // 1. Suelo de balasto y grilla
+    const groundGeo = new THREE.PlaneGeometry(160, 60);
+    const groundMat = new THREE.MeshStandardMaterial({
+      color: 0x0f172a,
+      roughness: 0.9,
+      metalness: 0.1,
+    });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.05;
+    scene.add(ground);
+
+    // 2. Rieles de acero a lo largo de X
+    const railMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 });
+    const railGeo = new THREE.BoxGeometry(140, 0.2, 0.15);
+
+    const railLeft = new THREE.Mesh(railGeo, railMat);
+    railLeft.position.set(20, 0.15, -1.1);
+    scene.add(railLeft);
+
+    const railRight = new THREE.Mesh(railGeo, railMat);
+    railRight.position.set(20, 0.15, 1.1);
+    scene.add(railRight);
+
+    // Traviesas de madera entre los rieles
+    const tieMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.8 });
+    const tieGeo = new THREE.BoxGeometry(0.5, 0.15, 2.8);
+    for (let x = -40; x <= 80; x += 1.8) {
+      const tie = new THREE.Mesh(tieGeo, tieMat);
+      tie.position.set(x, 0.08, 0);
+      scene.add(tie);
+    }
+
+    // 3. Andén de la Estación (Plataforma elevada a la derecha de las vías)
+    const platGeo = new THREE.BoxGeometry(140, 0.6, 6);
+    const platMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 });
+    const platform = new THREE.Mesh(platGeo, platMat);
+    platform.position.set(20, 0.3, 4.6);
+    scene.add(platform);
+
+    // Línea de seguridad amarilla del andén
+    const lineGeo = new THREE.BoxGeometry(140, 0.02, 0.15);
+    const lineMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24 });
+    const safeLine = new THREE.Mesh(lineGeo, lineMat);
+    safeLine.position.set(20, 0.61, 1.9);
+    scene.add(safeLine);
+
+    // 4. Farolas en el fondo del andén (z = 7.2, lejos de las vías para no obstruir la vista)
+    const lampMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.6 });
+    for (let lx = -25; lx <= 65; lx += 30) {
+      const poleGeo = new THREE.CylinderGeometry(0.08, 0.1, 4.5, 12);
+      const pole = new THREE.Mesh(poleGeo, lampMat);
+      pole.position.set(lx, 2.5, 7.2);
+      scene.add(pole);
+
+      const lampHeadGeo = new THREE.SphereGeometry(0.35, 16, 12);
+      const lampHeadMat = new THREE.MeshBasicMaterial({ color: 0xfef08a });
+      const lampHead = new THREE.Mesh(lampHeadGeo, lampHeadMat);
+      lampHead.position.set(lx, 4.8, 7.2);
+      scene.add(lampHead);
+    }
+
+    // 5. Observador S en el Andén (Parado en x = 0)
+    observerSGroup = new THREE.Group();
+    // Cabeza
+    const headGeo = new THREE.SphereGeometry(0.3, 16, 16);
+    const headMat = new THREE.MeshStandardMaterial({ color: 0x4f9eff });
+    const head = new THREE.Mesh(headGeo, headMat);
+    head.position.y = 1.9;
+    observerSGroup.add(head);
+    // Cuerpo
+    const bodyGeo = new THREE.CylinderGeometry(0.2, 0.25, 0.9, 12);
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8 });
+    const body = new THREE.Mesh(bodyGeo, bodyMat);
+    body.position.y = 1.25;
+    observerSGroup.add(body);
+    // Piernas
+    const legMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
+    const legGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.7, 8);
+    const legL = new THREE.Mesh(legGeo, legMat);
+    legL.position.set(-0.12, 0.45, 0);
+    observerSGroup.add(legL);
+    const legR = new THREE.Mesh(legGeo, legMat);
+    legR.position.set(0.12, 0.45, 0);
+    observerSGroup.add(legR);
+
+    observerSGroup.position.set(0, 0.6, 3.2);
+    scene.add(observerSGroup);
+
+    // Marcador vertical de emisión en el andén (x = 0)
+    const markerGeo = new THREE.CylinderGeometry(0.03, 0.03, 6, 8);
+    const markerMat = new THREE.MeshBasicMaterial({ color: 0x4f9eff, transparent: true, opacity: 0.45 });
+    const emitMarker = new THREE.Mesh(markerGeo, markerMat);
+    emitMarker.position.set(0, 3.0, 0);
+    scene.add(emitMarker);
+  }
+
+  function buildWagon() {
+    wagonGroup = new THREE.Group();
+
+    const wLen = L0 * 2; // 12.0 unidades de largo total
+    const wWid = 2.2;    // Ancho
+    const wHgt = 2.4;    // Altura
+
+    // 1. Suelo y chasis del vagón
+    const floorGeo = new THREE.BoxGeometry(wLen, 0.25, wWid);
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.6, roughness: 0.3 });
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.position.y = 0.5;
+    wagonGroup.add(floor);
+
+    // 2. Techo del vagón
+    const roofGeo = new THREE.BoxGeometry(wLen, 0.2, wWid);
+    const roofMat = new THREE.MeshStandardMaterial({ color: 0x6d28d9, metalness: 0.7, roughness: 0.25 });
+    const roof = new THREE.Mesh(roofGeo, roofMat);
+    roof.position.y = 0.5 + wHgt;
+    wagonGroup.add(roof);
+
+    // 3. Paredes delanteras y traseras sólidas (donde van los detectores)
+    const endWallGeo = new THREE.BoxGeometry(0.25, wHgt, wWid);
+    const endWallMat = new THREE.MeshStandardMaterial({ color: 0x4c1d95, metalness: 0.5, roughness: 0.4 });
+
+    // Pared trasera (Detector A en x = -L0)
+    const rearWall = new THREE.Mesh(endWallGeo, endWallMat);
+    rearWall.position.set(-L0 + 0.125, 0.5 + wHgt / 2, 0);
+    wagonGroup.add(rearWall);
+
+    // Pared delantera (Detector B en x = +L0)
+    const frontWall = new THREE.Mesh(endWallGeo, endWallMat);
+    frontWall.position.set(L0 - 0.125, 0.5 + wHgt / 2, 0);
+    wagonGroup.add(frontWall);
+
+    // 4. Paredes laterales de CRISTAL TRANSPARENTE (para ver el interior)
+    const glassGeo = new THREE.BoxGeometry(wLen - 0.5, wHgt - 0.2, 0.08);
+    const glassMat = new THREE.MeshStandardMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.22,
+      roughness: 0.1,
+      metalness: 0.2,
+      depthWrite: false,
     });
 
-    // Rieles de tren
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, wheelY + rWheel);
-    ctx.lineTo(canvas.width, wheelY + rWheel);
-    ctx.stroke();
+    const glassFront = new THREE.Mesh(glassGeo, glassMat);
+    glassFront.position.set(0, 0.5 + wHgt / 2, wWid / 2 - 0.04);
+    wagonGroup.add(glassFront);
 
-    // Etiqueta del vagón
-    ctx.fillStyle = isMoving ? COL.trackS : COL.trackSp;
-    ctx.font = 'bold 11px Consolas, monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText(label, xCenter, y0 - 8);
+    const glassBack = new THREE.Mesh(glassGeo, glassMat);
+    glassBack.position.set(0, 0.5 + wHgt / 2, -wWid / 2 + 0.04);
+    wagonGroup.add(glassBack);
 
-    if (isMoving && betaVal > 0.01) {
-      // Flecha de velocidad
-      ctx.fillStyle = COL.trackS;
-      ctx.font = '10px Consolas, monospace';
-      ctx.fillText(`v = +${betaVal.toFixed(2)}c →`, xCenter, y0 + h + 24);
+    // Pilares de las ventanas
+    const pillarGeo = new THREE.BoxGeometry(0.15, wHgt, 0.1);
+    const pillarMat = new THREE.MeshStandardMaterial({ color: 0x6d28d9 });
+    for (let px = -L0 + 2.4; px <= L0 - 2.4; px += 2.4) {
+      const pFront = new THREE.Mesh(pillarGeo, pillarMat);
+      pFront.position.set(px, 0.5 + wHgt / 2, wWid / 2);
+      wagonGroup.add(pFront);
+
+      const pBack = new THREE.Mesh(pillarGeo, pillarMat);
+      pBack.position.set(px, 0.5 + wHgt / 2, -wWid / 2);
+      wagonGroup.add(pBack);
     }
 
-    ctx.restore();
+    // 5. Interior: Pasajero S' sentado en el centro (x = 0)
+    const seatGeo = new THREE.BoxGeometry(0.8, 0.5, 0.8);
+    const seatMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
+    const seat = new THREE.Mesh(seatGeo, seatMat);
+    seat.position.set(0, 0.85, 0);
+    wagonGroup.add(seat);
+
+    // Figura del Pasajero S'
+    const passHead = new THREE.Mesh(new THREE.SphereGeometry(0.24, 16, 16), new THREE.MeshStandardMaterial({ color: 0xa78bfa }));
+    passHead.position.set(0, 1.8, 0);
+    wagonGroup.add(passHead);
+
+    const passBody = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.65, 12), new THREE.MeshStandardMaterial({ color: 0x7c3aed }));
+    passBody.position.set(0, 1.35, 0);
+    wagonGroup.add(passBody);
+
+    // 6. Bombilla / Lámpara de Flash en el centro del techo (x = 0)
+    const bulbGeo = new THREE.SphereGeometry(0.22, 16, 16);
+    const bulbMat = new THREE.MeshBasicMaterial({ color: 0x64748b });
+    bulbMesh = new THREE.Mesh(bulbGeo, bulbMat);
+    bulbMesh.position.set(0, 2.4, 0);
+    wagonGroup.add(bulbMesh);
+
+    bulbLight = new THREE.PointLight(0xfde047, 0, 15);
+    bulbLight.position.set(0, 2.4, 0);
+    wagonGroup.add(bulbLight);
+
+    // 7. Detector A (Trasero, en x = -L0)
+    const detGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.15, 16);
+    detGeo.rotateZ(Math.PI / 2);
+    const detAMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+    detectorAMesh = new THREE.Mesh(detGeo, detAMat);
+    detectorAMesh.position.set(-L0 + 0.3, 1.6, 0);
+    wagonGroup.add(detectorAMesh);
+
+    // Anillo de onda de choque para Detector A
+    const shockGeo = new THREE.RingGeometry(0.4, 0.6, 24);
+    shockGeo.rotateY(Math.PI / 2);
+    const shockMat = new THREE.MeshBasicMaterial({ color: 0x34d399, transparent: true, opacity: 0, side: THREE.DoubleSide });
+    shockwaveA = new THREE.Mesh(shockGeo, shockMat);
+    shockwaveA.position.set(-L0 + 0.35, 1.6, 0);
+    wagonGroup.add(shockwaveA);
+
+    // 8. Detector B (Delantero, en x = +L0)
+    const detBMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+    detectorBMesh = new THREE.Mesh(detGeo, detBMat);
+    detectorBMesh.position.set(L0 - 0.3, 1.6, 0);
+    wagonGroup.add(detectorBMesh);
+
+    // Anillo de onda de choque para Detector B
+    shockwaveB = new THREE.Mesh(shockGeo, shockMat.clone());
+    shockwaveB.position.set(L0 - 0.35, 1.6, 0);
+    wagonGroup.add(shockwaveB);
+
+    // 9. Ruedas del vagón
+    const wheelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.18, 16);
+    wheelGeo.rotateX(Math.PI / 2);
+    const wheelMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.8 });
+
+    [-L0 + 1.2, -L0 + 2.6, L0 - 2.6, L0 - 1.2].forEach(wx => {
+      const wL = new THREE.Mesh(wheelGeo, wheelMat);
+      wL.position.set(wx, 0.35, -1.1);
+      wagonGroup.add(wL);
+
+      const wR = new THREE.Mesh(wheelGeo, wheelMat);
+      wR.position.set(wx, 0.35, 1.1);
+      wagonGroup.add(wR);
+    });
+
+    wagonGroup.position.set(0, 0, 0);
+    scene.add(wagonGroup);
   }
 
-  function drawDetector(x, y, isHit, label) {
-    ctx.save();
-    const color = isHit ? COL.detectorOn : COL.detectorOff;
+  function buildLightPulses() {
+    // Fotón izquierdo (hacia Detector A)
+    const pGeo = new THREE.SphereGeometry(0.2, 16, 16);
+    const pMat = new THREE.MeshBasicMaterial({ color: 0xfde047 });
 
-    if (isHit) {
-      // Resplandor de impacto
-      ctx.shadowColor = COL.detectorOn;
-      ctx.shadowBlur = 16;
-      ctx.fillStyle = 'rgba(52, 211, 153, 0.25)';
-      ctx.beginPath();
-      ctx.arc(x, y, 14, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    pulseLeftMesh = new THREE.Mesh(pGeo, pMat);
+    pulseLeftMesh.visible = false;
+    scene.add(pulseLeftMesh);
 
-    // Punto central del detector
-    ctx.fillStyle = color;
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(x, y, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-    ctx.shadowBlur = 0;
+    // Rayo trazador izquierdo
+    const beamGeoL = new THREE.CylinderGeometry(0.04, 0.04, 1, 8);
+    beamGeoL.rotateZ(Math.PI / 2);
+    const beamMat = new THREE.MeshBasicMaterial({ color: 0xfde047, transparent: true, opacity: 0.65 });
+    laserBeamLeft = new THREE.Mesh(beamGeoL, beamMat);
+    laserBeamLeft.visible = false;
+    scene.add(laserBeamLeft);
 
-    // Etiqueta
-    ctx.fillStyle = color;
-    ctx.font = 'bold 10px Segoe UI, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(label, x, y + 18);
-    ctx.restore();
-  }
+    // Fotón derecho (hacia Detector B)
+    pulseRightMesh = new THREE.Mesh(pGeo, pMat.clone());
+    pulseRightMesh.visible = false;
+    scene.add(pulseRightMesh);
 
-  function drawBulb(x, y, isEmitted) {
-    ctx.save();
-    if (isEmitted) {
-      ctx.shadowColor = '#fde047';
-      ctx.shadowBlur = 20;
-      ctx.fillStyle = '#fde047';
-    } else {
-      ctx.fillStyle = '#64748b';
-    }
-    ctx.beginPath();
-    ctx.arc(x, y, 5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.restore();
-  }
-
-  function drawObserverFigure(x, y, color, label) {
-    ctx.save();
-    ctx.strokeStyle = color;
-    ctx.fillStyle   = color;
-    ctx.lineWidth   = 1.5;
-
-    // cabeza
-    ctx.beginPath(); ctx.arc(x, y - 14, 5, 0, Math.PI * 2); ctx.fill();
-    // cuerpo
-    ctx.beginPath(); ctx.moveTo(x, y - 9); ctx.lineTo(x, y + 5); ctx.stroke();
-    // brazos
-    ctx.beginPath(); ctx.moveTo(x - 7, y - 3); ctx.lineTo(x + 7, y - 3); ctx.stroke();
-    // piernas
-    ctx.beginPath();
-    ctx.moveTo(x, y + 5); ctx.lineTo(x - 5, y + 14);
-    ctx.moveTo(x, y + 5); ctx.lineTo(x + 5, y + 14);
-    ctx.stroke();
-
-    ctx.font = 'bold 10px Segoe UI, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(label, x, y + 26);
-    ctx.restore();
+    // Rayo trazador derecho
+    laserBeamRight = new THREE.Mesh(beamGeoL, beamMat.clone());
+    laserBeamRight.visible = false;
+    scene.add(laserBeamRight);
   }
 
   /* ══════════════════════════════════════════════════════════
-     FUNCIÓN PRINCIPAL DE RENDERIZADO
+     ACTUALIZACIÓN FÍSICA Y RENDER LOOP (60 FPS)
   ══════════════════════════════════════════════════════════ */
-  function draw() {
-    const W = canvas.width;
-    const H = canvas.height;
+  function renderLoop(timestamp) {
+    state.animReqId = requestAnimationFrame(renderLoop);
+
+    if (!state.lastStamp) state.lastStamp = timestamp;
+    const delta = (timestamp - state.lastStamp) / 1000;
+    state.lastStamp = timestamp;
+
+    if (state.running && !state.paused) {
+      state.timeReal += delta;
+      if (state.timeReal >= SECONDS_REAL) {
+        state.timeReal = SECONDS_REAL;
+        state.running  = false;
+        state.paused   = false;
+        btnPlay.disabled = false;
+        btnPlay.innerHTML = '<span class="btn-icon">▶</span> Emitir de nuevo';
+        btnPause.disabled = true;
+        btnPause.innerHTML = '<span class="btn-icon">⏸</span> Pausar';
+      }
+    }
+
+    updatePhysics();
+    updateCamera();
+    updateReadouts();
+
+    if (controls && controls.enabled) {
+      controls.update();
+    }
+
+    renderer.render(scene, camera);
+  }
+
+  function updatePhysics() {
     const β = state.beta;
-    const γ = Lorentz.gamma(β);
     const k = bondik(β);
-
-    // Fondo
-    ctx.fillStyle = COL.bg;
-    ctx.fillRect(0, 0, W, H);
-
-    // Grilla tenue
-    ctx.strokeStyle = COL.grid;
-    ctx.lineWidth = 1;
-    for (let x = 0; x <= W; x += W / 16) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-    }
-    for (let y = 0; y <= H; y += H / 8) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    }
-
-    // Separador horizontal central entre Pista 1 y Pista 2
-    ctx.strokeStyle = COL.sep;
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([6, 4]);
-    ctx.beginPath();
-    ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    const bandH = H / 2;
-    const ySp   = bandH * 0.45;    // Centro Pista 1 (Vagón S')
-    const yS    = bandH * 1.45;    // Centro Pista 2 (Andén S)
-
-    // Parámetros de escala
-    const L0 = Math.min(W * 0.22, 130);           // Semilongitud del vagón en reposo (px)
-    const L  = L0 / γ;                            // Semilongitud contraída en S (px)
-    const speedC = L0 / T_EMIT;                   // Rapidez de la luz en px/segundo virtual
-    const maxSimTime = Math.max(k * 1.3, 2.5);   // Tiempo virtual máximo para la animación
-
-    // Tiempo virtual actual transcurrido
+    const maxSimTime = Math.max(k * 1.3, 2.5);
     const simTime = (state.timeReal / SECONDS_REAL) * maxSimTime;
     const hasEmitted = simTime > 0.001;
 
-    // ── 1. PISTA SUPERIOR: PERSPECTIVA DEL VAGÓN (S' en reposo) ──
-    const xCenterSp = W * 0.50;
-    const halfHSp = 24;
+    // Velocidad del vagón en unidades 3D: v = β · c
+    const vWagon = β * SPEED_C;
+    const wagonX = vWagon * simTime;
 
-    // Rótulo superior
-    ctx.fillStyle = COL.trackSp;
-    ctx.font = 'bold 12px Segoe UI, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText("🚀 Pista 1: Perspectiva de S' (Dentro del vagón en reposo propio)", 14, 20);
-
-    // Vagón S' fijo en el centro
-    drawWagon(xCenterSp, ySp, L0, halfHSp, false, "Vagón S' (en reposo)", 0);
-
-    // Pasajero en el centro del vagón
-    drawObserverFigure(xCenterSp, ySp - 2, COL.trackSp, "Pasajero S'");
-
-    // Bombilla en el centro
-    drawBulb(xCenterSp, ySp - 8, hasEmitted);
-
-    // Detectores A (trasero, izq) y B (delantero, der)
-    const xDetSpA = xCenterSp - L0;
-    const xDetSpB = xCenterSp + L0;
-    const isHitSpA = simTime >= T_EMIT;
-    const isHitSpB = simTime >= T_EMIT;
-    drawDetector(xDetSpA, ySp, isHitSpA, "Det. A");
-    drawDetector(xDetSpB, ySp, isHitSpB, "Det. B");
-
-    // Pulsos de luz en S'
-    if (hasEmitted) {
-      const dLuzSp = Math.min(simTime * speedC, L0);
-      const xPulseSpLeft  = xCenterSp - dLuzSp;
-      const xPulseSpRight = xCenterSp + dLuzSp;
-
-      ctx.save();
-      ctx.fillStyle = COL.light;
-      ctx.shadowColor = COL.light;
-      ctx.shadowBlur = 10;
-
-      // Pulso hacia la izquierda
-      ctx.beginPath(); ctx.arc(xPulseSpLeft, ySp, 4, 0, Math.PI * 2); ctx.fill();
-      // Pulso hacia la derecha
-      ctx.beginPath(); ctx.arc(xPulseSpRight, ySp, 4, 0, Math.PI * 2); ctx.fill();
-
-      // Rayo trazador
-      ctx.strokeStyle = 'rgba(253, 224, 71, 0.4)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(xPulseSpLeft, ySp); ctx.lineTo(xPulseSpRight, ySp);
-      ctx.stroke();
-      ctx.restore();
+    // 1. Posición del vagón
+    if (wagonGroup) {
+      wagonGroup.position.set(wagonX, 0, 0);
     }
 
-    // Cronómetro S' en pantalla
-    ctx.fillStyle = isHitSpA && isHitSpB ? COL.detectorOn : COL.textMuted;
-    ctx.font = 'bold 11px Consolas, monospace';
-    ctx.textAlign = 'right';
-    const statusTextSp = (isHitSpA && isHitSpB) ? "¡Impacto Simultáneo en A y B!" : `t' = ${simTime.toFixed(2)} s`;
-    ctx.fillText(statusTextSp, W - 14, 20);
-
-    // ── 2. PISTA INFERIOR: PERSPECTIVA DEL ANDÉN (S en reposo, vagón a +βc) ──
-    const xOrigS = W * 0.28;                      // Posición del andén / origen de emisión en S
-    const vS     = β * speedC;                    // Rapidez del vagón en S (px/s)
-    const xCenterS = xOrigS + vS * simTime;       // Posición del centro del vagón en S
-    const halfHS = 24;
-
-    // Rótulo inferior
-    ctx.fillStyle = COL.trackS;
-    ctx.font = 'bold 12px Segoe UI, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(`🏢 Pista 2: Perspectiva de S (Desde el andén · Vagón pasando a +${β.toFixed(2)}c)`, 14, bandH + 20);
-
-    // Observador en el andén (fijo en xOrigS)
-    drawObserverFigure(xOrigS, yS + 32, COL.trackS, "Observador S (Andén)");
-
-    // Marca del punto de emisión en el andén (x = 0)
-    ctx.save();
-    ctx.strokeStyle = 'rgba(79, 158, 255, 0.35)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath();
-    ctx.moveTo(xOrigS, yS - halfHS - 12);
-    ctx.lineTo(xOrigS, yS + halfHS + 12);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = 'rgba(79, 158, 255, 0.6)';
-    ctx.font = '9px Consolas, monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('Origen emisión (x=0)', xOrigS, yS - halfHS - 16);
-    ctx.restore();
-
-    // Vagón en movimiento hacia la derecha
-    drawWagon(xCenterS, yS, L0, halfHS, true, `Vagón S' (en movimiento a +${β.toFixed(2)}c)`, β);
-
-    // Detectores A (trasero) y B (delantero) en el vagón móvil
-    const xDetSA = xCenterS - L0;
-    const xDetSB = xCenterS + L0;
-
-    // Tiempos físicos de impacto en S
-    const tImpactSA = T_EMIT / k;       // Impacta antes: t_A = 1 / k
-    const tImpactSB = T_EMIT * k;       // Impacta después: t_B = k
-
-    const isHitSA = simTime >= tImpactSA;
-    const isHitSB = simTime >= tImpactSB;
-    drawDetector(xDetSA, yS, isHitSA, "Det. A");
-    drawDetector(xDetSB, yS, isHitSB, "Det. B");
-
-    // Pulsos de luz en S (se propagan esféricamente desde el punto fijo de emisión xOrigS a rapidez c)
-    if (hasEmitted) {
-      // Posición del pulso hacia la izquierda
-      const dLuzLeftS = Math.min(simTime, tImpactSA) * speedC;
-      const xPulseSLeft = xOrigS - dLuzLeftS;
-
-      // Posición del pulso hacia la derecha
-      const dLuzRightS = Math.min(simTime, tImpactSB) * speedC;
-      const xPulseSRight = xOrigS + dLuzRightS;
-
-      ctx.save();
-      ctx.fillStyle = COL.light;
-      ctx.shadowColor = COL.light;
-      ctx.shadowBlur = 10;
-
-      // Pulso izquierdo
-      if (!isHitSA || simTime <= tImpactSA + 0.3) {
-        ctx.beginPath(); ctx.arc(xPulseSLeft, yS, 4, 0, Math.PI * 2); ctx.fill();
+    // 2. Destello de la bombilla
+    if (bulbMesh && bulbLight) {
+      if (hasEmitted && simTime < 0.4) {
+        bulbMesh.material.color.setHex(0xfde047);
+        bulbLight.intensity = Math.max(0, 4 - simTime * 10);
+      } else if (hasEmitted) {
+        bulbMesh.material.color.setHex(0xfef08a);
+        bulbLight.intensity = 0.5;
+      } else {
+        bulbMesh.material.color.setHex(0x64748b);
+        bulbLight.intensity = 0;
       }
-      // Pulso derecho
-      if (!isHitSB || simTime <= tImpactSB + 0.3) {
-        ctx.beginPath(); ctx.arc(xPulseSRight, yS, 4, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // 3. Tiempos físicos de impacto en el sistema del andén (S)
+    const tImpactSA = T_EMIT / k; // Impacto en A
+    const tImpactSB = T_EMIT * k; // Impacto en B
+
+    // Tiempos físicos de impacto en el sistema del vagón (S')
+    const isHitA = (state.camMode === 'sp') ? (simTime >= T_EMIT) : (simTime >= tImpactSA);
+    const isHitB = (state.camMode === 'sp') ? (simTime >= T_EMIT) : (simTime >= tImpactSB);
+
+    // Actualizar Detector A
+    if (detectorAMesh) {
+      if (isHitA) {
+        detectorAMesh.material.color.setHex(0x34d399); // Verde activo
+        if (shockwaveA) {
+          shockwaveA.material.opacity = Math.max(0, 1 - (simTime - (state.camMode === 'sp' ? T_EMIT : tImpactSA)) * 1.5);
+          const s = 1 + (simTime - (state.camMode === 'sp' ? T_EMIT : tImpactSA)) * 2;
+          shockwaveA.scale.set(s, s, s);
+        }
+      } else {
+        detectorAMesh.material.color.setHex(0xef4444); // Rojo esperando
+        if (shockwaveA) shockwaveA.material.opacity = 0;
       }
-
-      // Trazador desde el punto de emisión
-      ctx.strokeStyle = 'rgba(253, 224, 71, 0.3)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(xPulseSLeft, yS); ctx.lineTo(xPulseSRight, yS);
-      ctx.stroke();
-      ctx.restore();
     }
 
-    // Cronómetro S en pantalla
-    ctx.fillStyle = isHitSB ? '#fbbf24' : (isHitSA ? '#38bdf8' : COL.textMuted);
-    ctx.font = 'bold 11px Consolas, monospace';
-    ctx.textAlign = 'right';
-    let statusTextS = `t = ${simTime.toFixed(2)} s`;
-    if (isHitSB) {
-      statusTextS = `¡NO simultáneos! (A impactó a ${tImpactSA.toFixed(2)}s, B a ${tImpactSB.toFixed(2)}s)`;
-    } else if (isHitSA) {
-      statusTextS = `1.er Impacto en Det. A (t = ${tImpactSA.toFixed(2)}s) · B aún huyendo...`;
+    // Actualizar Detector B
+    if (detectorBMesh) {
+      if (isHitB) {
+        detectorBMesh.material.color.setHex(0x34d399); // Verde activo
+        if (shockwaveB) {
+          shockwaveB.material.opacity = Math.max(0, 1 - (simTime - (state.camMode === 'sp' ? T_EMIT : tImpactSB)) * 1.5);
+          const s = 1 + (simTime - (state.camMode === 'sp' ? T_EMIT : tImpactSB)) * 2;
+          shockwaveB.scale.set(s, s, s);
+        }
+      } else {
+        detectorBMesh.material.color.setHex(0xef4444); // Rojo esperando
+        if (shockwaveB) shockwaveB.material.opacity = 0;
+      }
     }
-    ctx.fillText(statusTextS, W - 14, bandH + 20);
 
-    // ── Pie de información ────────────────────────────────
-    ctx.save();
-    ctx.fillStyle = 'rgba(255,255,255,0.30)';
-    ctx.font = '10px Consolas, monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText(
-      `β = ${β.toFixed(2)} · γ = ${γ.toFixed(4)} · Factor Bondi k = ${k.toFixed(3)} · Δt_andén = ${(tImpactSB - tImpactSA).toFixed(2)} s`,
-      W / 2, H - 7
-    );
-    ctx.restore();
+    // 4. Posición de los pulsos de luz 3D
+    const yPulse = 1.6;
+    if (hasEmitted) {
+      if (state.camMode === 'sp') {
+        // En el vagón (S'): los pulsos salen del centro del vagón y viajan simétricamente a rapidez c
+        const dSp = Math.min(simTime * SPEED_C, L0);
+        const pLeftX = wagonX - dSp;
+        const pRightX = wagonX + dSp;
+
+        pulseLeftMesh.visible = !isHitA;
+        pulseLeftMesh.position.set(pLeftX, yPulse, 0);
+
+        pulseRightMesh.visible = !isHitB;
+        pulseRightMesh.position.set(pRightX, yPulse, 0);
+
+        laserBeamLeft.visible = !isHitA;
+        laserBeamLeft.position.set(wagonX - dSp / 2, yPulse, 0);
+        laserBeamLeft.scale.set(1, dSp, 1);
+
+        laserBeamRight.visible = !isHitB;
+        laserBeamRight.position.set(wagonX + dSp / 2, yPulse, 0);
+        laserBeamRight.scale.set(1, dSp, 1);
+
+      } else {
+        // En el andén (S): los pulsos salen del punto fijo x = 0 a rapidez c
+        const emitX = 0;
+        const dLightLeft = Math.min(simTime, tImpactSA) * SPEED_C;
+        const pLeftX = emitX - dLightLeft;
+
+        const dLightRight = Math.min(simTime, tImpactSB) * SPEED_C;
+        const pRightX = emitX + dLightRight;
+
+        pulseLeftMesh.visible = !isHitA;
+        pulseLeftMesh.position.set(pLeftX, yPulse, 0);
+
+        pulseRightMesh.visible = !isHitB;
+        pulseRightMesh.position.set(pRightX, yPulse, 0);
+
+        laserBeamLeft.visible = !isHitA;
+        laserBeamLeft.position.set(emitX - dLightLeft / 2, yPulse, 0);
+        laserBeamLeft.scale.set(1, dLightLeft, 1);
+
+        laserBeamRight.visible = !isHitB;
+        laserBeamRight.position.set(emitX + dLightRight / 2, yPulse, 0);
+        laserBeamRight.scale.set(1, dLightRight, 1);
+      }
+    } else {
+      pulseLeftMesh.visible = pulseRightMesh.visible = false;
+      laserBeamLeft.visible = laserBeamRight.visible = false;
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     SISTEMA DE CÁMARAS Y PERSPECTIVAS
+  ══════════════════════════════════════════════════════════ */
+  function setCameraMode(mode) {
+    state.camMode = mode;
+
+    if (btnCamS)  btnCamS.classList.toggle('active-cam', mode === 's');
+    if (btnCamSp) btnCamSp.classList.toggle('active-cam', mode === 'sp');
+
+    if (mode === 's') {
+      hudCamIcon.textContent = '🏢';
+      hudCamName.textContent = 'Sistema S: Andén en reposo (Vista 3D 360°)';
+      hudCamLabel.style.borderColor = 'rgba(79, 158, 255, 0.4)';
+      hudCamLabel.style.color = 'var(--color-accent)';
+      hudHint.textContent = '🖱 Arrastra para rotar 360° · ⚙ Rueda para zoom · El vagón pasa a +βc y los impactos NO son simultáneos';
+      if (controls) {
+        controls.enabled = true;
+        controls.target.set(6, 1.5, 0);
+      }
+      camera.position.set(12, 10, 22);
+    } else if (mode === 'sp') {
+      hudCamIcon.textContent = '🚀';
+      hudCamName.textContent = 'Sistema S\': Dentro del Vagón (Interior en reposo)';
+      hudCamLabel.style.borderColor = 'rgba(167, 139, 250, 0.4)';
+      hudCamLabel.style.color = 'var(--color-accent-2)';
+      hudHint.textContent = 'Dentro de la cabina: los dos pulsos recorren la misma distancia a rapidez c y chocan a la vez (Δt\' = 0)';
+      if (controls) controls.enabled = false;
+    }
+  }
+
+  function updateCamera() {
+    if (!camera) return;
+
+    const β = state.beta;
+    const k = bondik(β);
+    const maxSimTime = Math.max(k * 1.3, 2.5);
+    const simTime = (state.timeReal / SECONDS_REAL) * maxSimTime;
+    const vWagon = β * SPEED_C;
+    const wagonX = vWagon * simTime;
+
+    if (state.camMode === 's') {
+      // 1. SISTEMA S: La cámara 3D libre es controlada por OrbitControls
+      // OrbitControls se actualiza en el render loop.
+    } else if (state.camMode === 'sp') {
+      // 2. SISTEMA S': Cámara co-móvil perfectamente centrada con el vagón
+      // El vagón permanece completamente estático en la pantalla y se ve todo el interior de extremo a extremo con margen
+      const camPos = new THREE.Vector3(wagonX, 2.4, 11.0);
+      const lookTarget = new THREE.Vector3(wagonX, 1.5, 0);
+      camera.position.copy(camPos);
+      camera.lookAt(lookTarget);
+    }
   }
 
   /* ══════════════════════════════════════════════════════════
@@ -473,7 +670,8 @@
   function updateReadouts() {
     const β = state.beta;
     const k = bondik(β);
-    const simTime = (state.timeReal / SECONDS_REAL) * Math.max(k * 1.3, 2.5);
+    const maxSimTime = Math.max(k * 1.3, 2.5);
+    const simTime = (state.timeReal / SECONDS_REAL) * maxSimTime;
 
     const tImpactSpA = T_EMIT;
     const tImpactSpB = T_EMIT;
@@ -486,8 +684,8 @@
     if (state.timeReal === 0) {
       obsSpA.textContent = obsSpB.textContent = obsSpDt.textContent = '—';
       obsSA.textContent  = obsSB.textContent  = obsSDt.textContent  = '—';
-      obsSpVerd.textContent = 'Pulsa "Emitir flash" para iniciar';
-      obsSVerd.textContent  = 'Pulsa "Emitir flash" para iniciar';
+      obsSpVerd.textContent = 'Pulsa "Emitir flash" para iniciar la simulación 3D';
+      obsSVerd.textContent  = 'Pulsa "Emitir flash" para iniciar la simulación 3D';
       obsSpVerd.style.background = 'rgba(255,255,255,0.04)';
       obsSpVerd.style.color      = 'var(--color-text-dim)';
       obsSVerd.style.background  = 'rgba(255,255,255,0.04)';
@@ -549,36 +747,6 @@
   }
 
   /* ══════════════════════════════════════════════════════════
-     LOOP DE ANIMACIÓN
-  ══════════════════════════════════════════════════════════ */
-  function animLoop(timestamp) {
-    if (!state.running || state.paused) return;
-
-    if (!state.lastStamp) state.lastStamp = timestamp;
-    const delta = (timestamp - state.lastStamp) / 1000;
-    state.lastStamp = timestamp;
-
-    state.timeReal += delta;
-
-    draw();
-    updateReadouts();
-
-    if (state.timeReal < SECONDS_REAL) {
-      state.animReqId = requestAnimationFrame(animLoop);
-    } else {
-      state.timeReal = SECONDS_REAL;
-      state.running  = false;
-      state.paused   = false;
-      btnPlay.disabled   = false;
-      btnPlay.innerHTML  = '<span class="btn-icon">▶</span> Emitir de nuevo';
-      btnPause.disabled  = true;
-      btnPause.innerHTML = '<span class="btn-icon">⏸</span> Pausar';
-      draw();
-      updateReadouts();
-    }
-  }
-
-  /* ══════════════════════════════════════════════════════════
      CONTROLES DE VELOCIDAD Y PRESETS
   ══════════════════════════════════════════════════════════ */
   function updateVelocityBar() {
@@ -603,7 +771,6 @@
     }
     updateVelocityBar();
     updateVelocityAddition();
-    draw();
     updateReadouts();
   });
 
@@ -616,11 +783,17 @@
         sliderEl.value = state.beta;
         updateVelocityBar();
         updateVelocityAddition();
-        draw();
         updateReadouts();
       });
     });
   }
+
+  /* ══════════════════════════════════════════════════════════
+     CONTROLADORES DE CÁMARA
+  ══════════════════════════════════════════════════════════ */
+  if (btnCamS)    btnCamS.addEventListener('click', () => setCameraMode('s'));
+  if (btnCamSp)   btnCamSp.addEventListener('click', () => setCameraMode('sp'));
+  if (btnCamFree) btnCamFree.addEventListener('click', () => setCameraMode('free'));
 
   /* ══════════════════════════════════════════════════════════
      BOTONES PLAY / PAUSE / RESET
@@ -633,25 +806,21 @@
       state.running   = true;
       state.lastStamp = performance.now();
       btnPlay.disabled   = true;
-      btnPlay.innerHTML  = '<span class="btn-icon">⏸</span> En vuelo…';
+      btnPlay.innerHTML  = '<span class="btn-icon">⏸</span> En vuelo 3D…';
       btnPause.disabled  = false;
       btnPause.innerHTML = '<span class="btn-icon">⏸</span> Pausar';
-      state.animReqId = requestAnimationFrame(animLoop);
       return;
     }
 
-    // Nuevo flash
     state.timeReal  = 0;
     state.running   = true;
     state.paused    = false;
     state.lastStamp = performance.now();
 
     btnPlay.disabled   = true;
-    btnPlay.innerHTML  = '<span class="btn-icon">⏸</span> En vuelo…';
+    btnPlay.innerHTML  = '<span class="btn-icon">⏸</span> En vuelo 3D…';
     btnPause.disabled  = false;
     btnPause.innerHTML = '<span class="btn-icon">⏸</span> Pausar';
-
-    state.animReqId = requestAnimationFrame(animLoop);
   });
 
   btnPause.addEventListener('click', () => {
@@ -659,7 +828,6 @@
 
     if (!state.paused) {
       state.paused = true;
-      cancelAnimationFrame(state.animReqId);
       btnPlay.disabled   = false;
       btnPlay.innerHTML  = '<span class="btn-icon">▶</span> Reanudar';
       btnPause.disabled  = true;
@@ -668,7 +836,6 @@
   });
 
   btnReset.addEventListener('click', () => {
-    cancelAnimationFrame(state.animReqId);
     state.running  = false;
     state.paused   = false;
     state.timeReal = 0;
@@ -678,7 +845,7 @@
     btnPause.disabled  = true;
     btnPause.innerHTML = '<span class="btn-icon">⏸</span> Pausar';
 
-    draw();
+    updatePhysics();
     updateReadouts();
   });
 
@@ -747,9 +914,18 @@
   /* ══════════════════════════════════════════════════════════
      INICIALIZACIÓN
   ══════════════════════════════════════════════════════════ */
-  updateVelocityBar();
-  updateVelocityAddition();
-  resizeCanvas();
-  updateReadouts();
+  window.addEventListener('DOMContentLoaded', () => {
+    initThree();
+    updateVelocityBar();
+    updateVelocityAddition();
+    updateReadouts();
+  });
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initThree();
+    updateVelocityBar();
+    updateVelocityAddition();
+    updateReadouts();
+  }
 
 })();

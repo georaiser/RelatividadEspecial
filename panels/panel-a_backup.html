@@ -61,27 +61,18 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
-       HERO 1 — SIMULACIÓN 3D: EL VAGÓN DE EINSTEIN
+       HERO 1 — SIMULACIÓN INTERACTIVA: EL VAGÓN DE EINSTEIN
   ═══════════════════════════════════════════════════════ -->
   <div class="canvas-wrapper">
     <div class="canvas-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-      <span>El Experimento del Vagón de Einstein en 3D (Simultaneidad Relativa)</span>
-      <div class="cam-selector-bar" id="cam-selector">
-        <span style="font-size:0.75rem;color:var(--color-muted);margin-right:4px;">Sistema de Referencia:</span>
-        <button class="cam-btn active-cam" data-cam="s" id="btn-cam-s">🏢 Sistema S: Andén (Vista 3D 360°)</button>
-        <button class="cam-btn cam-sp" data-cam="sp" id="btn-cam-sp">🚀 Sistema S': Dentro del Vagón (Interior)</button>
-      </div>
+      <span>El Experimento del Vagón de Einstein (Simultaneidad Relativa)</span>
+      <span style="font-size:0.75rem;font-weight:400;color:var(--color-muted);">
+        🟡 Pulsos de luz a rapidez c &nbsp;|&nbsp; 🔴 Detectores A (trasero) y B (delantero)
+      </span>
     </div>
 
-    <!-- Viewport 3D Three.js -->
-    <div class="canvas-3d-viewport" id="viewport-3d">
-      <div class="hud-3d-cam-label" id="hud-cam-label">
-        <span id="hud-cam-icon">🏢</span> <span id="hud-cam-name">Perspectiva Andén S (Laboratorio en reposo)</span>
-      </div>
-      <div class="hud-3d-hint" id="hud-hint">
-        Ves pasar el vagón a +βc · La luz impacta en Det. A antes que en Det. B
-      </div>
-    </div>
+    <!-- Canvas 2D interactivo del tren -->
+    <canvas id="anim-canvas"></canvas>
 
     <!-- Controles de la animación -->
     <div class="anim-controls">

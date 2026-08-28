@@ -463,19 +463,99 @@
 }
 
 /* ══════════════════════════════════════════════════════════
-   PANEL A — EXPERIMENTO DEL VAGÓN DE EINSTEIN (CANVAS 2D)
+   PANEL A — EXPERIMENTO DEL VAGÓN DE EINSTEIN EN 3D
 ══════════════════════════════════════════════════════════ */
-#anim-canvas {
+.canvas-3d-viewport {
   width: 100%;
-  min-height: 400px;
-  background: #09111e;
+  height: 440px;
+  background: #060b14;
+  position: relative;
+  overflow: hidden;
   display: block;
-  cursor: default;
 }
 @media (max-width: 600px) {
-  #anim-canvas {
-    min-height: 340px;
+  .canvas-3d-viewport {
+    height: 340px;
   }
+}
+.canvas-3d-viewport canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  outline: none;
+}
+
+.cam-selector-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.cam-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-dim);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+.cam-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+  border-color: var(--color-accent);
+}
+.cam-btn.active-cam {
+  background: rgba(79, 158, 255, 0.15);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  box-shadow: 0 0 10px rgba(79, 158, 255, 0.2);
+}
+.cam-btn.cam-sp.active-cam {
+  background: rgba(167, 139, 250, 0.15);
+  border-color: var(--color-accent-2);
+  color: var(--color-accent-2);
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.2);
+}
+
+.hud-3d-hint {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: rgba(9, 17, 30, 0.75);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.hud-3d-cam-label {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  background: rgba(9, 17, 30, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(79, 158, 255, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  pointer-events: none;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .train-status-badge {
