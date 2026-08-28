@@ -43,7 +43,7 @@
   const c2 = el('c2-canvas'), ctx2 = c2.getContext('2d');
   const c3 = el('c3-canvas'), ctx3 = c3.getContext('2d');
 
-  const CANVAS_H = 440;
+  const CANVAS_H = 460;
   const RANGE    = 5.5;   // unidades físicas visibles desde el centro
 
   /* ── Sistema de coordenadas ────────────────────────────── */
@@ -69,7 +69,7 @@
   ══════════════════════════════════════════════════════════ */
 
   function drawBackground(ctx, d) {
-    ctx.fillStyle = '#0d1117';
+    ctx.fillStyle = '#09111e';
     ctx.fillRect(0, 0, d.W, d.H);
   }
 
@@ -97,24 +97,22 @@
     ctx.save();
 
     // Región futura (ct > |x|): triángulo superior
-    ctx.fillStyle = 'rgba(253,224,71,0.04)';
+    ctx.fillStyle = 'rgba(253,224,71,0.035)';
     ctx.beginPath();
     ctx.moveTo(cx, cy);
-    const topLeft  = cy;          // ct = cx/scale → top-left corner
-    const topRight = cy - (W - cx);
-    ctx.lineTo(0,  clamp(cy + cx,          0, H));
+    ctx.lineTo(0,  clamp(cy + cx, 0, H));
     ctx.lineTo(0,  0); ctx.lineTo(W, 0);
-    ctx.lineTo(W,  clamp(cy - (W - cx),    0, H));
+    ctx.lineTo(W,  clamp(cy - (W - cx), 0, H));
     ctx.closePath();
     ctx.fill();
 
     // Región pasada (ct < -|x|): triángulo inferior
-    ctx.fillStyle = 'rgba(253,224,71,0.025)';
+    ctx.fillStyle = 'rgba(253,224,71,0.02)';
     ctx.beginPath();
     ctx.moveTo(cx, cy);
-    ctx.lineTo(0,  clamp(cy - cx,          0, H));
+    ctx.lineTo(0,  clamp(cy - cx, 0, H));
     ctx.lineTo(0,  H); ctx.lineTo(W, H);
-    ctx.lineTo(W,  clamp(cy + (W - cx),    0, H));
+    ctx.lineTo(W,  clamp(cy + (W - cx), 0, H));
     ctx.closePath();
     ctx.fill();
 
@@ -126,14 +124,14 @@
     ctx.save();
 
     // Ejes principales
-    ctx.strokeStyle = 'rgba(96,165,250,0.8)';
+    ctx.strokeStyle = 'rgba(96,165,250,0.85)';
     ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();   // eje x
     ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();   // eje ct
 
     // Flechas
-    const arr = 7;
-    ctx.fillStyle = 'rgba(96,165,250,0.8)';
+    const arr = 8;
+    ctx.fillStyle = 'rgba(96,165,250,0.85)';
     ctx.beginPath(); ctx.moveTo(W - 2, cy); ctx.lineTo(W - 2 - arr, cy - arr/2);
     ctx.lineTo(W - 2 - arr, cy + arr/2); ctx.closePath(); ctx.fill();
     ctx.beginPath(); ctx.moveTo(cx, 2); ctx.lineTo(cx - arr/2, 2 + arr);
@@ -141,15 +139,15 @@
 
     // Etiquetas
     ctx.fillStyle = '#60a5fa';
-    ctx.font = 'bold 13px monospace';
+    ctx.font = 'bold 13px Consolas, monospace';
     ctx.fillText('x', W - 18, cy - 8);
-    ctx.fillText('ct', cx + 6, 16);
+    ctx.fillText('ct', cx + 8, 18);
 
     // Marcas y números
-    ctx.strokeStyle = 'rgba(96,165,250,0.35)';
+    ctx.strokeStyle = 'rgba(96,165,250,0.4)';
     ctx.lineWidth = 1;
-    ctx.fillStyle  = 'rgba(96,165,250,0.55)';
-    ctx.font = '9px monospace';
+    ctx.fillStyle  = 'rgba(96,165,250,0.6)';
+    ctx.font = '10px Consolas, monospace';
 
     for (let i = -5; i <= 5; i++) {
       if (i === 0) continue;
@@ -157,11 +155,11 @@
       const py = cy - i * scale;
       if (px >= 0 && px <= W) {
         ctx.beginPath(); ctx.moveTo(px, cy - 4); ctx.lineTo(px, cy + 4); ctx.stroke();
-        if (i !== 0) ctx.fillText(i, px - (i < 0 ? 7 : 3), cy + 14);
+        ctx.fillText(i, px - (i < 0 ? 8 : 3), cy + 15);
       }
       if (py >= 0 && py <= H) {
         ctx.beginPath(); ctx.moveTo(cx - 4, py); ctx.lineTo(cx + 4, py); ctx.stroke();
-        if (i !== 0) ctx.fillText(i, cx - 16, py + 3);
+        ctx.fillText(i, cx - 18, py + 3);
       }
     }
 
@@ -172,33 +170,58 @@
     if (β < 0.005) return;
     const { W, H, cx, cy } = d;
     const ext = Math.max(W, H) * 1.5;
+    const γ = Lorentz.gamma(β);
 
     ctx.save();
-    ctx.strokeStyle = 'rgba(192,132,252,0.65)';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(192,132,252,0.75)';
+    ctx.lineWidth = 1.6;
 
-    // Eje ct': dirección canvas (β, −1) — worldline del origen de K'
+    // Eje ct': dirección (β, 1) en espacio físico → (β·ext, -ext) en canvas
     ctx.beginPath();
     ctx.moveTo(cx - β * ext, cy + ext);
     ctx.lineTo(cx + β * ext, cy - ext);
     ctx.stroke();
 
-    // Eje x': dirección canvas (1, −β) — líneas de simultaneidad de K'
+    // Eje x': dirección (1, β) en espacio físico → (ext, -β·ext) en canvas
     ctx.beginPath();
     ctx.moveTo(cx - ext,     cy + β * ext);
     ctx.lineTo(cx + ext,     cy - β * ext);
     ctx.stroke();
 
-    // Etiquetas K'
+    // ── Marcas de calibración hiperbólica en ejes K' ─────
     ctx.fillStyle = '#c084fc';
-    ctx.font = 'bold 12px monospace';
-    const ctp_lx = cx + β * Math.min(cy - 14, ext);
-    const ctp_ly = 14;
-    ctx.fillText("ct'", clamp(ctp_lx + 4, 4, W - 28), ctp_ly);
+    ctx.font = 'bold 9px Consolas, monospace';
 
-    const xp_rx = W - 4;
-    const xp_ry = cy - β * (W - cx - 4);
-    ctx.fillText("x'", xp_rx - 20, clamp(xp_ry - 4, 14, H - 4));
+    for (let n = -4; n <= 4; n++) {
+      if (n === 0) continue;
+      // Marca en eje ct': (x = n·γ·β, ct = n·γ)
+      const pCt = toCanvas(d, n * γ * β, n * γ);
+      if (pCt.px >= 10 && pCt.px <= W - 10 && pCt.py >= 10 && pCt.py <= H - 10) {
+        ctx.beginPath();
+        ctx.arc(pCt.px, pCt.py, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillText(n, pCt.px + 5, pCt.py + 3);
+      }
+
+      // Marca en eje x': (x = n·γ, ct = n·γ·β)
+      const pX = toCanvas(d, n * γ, n * γ * β);
+      if (pX.px >= 10 && pX.px <= W - 10 && pX.py >= 10 && pX.py <= H - 10) {
+        ctx.beginPath();
+        ctx.arc(pX.px, pX.py, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillText(n, pX.px - 3, pX.py + 13);
+      }
+    }
+
+    // Etiquetas K'
+    ctx.font = 'bold 13px Consolas, monospace';
+    const ctp_lx = cx + β * Math.min(cy - 16, ext);
+    const ctp_ly = 18;
+    ctx.fillText("ct'", clamp(ctp_lx + 6, 6, W - 32), ctp_ly);
+
+    const xp_rx = W - 6;
+    const xp_ry = cy - β * (W - cx - 6);
+    ctx.fillText("x'", xp_rx - 22, clamp(xp_ry - 6, 18, H - 6));
 
     ctx.restore();
   }
@@ -206,7 +229,7 @@
   function drawLightConeLines(ctx, d) {
     const { W, H, cx, cy } = d;
     ctx.save();
-    ctx.strokeStyle = 'rgba(253,224,71,0.7)';
+    ctx.strokeStyle = 'rgba(253,224,71,0.75)';
     ctx.lineWidth = 1.5;
     ctx.setLineDash([6, 5]);
 
@@ -226,35 +249,121 @@
     ctx.restore();
   }
 
+  /* Hipérbola invariante que pasa por el Evento A: ct² - x² = Δs² */
+  function drawCalibrationHyperbola(ctx, d, event) {
+    const ds2 = event.ct * event.ct - event.x * event.x;
+    if (Math.abs(ds2) < 0.08) return; // muy cerca del cono de luz
+
+    ctx.save();
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([3, 4]);
+
+    if (ds2 > 0) {
+      // Rama superior/inferior: ct = ±√(x² + ds2)
+      ctx.strokeStyle = 'rgba(96,165,250,0.3)';
+      const s = Math.sqrt(ds2);
+      ctx.beginPath();
+      let first = true;
+      for (let x = -RANGE; x <= RANGE; x += 0.1) {
+        const ct = Math.sign(event.ct >= 0 ? 1 : -1) * Math.sqrt(x * x + ds2);
+        const { px, py } = toCanvas(d, x, ct);
+        if (first) { ctx.moveTo(px, py); first = false; }
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    } else {
+      // Rama derecha/izquierda: x = ±√(ct² - ds2)
+      ctx.strokeStyle = 'rgba(192,132,252,0.3)';
+      const absDs2 = -ds2;
+      ctx.beginPath();
+      let first = true;
+      for (let ct = -RANGE; ct <= RANGE; ct += 0.1) {
+        const x = Math.sign(event.x >= 0 ? 1 : -1) * Math.sqrt(ct * ct + absDs2);
+        const { px, py } = toCanvas(d, x, ct);
+        if (first) { ctx.moveTo(px, py); first = false; }
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  function drawEventProjections(ctx, d, event, β) {
+    const { px: epx, py: epy } = toCanvas(d, event.x, event.ct);
+    const { px: px0, py: py0 } = toCanvas(d, 0, 0);
+
+    ctx.save();
+    // ── Proyecciones K (Azul) ──
+    ctx.strokeStyle = 'rgba(96,165,250,0.45)';
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(epx, epy); ctx.lineTo(epx, py0); ctx.stroke(); // hacia eje x
+    ctx.moveTo(epx, epy); ctx.lineTo(px0, epy); ctx.stroke(); // hacia eje ct
+    ctx.setLineDash([]);
+
+    // ── Proyecciones K' (Violeta) ──
+    if (β > 0.005) {
+      const γ = Lorentz.gamma(β);
+      const xp  = γ * (event.x - β * event.ct);
+      const ctp = γ * (event.ct - β * event.x);
+
+      // Proyección paralela a ct' hacia eje x'
+      const x_int_xp = γ * xp;
+      const ct_int_xp = β * x_int_xp;
+      const p_xp = toCanvas(d, x_int_xp, ct_int_xp);
+
+      // Proyección paralela a x' hacia eje ct'
+      const ct_int_ctp = γ * ctp;
+      const x_int_ctp = β * ct_int_ctp;
+      const p_ctp = toCanvas(d, x_int_ctp, ct_int_ctp);
+
+      ctx.strokeStyle = 'rgba(192,132,252,0.55)';
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(epx, epy); ctx.lineTo(p_xp.px, p_xp.py); ctx.stroke();
+      ctx.moveTo(epx, epy); ctx.lineTo(p_ctp.px, p_ctp.py); ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#c084fc';
+      ctx.beginPath(); ctx.arc(p_xp.px, p_xp.py, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(p_ctp.px, p_ctp.py, 3, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+  }
+
   function drawEventDot(ctx, d, event, label, color) {
     const { px, py } = toCanvas(d, event.x, event.ct);
-    if (px < -20 || px > d.W + 20 || py < -20 || py > d.H + 20) return;
+    if (px < -30 || px > d.W + 30 || py < -30 || py > d.H + 30) return;
 
     ctx.save();
 
-    // Halo
-    const grd = ctx.createRadialGradient(px, py, 0, px, py, 14);
-    grd.addColorStop(0, color + 'cc');
+    // Halo luminoso
+    const grd = ctx.createRadialGradient(px, py, 0, px, py, 16);
+    grd.addColorStop(0, color + 'ee');
     grd.addColorStop(1, color + '00');
     ctx.fillStyle = grd;
-    ctx.beginPath(); ctx.arc(px, py, 14, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(px, py, 16, 0, Math.PI * 2); ctx.fill();
 
-    // Punto principal
+    // Punto central
     ctx.fillStyle   = color;
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth   = 1.5;
-    ctx.beginPath(); ctx.arc(px, py, 5.5, 0, Math.PI * 2);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth   = 2;
+    ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI * 2);
     ctx.fill(); ctx.stroke();
 
     // Etiqueta
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 11px monospace';
-    ctx.fillText(label, px + 9, py - 9);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 12px Consolas, monospace';
+    ctx.fillText(label, px + 10, py - 10);
 
     // Coordenadas mini
-    ctx.fillStyle = color + 'cc';
-    ctx.font = '9px monospace';
-    ctx.fillText(`(${event.x.toFixed(1)}, ${event.ct.toFixed(1)})`, px + 9, py + 3);
+    ctx.fillStyle = color;
+    ctx.font = 'bold 10px Consolas, monospace';
+    ctx.fillText(`(${event.x.toFixed(2)}, ${event.ct.toFixed(2)})`, px + 10, py + 4);
 
     ctx.restore();
   }
@@ -266,9 +375,9 @@
     const ext = Math.max(W, H) * 1.5;
 
     ctx.save();
-    ctx.strokeStyle = 'rgba(192,132,252,0.4)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 5]);
+    ctx.strokeStyle = 'rgba(192,132,252,0.45)';
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([4, 4]);
     ctx.beginPath();
     ctx.moveTo(cx - β * ext, cy + ext);
     ctx.lineTo(cx + β * ext, cy - ext);
@@ -283,9 +392,9 @@
 
     ctx.save();
     ctx.strokeStyle = '#fde047';
-    ctx.lineWidth = 1;
-    ctx.globalAlpha = 0.45;
-    ctx.setLineDash([4, 5]);
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.6;
+    ctx.setLineDash([5, 4]);
 
     // Cono futuro
     ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + ext, oy - ext); ctx.stroke();
@@ -295,7 +404,7 @@
     ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox - ext, oy + ext); ctx.stroke();
 
     // Relleno sutil del cono futuro desde A
-    ctx.globalAlpha = 0.04;
+    ctx.globalAlpha = 0.05;
     ctx.fillStyle = '#fde047';
     ctx.beginPath();
     ctx.moveTo(ox, oy);
@@ -322,15 +431,25 @@
 
     ctx.save();
     ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
-    ctx.setLineDash([5, 4]);
-    ctx.globalAlpha = 0.75;
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([6, 4]);
+    ctx.globalAlpha = 0.85;
     ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
     ctx.setLineDash([]);
+
+    // Badge informativo en el centro del vector A→B
+    const mx = (ax + bx) / 2;
+    const my = (ay + by) / 2;
+    ctx.fillStyle = color;
+    ctx.font = 'bold 10px Consolas, monospace';
+    ctx.textAlign = 'center';
+    const extraLabel = type === 'temporal' ? `Δτ = ${fmt(Math.sqrt(Math.max(0, ds2)), 2)}`
+                     : type === 'espacial' ? `ΔL = ${fmt(Math.sqrt(Math.max(0, -ds2)), 2)}`
+                     : `Luz (Δτ = 0)`;
+    ctx.fillText(`Δs² = ${fmt(ds2, 2)} · ${extraLabel}`, mx, my - 8);
+
     ctx.restore();
   }
-
-  // (drawSimultaneityLines eliminada — drawDiagram usa drawSimulLines)
 
   /* ══════════════════════════════════════════════════════════
      FUNCIÓN PRINCIPAL DE DIBUJO
@@ -340,7 +459,7 @@
     const d = dCtx(canvas);
     const { β, A, B } = state;
 
-    // Capas base (siempre)
+    // Capas base
     drawBackground(ctx, d);
     drawGrid(ctx, d);
     drawLightConeRegions(ctx, d);
@@ -351,7 +470,9 @@
     // Capas específicas por modo
     switch (mode) {
       case 'events':
+        drawCalibrationHyperbola(ctx, d, A);
         drawWorldlineKprime(ctx, d, β);
+        drawEventProjections(ctx, d, A, β);
         drawEventDot(ctx, d, A, 'A', '#60a5fa');
         break;
 
@@ -370,47 +491,47 @@
     }
   }
 
-  /* Líneas de simultaneidad completas (versión pública corregida) */
+  /* Líneas de simultaneidad */
   function drawSimulLines(ctx, d, β, A, B) {
     const { W, H } = d;
     const ext = Math.max(W, H) * 1.5;
 
     ctx.save();
-    const events  = [A, B];
-    const lblsK   = ['A', 'B'];
+    const events = [A, B];
+    const lblsK  = ['A', 'B'];
 
     // K: líneas horizontales
     events.forEach((ev, i) => {
       const { py } = toCanvas(d, 0, ev.ct);
       if (py < 0 || py > H) return;
-      ctx.strokeStyle = i === 0 ? 'rgba(96,165,250,0.28)' : 'rgba(96,165,250,0.18)';
+      ctx.strokeStyle = i === 0 ? 'rgba(96,165,250,0.45)' : 'rgba(96,165,250,0.35)';
       ctx.lineWidth = 1.5;
-      ctx.setLineDash([5, 6]);
+      ctx.setLineDash([5, 5]);
       ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(W, py); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = 'rgba(96,165,250,0.6)';
-      ctx.font = '9px monospace';
-      ctx.fillText(`t${lblsK[i]}=${ev.ct.toFixed(1)}`, 4, py - 3);
+      ctx.fillStyle = 'rgba(96,165,250,0.85)';
+      ctx.font = 'bold 10px Consolas, monospace';
+      ctx.fillText(`ct_${lblsK[i]} = ${ev.ct.toFixed(1)} (K)`, 6, py - 4);
     });
 
-    // K': líneas inclinadas (dirección (1, −β) en canvas)
+    // K': líneas inclinadas (pendiente β en ct vs x)
     if (β > 0.005) {
       events.forEach((ev, i) => {
         const { px: epx, py: epy } = toCanvas(d, ev.x, ev.ct);
-        const tp = Lorentz.transform(ev.x, ev.ct, β).t;
-        ctx.strokeStyle = i === 0 ? 'rgba(192,132,252,0.28)' : 'rgba(192,132,252,0.18)';
+        const ctp = Lorentz.transform(ev.x, ev.ct, β).t;
+        ctx.strokeStyle = i === 0 ? 'rgba(192,132,252,0.5)' : 'rgba(192,132,252,0.4)';
         ctx.lineWidth = 1.5;
-        ctx.setLineDash([4, 6]);
+        ctx.setLineDash([5, 5]);
         ctx.beginPath();
         ctx.moveTo(epx - ext, epy + β * ext);
         ctx.lineTo(epx + ext, epy - β * ext);
         ctx.stroke();
         ctx.setLineDash([]);
-        ctx.fillStyle = 'rgba(192,132,252,0.65)';
-        ctx.font = '9px monospace';
-        const lx = clamp(epx + 30, 4, W - 70);
-        const ly = clamp(epy - β * 30 - 4, 10, H - 4);
-        ctx.fillText(`t'${lblsK[i]}=${tp.toFixed(1)}`, lx, ly);
+        ctx.fillStyle = 'rgba(192,132,252,0.9)';
+        ctx.font = 'bold 10px Consolas, monospace';
+        const lx = clamp(epx + 35, 6, W - 90);
+        const ly = clamp(epy - β * 35 - 4, 14, H - 6);
+        ctx.fillText(`ct'_${lblsK[i]} = ${ctp.toFixed(1)} (K')`, lx, ly);
       });
     }
 
