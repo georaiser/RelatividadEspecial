@@ -23,7 +23,7 @@ C = 1  # velocidad de la luz (unidades naturales)
 
 def gamma(beta: float) -> float:
     """Factor de Lorentz γ = 1 / √(1 − β²)"""
-    assert 0 <= beta < 1, f"beta debe estar en [0, 1). Recibido: {beta}"
+    assert abs(beta) < 1, f"|beta| debe ser menor que 1. Recibido: {beta}"
     return 1.0 / math.sqrt(1.0 - beta**2)
 
 

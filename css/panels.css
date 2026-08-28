@@ -465,10 +465,15 @@
 /* Canvas principal del Panel A */
 #anim-canvas {
   width: 100%;
-  height: 280px;
+  min-height: 380px;
   background: #09111e;
   display: block;
   cursor: default;
+}
+@media (max-width: 600px) {
+  #anim-canvas {
+    min-height: 320px;
+  }
 }
 
 /* Controles debajo del canvas */

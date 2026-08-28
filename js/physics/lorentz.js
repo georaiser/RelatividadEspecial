@@ -12,12 +12,13 @@ const Lorentz = (() => {
 
   /**
    * Factor de Lorentz γ para una velocidad β = v/c ∈ [0, 1).
-   * @param {number} beta — velocidad relativa v/c
+   * @param {number} beta — velocidad relativa v/c (|beta| < 1)
    * @returns {number} γ = 1 / √(1 − β²)
    */
   function gamma(beta) {
-    if (beta < 0 || beta >= 1) {
-      throw new RangeError(`beta debe estar en [0, 1). Se recibió: ${beta}`);
+    const absBeta = Math.abs(beta);
+    if (absBeta >= 1) {
+      throw new RangeError(`|beta| debe ser menor que 1. Se recibió: ${beta}`);
     }
     return 1 / Math.sqrt(1 - beta * beta);
   }

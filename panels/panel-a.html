@@ -148,10 +148,17 @@
     <canvas id="anim-canvas"></canvas>
     <div class="anim-controls">
       <span class="anim-label">Velocidad S':</span>
+      <div class="preset-row" id="presets-a-beta" style="margin-bottom:0;">
+        <button class="preset-btn" data-beta="0.10">0.10c</button>
+        <button class="preset-btn active-preset" data-beta="0.60">0.60c</button>
+        <button class="preset-btn" data-beta="0.80">0.80c</button>
+        <button class="preset-btn" data-beta="0.95">0.95c</button>
+      </div>
       <input type="range" id="speed-slider" class="speed-slider"
              min="0" max="0.95" step="0.01" value="0.6" />
       <span id="beta-readout" class="readout">β = 0.60</span>
       <span id="gamma-readout" class="gamma-badge">γ = <span id="gamma-val">1.2500</span></span>
+      <span class="readout k-readout" id="k-readout">k = 2.000</span>
       <button id="btn-play"  class="btn btn-primary"><span class="btn-icon">▶</span> Emitir pulso</button>
       <button id="btn-pause" class="btn btn-secondary" disabled><span class="btn-icon">⏸</span> Pausar</button>
       <button id="btn-reset" class="btn btn-secondary"><span class="btn-icon">↺</span> Reiniciar</button>
@@ -239,6 +246,12 @@
 
     <div class="slider-row">
       <span class="anim-label">u/c =</span>
+      <div class="preset-row" id="presets-a-u" style="margin-bottom:0;">
+        <button class="preset-btn" data-u="0.20">0.20c</button>
+        <button class="preset-btn" data-u="0.50">0.50c</button>
+        <button class="preset-btn active-preset" data-u="0.80">0.80c</button>
+        <button class="preset-btn" data-u="1.00">1.00c (Luz)</button>
+      </div>
       <input type="range" id="u-slider" class="slider-generic" min="0" max="1.0" step="0.01" value="0.8" />
       <span id="u-readout" class="readout">u = 0.80c</span>
     </div>
