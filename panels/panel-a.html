@@ -65,27 +65,33 @@
   ═══════════════════════════════════════════════════════ -->
   <div class="canvas-wrapper">
     <div class="canvas-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-      <span>El Experimento del Vagón de Einstein en 3D (Simultaneidad Relativa)</span>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span>El Experimento del Vagón de Einstein en 3D</span>
+        <div class="exp-selector-bar" id="exp-selector">
+          <button class="exp-btn active-exp" id="btn-exp-flash">💡 1. Destello de Luz (Simultaneidad)</button>
+          <button class="exp-btn" id="btn-exp-probe">🚀 2. Disparar Sonda u' (Composición)</button>
+        </div>
+      </div>
       <div class="cam-selector-bar" id="cam-selector">
-        <span style="font-size:0.75rem;color:var(--color-muted);margin-right:4px;">Sistema de Referencia:</span>
-        <button class="cam-btn active-cam" data-cam="s" id="btn-cam-s">🏢 Sistema S: Andén (Vista 3D 360°)</button>
-        <button class="cam-btn cam-sp" data-cam="sp" id="btn-cam-sp">🚀 Sistema S': Dentro del Vagón (Interior)</button>
+        <span style="font-size:0.75rem;color:var(--color-muted);margin-right:4px;">Sistema:</span>
+        <button class="cam-btn active-cam" data-cam="s" id="btn-cam-s">🏢 Sistema S (Andén 3D)</button>
+        <button class="cam-btn cam-sp" data-cam="sp" id="btn-cam-sp">🚀 Sistema S' (Vagón)</button>
       </div>
     </div>
 
     <!-- Viewport 3D Three.js -->
     <div class="canvas-3d-viewport" id="viewport-3d">
       <div class="hud-3d-cam-label" id="hud-cam-label">
-        <span id="hud-cam-icon">🏢</span> <span id="hud-cam-name">Perspectiva Andén S (Laboratorio en reposo)</span>
+        <span id="hud-cam-icon">🏢</span> <span id="hud-cam-name">Sistema S: Andén en reposo (Vista 3D 360°)</span>
       </div>
       <div class="hud-3d-hint" id="hud-hint">
-        Ves pasar el vagón a +βc · La luz impacta en Det. A antes que en Det. B
+        🖱 Arrastra para rotar 360° · ⚙ Rueda para zoom · El vagón pasa a +βc y los impactos NO son simultáneos
       </div>
     </div>
 
     <!-- Controles de la animación -->
     <div class="anim-controls">
-      <span class="anim-label">Velocidad del vagón (β):</span>
+      <span class="anim-label">Velocidad vagón (β):</span>
       <div class="preset-row" id="presets-a-beta" style="margin-bottom:0;">
         <button class="preset-btn" data-beta="0.10">0.10c</button>
         <button class="preset-btn active-preset" data-beta="0.60">0.60c</button>
@@ -97,14 +103,22 @@
       <span id="beta-readout" class="readout">β = 0.60</span>
       <span id="gamma-readout" class="gamma-badge">γ = <span id="gamma-val">1.2500</span></span>
       <span class="readout k-readout" id="k-readout">k = 2.000</span>
+
+      <!-- Control de velocidad de la sonda u' (modo composición) -->
+      <div id="probe-control-wrap" style="display:none;align-items:center;gap:6px;border-left:1px solid var(--color-border);padding-left:10px;">
+        <span class="anim-label" style="color:var(--color-accent-2);">Sonda (u'):</span>
+        <input type="range" id="probe-u-slider" class="speed-slider" min="0.1" max="1.0" step="0.05" value="0.5" style="width:80px;" />
+        <span id="probe-u-readout" class="readout" style="color:var(--color-accent-2);">u' = 0.50c</span>
+      </div>
+
       <button id="btn-play"  class="btn btn-primary"><span class="btn-icon">▶</span> Emitir flash</button>
       <button id="btn-pause" class="btn btn-secondary" disabled><span class="btn-icon">⏸</span> Pausar</button>
       <button id="btn-reset" class="btn btn-secondary"><span class="btn-icon">↺</span> Reiniciar</button>
     </div>
   </div>
 
-  <!-- Tarjetas de lectura de simultaneidad en tiempo real S y S' -->
-  <div class="obs-grid">
+  <!-- 1. Tarjetas de lectura de SIMULTANEIDAD (Modo Flash de luz) -->
+  <div class="obs-grid" id="cards-simultaneity">
     <!-- Vagón S' -->
     <div class="obs-card sp-card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xs);">
@@ -148,6 +162,24 @@
     </div>
   </div>
 
+  <!-- 2. Tarjetas de lectura de COMPOSICIÓN DE VELOCIDADES (Modo Sonda / Proyectil) -->
+  <div class="vadd-grid" id="cards-composition" style="display:none;margin-top:var(--space-md);">
+    <div class="vadd-card galileo">
+      <div class="vadd-label">🏛️ Predicción Clásica de Galileo ✗</div>
+      <div class="vadd-formula">u = u' + v</div>
+      <div class="vadd-result" id="vadd-galileo">—</div>
+      <div class="vadd-bar-track"><div class="vadd-bar-fill" id="vadd-bar-g" style="width:0%"></div></div>
+      <div class="vadd-warning" id="vadd-g-warn"></div>
+    </div>
+    <div class="vadd-card lorentz">
+      <div class="vadd-label">⚡ Realidad Relativista de Einstein (Lorentz) ✓</div>
+      <div class="vadd-formula">u = (u' + v) / (1 + u'·v/c²)</div>
+      <div class="vadd-result" id="vadd-lorentz">—</div>
+      <div class="vadd-bar-track"><div class="vadd-bar-fill" id="vadd-bar-l" style="width:80%"></div></div>
+      <div class="vadd-warning" id="vadd-l-note"></div>
+    </div>
+  </div>
+
   <div class="insight-box" style="margin-top:var(--space-md);margin-bottom:var(--space-xl);">
     <div class="insight-title">💡 La clave de la Relatividad: ¿Por qué la simultaneidad no es absoluta?</div>
     <div style="display:flex;flex-direction:column;gap:var(--space-sm);font-size:0.88rem;line-height:1.6;margin-top:var(--space-xs);">
@@ -164,67 +196,12 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
-       HERO 2 — CALCULADORA DE ADICIÓN DE VELOCIDADES
+       COMPARACIÓN TEÓRICA Y RESUMEN INVARIANTE
   ═══════════════════════════════════════════════════════ -->
   <hr class="divider" />
-  <h3 class="section-heading">Composición de velocidades: Galileo vs. Lorentz</h3>
-
-  <div class="info-box" style="padding:var(--space-lg);margin-bottom:var(--space-xl);">
-    <div class="slider-row">
-      <span class="anim-label">Velocidad del objeto en S (u):</span>
-      <div class="preset-row" id="presets-a-u" style="margin-bottom:0;">
-        <button class="preset-btn" data-u="0.20">0.20c</button>
-        <button class="preset-btn" data-u="0.50">0.50c</button>
-        <button class="preset-btn active-preset" data-u="0.80">0.80c</button>
-        <button class="preset-btn" data-u="1.00">1.00c (Luz)</button>
-      </div>
-      <input type="range" id="u-slider" class="slider-generic" min="0" max="1.0" step="0.01" value="0.8" />
-      <span id="u-readout" class="readout">u = 0.80c</span>
-    </div>
-
-    <div class="vadd-grid">
-      <div class="vadd-card galileo">
-        <div class="vadd-label">Galileo (Clásico) ✗</div>
-        <div class="vadd-formula">u' = u − v</div>
-        <div class="vadd-result" id="vadd-galileo">—</div>
-        <div class="vadd-bar-track"><div class="vadd-bar-fill" id="vadd-bar-g" style="width:0%"></div></div>
-        <div class="vadd-warning" id="vadd-g-warn"></div>
-      </div>
-      <div class="vadd-card lorentz">
-        <div class="vadd-label">Einstein (Relativista) ✓</div>
-        <div class="vadd-formula">u' = (u − v) / (1 − u·v/c²)</div>
-        <div class="vadd-result" id="vadd-lorentz">—</div>
-        <div class="vadd-bar-track"><div class="vadd-bar-fill" id="vadd-bar-l" style="width:80%"></div></div>
-        <div class="vadd-warning" id="vadd-l-note"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════
-       CONTEXTO HISTÓRICO Y COMPARACIÓN TEÓRICA (Compacto)
-  ═══════════════════════════════════════════════════════ -->
-  <hr class="divider" />
-  <h3 class="section-heading">Fundamento histórico y teórico</h3>
+  <h3 class="section-heading">Fundamento teórico: Galileo vs. Lorentz</h3>
 
   <div class="two-col" style="margin-bottom:var(--space-lg);">
-    <!-- Experimento Michelson-Morley -->
-    <div class="info-box" style="margin-bottom:0;">
-      <h3>Experimento de Michelson–Morley (1887)</h3>
-      <p style="font-size:0.86rem;margin-bottom:var(--space-sm);">
-        Buscaba medir el "viento de éter" (movimiento terrestre a ~30 km/s).
-        El resultado fue nulo, demostrando que <code>c</code> es independiente del movimiento.
-      </p>
-      <div class="mm-result" style="padding:var(--space-md);margin-top:0;">
-        <div class="mm-bar-wrap">
-          <div class="mm-bar-label">Predicho clásico (ΔN = 0.373)</div>
-          <div class="mm-bar-track"><div class="mm-bar-fill predicted"></div></div>
-          <div class="mm-bar-label" style="margin-top:var(--space-xs);">Observado real (ΔN &lt; 0.01)</div>
-          <div class="mm-bar-track"><div class="mm-bar-fill observed"></div></div>
-          <div class="mm-verdict" style="color:var(--color-success);font-size:0.8rem;margin-top:4px;">Resultado: ΔN ≈ 0 ✓</div>
-        </div>
-      </div>
-    </div>
-
     <!-- Transformaciones comparadas -->
     <div class="comparison-grid">
       <div class="transform-box galileo" style="padding:var(--space-md);">
@@ -251,51 +228,27 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Resumen: Cambios vs Invariantes -->
-  <div class="two-col" style="margin-bottom:var(--space-lg);">
-    <div class="info-box compact-box" style="margin-bottom:0;">
-      <h3>Lo que cambia entre observadores</h3>
-      <ul class="summary-list" style="font-size:0.84rem;gap:4px;">
-        <li>Coordenadas (x, t) de un evento</li>
-        <li>Simultaneidad espacial</li>
-        <li>Duración de intervalos temporales (dilatación)</li>
-        <li>Longitud medida de objetos (contracción)</li>
-      </ul>
-    </div>
-    <div class="info-box accent-green compact-box" style="margin-bottom:0;">
-      <h3>Lo que permanece invariante</h3>
-      <ul class="summary-list" style="font-size:0.84rem;gap:4px;">
-        <li>Rapidez de la luz: c en todo sistema inercial</li>
-        <li>Intervalo espacio-temporal: Δs² = c²Δt² − Δx²</li>
-        <li>Leyes físicas y orden causal</li>
-        <li>Carga eléctrica y masa en reposo</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Evidencias experimentales compactas -->
-  <div class="evidence-grid" style="margin-bottom:var(--space-lg);">
-    <div class="evidence-card" style="padding:var(--space-sm) var(--space-md);">
-      <div class="ev-year">1938 · Ives–Stilwell</div>
-      <div class="ev-title" style="font-size:0.82rem;">Doppler transverso</div>
-      <div class="ev-body" style="font-size:0.76rem;">Confirmación de dilatación temporal en iones rápidos con 1% de error.</div>
-    </div>
-    <div class="evidence-card" style="padding:var(--space-sm) var(--space-md);">
-      <div class="ev-year">1941 · Rossi–Hall</div>
-      <div class="ev-title" style="font-size:0.82rem;">Muones atmosféricos</div>
-      <div class="ev-body" style="font-size:0.76rem;">Con γ ≈ 10 viajan 10 km antes de desintegrarse (clásicamente solo 660 m).</div>
-    </div>
-    <div class="evidence-card" style="padding:var(--space-sm) var(--space-md);">
-      <div class="ev-year">1971 · Hafele–Keating</div>
-      <div class="ev-title" style="font-size:0.82rem;">Relojes atómicos</div>
-      <div class="ev-body" style="font-size:0.76rem;">Desfase de ~200 ns en aviones comerciales confirmado con precisión.</div>
-    </div>
-    <div class="evidence-card" style="padding:var(--space-sm) var(--space-md);">
-      <div class="ev-year">GPS actual</div>
-      <div class="ev-title" style="font-size:0.82rem;">Satélites GPS</div>
-      <div class="ev-body" style="font-size:0.76rem;">Corrección relativista diaria de +38.4 μs para evitar desvíos de >10 km/día.</div>
+    <!-- Resumen: Cambios vs Invariantes -->
+    <div style="display:flex;flex-direction:column;gap:var(--space-sm);">
+      <div class="info-box compact-box" style="margin-bottom:0;">
+        <h3>Lo que cambia entre observadores</h3>
+        <ul class="summary-list" style="font-size:0.84rem;gap:4px;">
+          <li>Coordenadas (x, t) de un evento</li>
+          <li>Simultaneidad espacial</li>
+          <li>Duración de intervalos temporales (dilatación)</li>
+          <li>Longitud medida de objetos (contracción)</li>
+        </ul>
+      </div>
+      <div class="info-box accent-green compact-box" style="margin-bottom:0;">
+        <h3>Lo que permanece invariante</h3>
+        <ul class="summary-list" style="font-size:0.84rem;gap:4px;">
+          <li>Rapidez de la luz: c en todo sistema inercial</li>
+          <li>Intervalo espacio-temporal: Δs² = c²Δt² − Δx²</li>
+          <li>Leyes físicas y orden causal</li>
+          <li>Carga eléctrica y masa en reposo</li>
+        </ul>
+      </div>
     </div>
   </div>
 
