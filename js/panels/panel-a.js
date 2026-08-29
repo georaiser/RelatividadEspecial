@@ -720,10 +720,11 @@
       probeControlWrap.style.display = (exp === 'probe') ? 'inline-flex' : 'none';
     }
 
-    const cardsSimul = document.getElementById('cards-simultaneity');
-    const cardsComp  = document.getElementById('cards-composition');
-    if (cardsSimul) cardsSimul.style.display = (exp === 'flash') ? 'grid' : 'none';
-    if (cardsComp)  cardsComp.style.display  = (exp === 'probe') ? 'grid' : 'none';
+    const secFlash = document.getElementById('section-flash-mode');
+    const secProbe = document.getElementById('section-probe-mode');
+
+    if (secFlash) secFlash.style.display = (exp === 'flash') ? 'block' : 'none';
+    if (secProbe) secProbe.style.display = (exp === 'probe') ? 'block' : 'none';
 
     if (exp === 'flash') {
       btnPlay.innerHTML = '<span class="btn-icon">▶</span> Emitir flash';
@@ -789,6 +790,7 @@
         badgeSp.textContent = 'En espera';
         badgeS.className = 'train-status-badge waiting';
         badgeS.textContent = 'En espera';
+        updateTheoryCalculations();
         return;
       }
 
@@ -840,33 +842,77 @@
         badgeS.textContent = 'En vuelo...';
       }
 
-    // ── MODO 2: DISPARAR SONDA (Composición) ───────────────
+    // ── MODO 2: DISPARAR SONDA (Composición FUSIONADA) ─────
     } else if (state.expMode === 'probe') {
       const uPrime = state.probeU;
       const v = β;
       const uLorentz = (uPrime + v) / (1 + uPrime * v);
       const uGalileo = uPrime + v;
+      const denom = 1 + uPrime * v;
 
-      // Actualizar tarjetas dedicadas de Composición de Velocidades (Galileo vs. Lorentz)
+      // Actualizar tarjetas dedicadas FUSIONADAS de Composición de Velocidades (Galileo vs. Lorentz)
+      const vaddGSub = document.getElementById('vadd-g-sub');
+      const vaddLSub = document.getElementById('vadd-l-sub');
+
+      if (vaddGSub) vaddGSub.textContent = `${uPrime.toFixed(2)}c + ${v.toFixed(2)}c`;
+      if (vaddLSub) {
+        vaddLSub.innerHTML = `<span class="mini-frac"><span class="mf-num">${uPrime.toFixed(2)} + ${v.toFixed(2)}</span><span class="mf-denom">1 + ${(uPrime * v).toFixed(2)}</span></span> c = <span class="mini-frac"><span class="mf-num">${(uPrime + v).toFixed(2)}</span><span class="mf-denom">${denom.toFixed(3)}</span></span> c`;
+      }
+
       if (vaddG) vaddG.textContent = uGalileo.toFixed(4) + ' c';
       if (vaddL) vaddL.textContent = uLorentz.toFixed(4) + ' c';
       if (vaddBarG) vaddBarG.style.width = Math.min((uGalileo / 1.5) * 100, 100) + '%';
-      if (vaddBarL) vaddBarL.style.width = (uLorentz * 100) + '%';
+      if (vaddBarL) vaddBarL.style.width = Math.min((uLorentz / 1.5) * 100, 100) + '%';
 
       if (vaddGWarn) {
         if (uGalileo > 1.0) {
-          vaddGWarn.innerHTML = `⚠ u = ${uPrime.toFixed(2)}c + ${v.toFixed(2)}c = <strong>${uGalileo.toFixed(2)}c &gt; c</strong> — ¡Supera la velocidad de la luz (falla física)!`;
+          vaddGWarn.innerHTML = `⚠ <strong>¡Falla física! u = ${uGalileo.toFixed(2)}c &gt; c</strong> — Supera la velocidad límite y viola la causalidad.`;
         } else {
-          vaddGWarn.innerHTML = `u = ${uPrime.toFixed(2)}c + ${v.toFixed(2)}c = <strong>${uGalileo.toFixed(4)}c</strong> (predicción lineal clásica).`;
+          vaddGWarn.innerHTML = `u = ${uGalileo.toFixed(4)}c (predicción lineal clásica sin límite relativista).`;
         }
       }
 
       if (vaddLNote) {
         if (Math.abs(uPrime - 1.0) < 0.001) {
-          vaddLNote.innerHTML = `✓ Para la luz (u'=c): u = (c+v)/(1+v/c) = <strong>1.0000c</strong> siempre.`;
+          vaddLNote.innerHTML = `✓ Para la luz (u'=c): u = (c + v) / (1 + v/c) = <strong>1.0000c</strong> invariable en todo sistema.`;
         } else {
-          vaddLNote.innerHTML = `✓ u = (${uPrime.toFixed(2)} + ${v.toFixed(2)}) / (1 + ${(uPrime * v).toFixed(3)}) c = <strong>${uLorentz.toFixed(4)}c &lt; c</strong>.`;
+          vaddLNote.innerHTML = `✓ El denominador (1 + u'v/c² = ${denom.toFixed(3)}) frena la suma asegurando <strong>u = ${uLorentz.toFixed(4)}c &lt; c</strong>.`;
         }
+      }
+    }
+
+    // ── Actualizar desgloses numéricos en las cajas de Fundamento Teórico ──
+    updateTheoryCalculations();
+  }
+
+  function updateTheoryCalculations() {
+    const β = state.beta;
+    const k = bondik(β);
+
+    // 1. Modo Simultaneidad
+    const tImpactSp = T_EMIT; // 1.00 s
+    const tImpactSA = T_EMIT / k;
+    const tImpactSB = T_EMIT * k;
+    const dtS = tImpactSB - tImpactSA;
+
+    const calcGTa = document.getElementById('calc-g-ta');
+    const calcGTb = document.getElementById('calc-g-tb');
+    const calcGDt = document.getElementById('calc-g-dt');
+    const calcLTa = document.getElementById('calc-l-ta');
+    const calcLTb = document.getElementById('calc-l-tb');
+    const calcLDt = document.getElementById('calc-l-dt');
+
+    if (calcGTa) calcGTa.textContent = `${tImpactSp.toFixed(2)} s`;
+    if (calcGTb) calcGTb.textContent = `${tImpactSp.toFixed(2)} s`;
+    if (calcGDt) calcGDt.textContent = `Δt = 0.00 s (Simultáneos)`;
+
+    if (calcLTa) calcLTa.textContent = `${tImpactSA.toFixed(2)} s`;
+    if (calcLTb) calcLTb.textContent = `${tImpactSB.toFixed(2)} s`;
+    if (calcLDt) {
+      if (β < 0.005) {
+        calcLDt.textContent = `Δt = 0.00 s (En reposo)`;
+      } else {
+        calcLDt.textContent = `Δt = ${dtS.toFixed(2)} s (No simultáneos)`;
       }
     }
   }
@@ -913,10 +959,28 @@
     });
   }
 
+  if (presetsUEl) {
+    presetsUEl.querySelectorAll('.btn-preset-u').forEach(btn => {
+      btn.addEventListener('click', () => {
+        presetsUEl.querySelectorAll('.btn-preset-u').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.probeU = parseFloat(btn.dataset.u);
+        if (probeUSlider) probeUSlider.value = state.probeU;
+        if (probeUReadout) probeUReadout.textContent = `u' = ${state.probeU.toFixed(2)}c`;
+        updateReadouts();
+      });
+    });
+  }
+
   if (probeUSlider) {
     probeUSlider.addEventListener('input', () => {
       state.probeU = parseFloat(probeUSlider.value);
       if (probeUReadout) probeUReadout.textContent = `u' = ${state.probeU.toFixed(2)}c`;
+      if (presetsUEl) {
+        presetsUEl.querySelectorAll('.btn-preset-u').forEach(b => {
+          b.classList.toggle('active', Math.abs(parseFloat(b.dataset.u) - state.probeU) < 0.01);
+        });
+      }
       updateReadouts();
     });
   }

@@ -117,134 +117,286 @@
     </div>
   </div>
 
-  <!-- 1. Tarjetas de lectura de SIMULTANEIDAD (Modo Flash de luz) -->
-  <div class="obs-grid" id="cards-simultaneity">
-    <!-- Vagón S' -->
-    <div class="obs-card sp-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xs);">
-        <h4>🚀 Sistema S' (Pasajero en el vagón)</h4>
-        <span class="train-status-badge waiting" id="badge-sp">En espera</span>
+  <!-- ═══════════════════════════════════════════════════════
+       MODO 1: SIMULTANEIDAD (Destello de luz en el vagón)
+  ═══════════════════════════════════════════════════════ -->
+  <div id="section-flash-mode">
+    <!-- 1. Tarjetas de lectura de SIMULTANEIDAD -->
+    <div class="obs-grid" id="cards-simultaneity">
+      <!-- Vagón S' -->
+      <div class="obs-card sp-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xs);">
+          <h4>🚀 Sistema S' (Pasajero en el vagón)</h4>
+          <span class="train-status-badge waiting" id="badge-sp">En espera</span>
+        </div>
+        <div class="obs-row">
+          <span class="obs-key">Impacto Detector Trasero (A)</span>
+          <span class="obs-val" id="obs-sp-a">—</span>
+        </div>
+        <div class="obs-row">
+          <span class="obs-key">Impacto Detector Delantero (B)</span>
+          <span class="obs-val" id="obs-sp-b">—</span>
+        </div>
+        <div class="obs-row">
+          <span class="obs-key">Diferencia temporal (Δt')</span>
+          <span class="obs-val" id="obs-sp-dt">—</span>
+        </div>
+        <div class="obs-speed-row" id="obs-sp-verdict">Pulsa "Emitir flash" para iniciar</div>
       </div>
-      <div class="obs-row">
-        <span class="obs-key">Impacto Detector Trasero (A)</span>
-        <span class="obs-val" id="obs-sp-a">—</span>
+
+      <!-- Andén S -->
+      <div class="obs-card s-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xs);">
+          <h4>🏢 Sistema S (Observador en el andén)</h4>
+          <span class="train-status-badge waiting" id="badge-s">En espera</span>
+        </div>
+        <div class="obs-row">
+          <span class="obs-key">Impacto Detector Trasero (A)</span>
+          <span class="obs-val" id="obs-s-a">—</span>
+        </div>
+        <div class="obs-row">
+          <span class="obs-key">Impacto Detector Delantero (B)</span>
+          <span class="obs-val" id="obs-s-b">—</span>
+        </div>
+        <div class="obs-row">
+          <span class="obs-key">Diferencia temporal (Δt)</span>
+          <span class="obs-val" id="obs-s-dt">—</span>
+        </div>
+        <div class="obs-speed-row" id="obs-s-verdict">Pulsa "Emitir flash" para iniciar</div>
       </div>
-      <div class="obs-row">
-        <span class="obs-key">Impacto Detector Delantero (B)</span>
-        <span class="obs-val" id="obs-sp-b">—</span>
-      </div>
-      <div class="obs-row">
-        <span class="obs-key">Diferencia temporal (Δt')</span>
-        <span class="obs-val" id="obs-sp-dt">—</span>
-      </div>
-      <div class="obs-speed-row" id="obs-sp-verdict">Pulsa "Emitir flash" para iniciar</div>
     </div>
 
-    <!-- Andén S -->
-    <div class="obs-card s-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xs);">
-        <h4>🏢 Sistema S (Observador en el andén)</h4>
-        <span class="train-status-badge waiting" id="badge-s">En espera</span>
-      </div>
-      <div class="obs-row">
-        <span class="obs-key">Impacto Detector Trasero (A)</span>
-        <span class="obs-val" id="obs-s-a">—</span>
-      </div>
-      <div class="obs-row">
-        <span class="obs-key">Impacto Detector Delantero (B)</span>
-        <span class="obs-val" id="obs-s-b">—</span>
-      </div>
-      <div class="obs-row">
-        <span class="obs-key">Diferencia temporal (Δt)</span>
-        <span class="obs-val" id="obs-s-dt">—</span>
-      </div>
-      <div class="obs-speed-row" id="obs-s-verdict">Pulsa "Emitir flash" para iniciar</div>
-    </div>
-  </div>
+    <!-- 2. Fundamento Teórico del Destello de Luz (Galileo vs. Lorentz) -->
+    <div id="theory-simultaneity" style="margin-top:var(--space-md);">
+      <h3 class="section-heading">Fundamento teórico: Simultaneidad y Tiempos de Impacto (Galileo vs. Lorentz)</h3>
+      <div class="comparison-grid" style="margin-bottom:var(--space-md);">
+        <div class="transform-box galileo" style="padding:var(--space-md);">
+          <h4>Galileo (Tiempo Absoluto Clásico)</h4>
+          <div class="transform-eq" style="font-size:0.82rem;line-height:1.6;">
+            <div><strong>Fórmula:</strong> t' = t &ensp;⇒&ensp; t<sub>A</sub> = t<sub>B</sub> = L₀/c</div>
+            <div style="margin-top:6px;padding:6px;background:rgba(255,255,255,0.03);border-radius:var(--radius-sm);">
+              <div>Impacto A en S: <span id="calc-g-ta" style="font-family:var(--font-mono);font-weight:600;">1.00 s</span></div>
+              <div>Impacto B en S: <span id="calc-g-tb" style="font-family:var(--font-mono);font-weight:600;">1.00 s</span></div>
+              <div style="color:var(--color-muted);font-weight:700;margin-top:2px;">Desfase: <span id="calc-g-dt">Δt = 0.00 s (Simultáneos)</span></div>
+            </div>
+          </div>
+          <div class="transform-problem" style="font-size:0.75rem;margin-top:8px;">
+            ⚠ Asume que la velocidad de la luz se suma con la del vagón (c ± v), violando el 2.º postulado de Einstein.
+          </div>
+        </div>
 
-  <!-- 2. Tarjetas de lectura de COMPOSICIÓN DE VELOCIDADES (Modo Sonda / Proyectil) -->
-  <div class="vadd-grid" id="cards-composition" style="display:none;margin-top:var(--space-md);">
-    <div class="vadd-card galileo">
-      <div class="vadd-label">🏛️ Predicción Clásica de Galileo ✗</div>
-      <div class="vadd-formula">u = u' + v</div>
-      <div class="vadd-result" id="vadd-galileo">—</div>
-      <div class="vadd-bar-track"><div class="vadd-bar-fill" id="vadd-bar-g" style="width:0%"></div></div>
-      <div class="vadd-warning" id="vadd-g-warn"></div>
+        <div class="transform-box lorentz-box" style="padding:var(--space-md);">
+          <h4>Lorentz / Einstein (Simultaneidad Relativa Real)</h4>
+          <div class="transform-eq" style="font-size:0.82rem;line-height:1.6;">
+            <div><strong>Fórmula:</strong> t<sub>A</sub> = (L₀/c)/k, &ensp; t<sub>B</sub> = (L₀/c)·k, &ensp; k = √((1+β)/(1−β))</div>
+            <div style="margin-top:6px;padding:6px;background:rgba(79,158,255,0.06);border-radius:var(--radius-sm);">
+              <div>Impacto A (trasero): <span id="calc-l-ta" style="font-family:var(--font-mono);font-weight:600;color:var(--color-accent);">0.50 s</span></div>
+              <div>Impacto B (delantero): <span id="calc-l-tb" style="font-family:var(--font-mono);font-weight:600;color:var(--color-accent-2);">2.00 s</span></div>
+              <div style="color:var(--color-success);font-weight:700;margin-top:2px;">Desfase real: <span id="calc-l-dt">Δt = 1.50 s (No simultáneos)</span></div>
+            </div>
+          </div>
+          <div class="consequence" style="font-size:0.75rem;margin-top:8px;">
+            ✓ Como c es invariante, la luz viaja a c para ambos observadores obligando a que el tiempo se desincronice.
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="vadd-card lorentz">
-      <div class="vadd-label">⚡ Realidad Relativista de Einstein (Lorentz) ✓</div>
-      <div class="vadd-formula">u = (u' + v) / (1 + u'·v/c²)</div>
-      <div class="vadd-result" id="vadd-lorentz">—</div>
-      <div class="vadd-bar-track"><div class="vadd-bar-fill" id="vadd-bar-l" style="width:80%"></div></div>
-      <div class="vadd-warning" id="vadd-l-note"></div>
-    </div>
-  </div>
 
-  <div class="insight-box" style="margin-top:var(--space-md);margin-bottom:var(--space-xl);">
-    <div class="insight-title">💡 La clave de la Relatividad: ¿Por qué la simultaneidad no es absoluta?</div>
-    <div style="display:flex;flex-direction:column;gap:var(--space-sm);font-size:0.88rem;line-height:1.6;margin-top:var(--space-xs);">
-      <p style="margin:0;">
-        <strong style="color:var(--color-accent-2);">1. En el vagón (S' en reposo propio):</strong> La bombilla está exactamente en el centro y las paredes están a la misma distancia <code>L₀</code>. Como la luz viaja a rapidez <code>c</code> en ambas direcciones, alcanza los detectores A y B <strong>al mismo tiempo exacto (simultáneos, Δt' = 0)</strong>.
-      </p>
-      <p style="margin:0;">
-        <strong style="color:var(--color-accent);">2. En el andén (S ve pasar el vagón a +β·c):</strong> La luz también viaja a rapidez <code>c</code> en ambas direcciones. Pero mientras la luz viaja, el detector trasero A <em>avanza al encuentro</em> de la luz (recorre menos distancia), mientras el detector delantero B <em>se aleja huyendo</em> de la luz. Por tanto, la luz impacta en A <strong>antes</strong> que en B (<code>t_A &lt; t_B</code>, <strong>no simultáneos</strong>).
-      </p>
-      <p style="margin:0;">
-        <strong style="color:var(--color-success);">3. Conclusión fundamental:</strong> Ambos observadores tienen razón en su propio sistema de referencia. La constancia de la velocidad de la luz <code>c</code> exige que <strong>dos sucesos que son simultáneos para un observador, NO lo sean para otro que se mueve respecto a él</strong>.
-      </p>
+    <!-- 3. Insight de Simultaneidad -->
+    <div class="insight-box" id="insight-simultaneity" style="margin-top:var(--space-md);margin-bottom:var(--space-xl);">
+      <div class="insight-title">💡 La clave de la Relatividad: ¿Por qué la simultaneidad no es absoluta?</div>
+      <div style="display:flex;flex-direction:column;gap:var(--space-sm);font-size:0.88rem;line-height:1.6;margin-top:var(--space-xs);">
+        <p style="margin:0;">
+          <strong style="color:var(--color-accent-2);">1. En el vagón (S' en reposo propio):</strong> La bombilla está exactamente en el centro y las paredes están a la misma distancia <code>L₀</code>. Como la luz viaja a rapidez <code>c</code> en ambas direcciones, alcanza los detectores A y B <strong>al mismo tiempo exacto (simultáneos, Δt' = 0)</strong>.
+        </p>
+        <p style="margin:0;">
+          <strong style="color:var(--color-accent);">2. En el andén (S ve pasar el vagón a +β·c):</strong> La luz también viaja a rapidez <code>c</code> en ambas direcciones. Pero mientras la luz viaja, el detector trasero A <em>avanza al encuentro</em> de la luz (recorre menos distancia), mientras el detector delantero B <em>se aleja huyendo</em> de la luz. Por tanto, la luz impacta en A <strong>antes</strong> que en B (<code>t_A &lt; t_B</code>, <strong>no simultáneos</strong>).
+        </p>
+        <p style="margin:0;">
+          <strong style="color:var(--color-success);">3. Conclusión fundamental:</strong> Ambos observadores tienen razón en su propio sistema de referencia. La constancia de la velocidad de la luz <code>c</code> exige que <strong>dos sucesos que son simultáneos para un observador, NO lo sean para otro que se mueve respecto a él</strong>.
+        </p>
+      </div>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
-       COMPARACIÓN TEÓRICA Y RESUMEN INVARIANTE
+       MODO 2: COMPOSICIÓN DE VELOCIDADES (Disparo de sonda u')
   ═══════════════════════════════════════════════════════ -->
-  <hr class="divider" />
-  <h3 class="section-heading">Fundamento teórico: Galileo vs. Lorentz</h3>
-
-  <!-- Transformaciones comparadas -->
-  <div class="comparison-grid" style="margin-bottom:var(--space-md);">
-    <div class="transform-box galileo" style="padding:var(--space-md);">
-      <h4>Galileo (Clásico)</h4>
-      <div class="transform-eq" style="font-size:0.8rem;line-height:1.6;">
-        x' = x − v·t<br/>
-        t' = t (tiempo absoluto)<br/>
-        u = u' + v
+  <div id="section-probe-mode" style="display:none;">
+    <!-- Encabezado con selector rápido de u' -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-top:var(--space-md);margin-bottom:var(--space-xs);">
+      <div>
+        <h3 class="section-heading" style="margin:0;">Arena Comparativa: Ley de Composición de Velocidades</h3>
+        <p style="font-size:0.8rem;color:var(--color-text-dim);margin:2px 0 0 0;">
+          Un objeto viaja a rapidez propia <strong style="color:var(--color-accent-2);">u'</strong> en el vagón, mientras el vagón se desplaza a <strong style="color:var(--color-accent);">v = β·c</strong> respecto al andén.
+        </p>
       </div>
-      <div class="transform-problem" style="font-size:0.75rem;margin-top:6px;">
-        ⚠ u_luz = c + v ≠ c (falla físico)
+      <!-- Presets de u' -->
+      <div id="presets-a-u" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.03);padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--color-border);">
+        <span style="font-size:0.75rem;color:var(--color-muted);font-weight:600;">Sonda u':</span>
+        <button type="button" class="btn-preset-u" data-u="0.2">0.20c</button>
+        <button type="button" class="btn-preset-u active" data-u="0.5">0.50c</button>
+        <button type="button" class="btn-preset-u" data-u="0.8">0.80c</button>
+        <button type="button" class="btn-preset-u" data-u="1.0">1.00c (Luz)</button>
       </div>
     </div>
 
-    <div class="transform-box lorentz-box" style="padding:var(--space-md);">
-      <h4>Lorentz / Einstein (Relativista)</h4>
-      <div class="transform-eq" style="font-size:0.8rem;line-height:1.6;">
-        x' = γ(x − βct)<br/>
-        t' = γ(t − βx/c)<br/>
-        u = (u' + v) / (1 + u'·v/c²)
+    <!-- Grid comparativo -->
+    <div class="vadd-grid" id="cards-composition" style="margin-top:var(--space-xs);">
+      <!-- Galileo -->
+      <div class="vadd-card galileo" style="display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div class="vadd-header">
+            <div class="vadd-title-group">
+              <span class="vadd-icon">🏛️</span>
+              <div>
+                <h4 class="vadd-title">Predicción Clásica de Galileo</h4>
+                <span class="vadd-subtitle">Adición vectorial simple (Tiempo Absoluto)</span>
+              </div>
+            </div>
+            <span class="vadd-badge badge-danger">✗ Falla física</span>
+          </div>
+
+          <!-- Ecuación algebraica -->
+          <div class="math-display-box">
+            <div class="math-eq">
+              <span class="math-var">u</span> = <span class="math-var">u'</span> + <span class="math-var">v</span>
+            </div>
+          </div>
+
+          <!-- Sustitución y Resultado en vivo -->
+          <div class="calc-steps-box">
+            <div class="calc-step-row">
+              <span class="calc-step-label">Sustitución:</span>
+              <span class="calc-step-val" id="vadd-g-sub">0.50c + 0.60c</span>
+            </div>
+            <div class="calc-result-row">
+              <span class="calc-result-label">Velocidad en S:</span>
+              <span class="calc-result-num text-danger" id="vadd-galileo">1.1000 c</span>
+            </div>
+          </div>
+
+          <!-- Gauge de velocidad con línea límite c = 1.0 -->
+          <div class="vadd-gauge">
+            <div class="gauge-track">
+              <div class="gauge-fill fill-danger" id="vadd-bar-g" style="width:73.3%;"></div>
+              <div class="gauge-limit-mark">
+                <span class="gauge-limit-label">c = 1.0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Diagnóstico y advertencia física -->
+          <div class="vadd-verdict verdict-danger" id="vadd-g-warn">
+            ⚠ ¡Falla física! u = 1.10c &gt; c — Supera la velocidad límite y viola la causalidad.
+          </div>
+        </div>
+
+        <div style="font-size:0.75rem;color:var(--color-muted);margin-top:8px;border-top:1px solid rgba(255,255,255,0.05);padding-top:6px;">
+          Asume tiempo absoluto ($t'=t$). Falla porque si <code>u'=c</code> daría <code>u = c + v &gt; c</code> (incompatible con electromagnetismo).
+        </div>
       </div>
-      <div class="consequence" style="font-size:0.75rem;margin-top:6px;">
-        ✓ Si u' = c → u = c siempre (invariante)
+
+      <!-- Lorentz / Einstein -->
+      <div class="vadd-card lorentz" style="display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div class="vadd-header">
+            <div class="vadd-title-group">
+              <span class="vadd-icon">⚡</span>
+              <div>
+                <h4 class="vadd-title">Realidad Relativista de Einstein</h4>
+                <span class="vadd-subtitle">Transformación de Lorentz (Espacio-Tiempo Dinámico)</span>
+              </div>
+            </div>
+            <span class="vadd-badge badge-success">✓ Realidad física</span>
+          </div>
+
+          <!-- Ecuación algebraica con fracción CSS real -->
+          <div class="math-display-box">
+            <div class="math-fraction-eq">
+              <span class="math-var">u</span> = 
+              <span class="frac">
+                <span class="frac-num"><span class="math-var">u'</span> + <span class="math-var">v</span></span>
+                <span class="frac-denom">1 + (<span class="math-var">u'</span>·<span class="math-var">v</span> / <span class="math-var">c²</span>)</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Sustitución y Resultado en vivo con mini-fracciones -->
+          <div class="calc-steps-box">
+            <div class="calc-step-row">
+              <span class="calc-step-label">Sustitución:</span>
+              <span class="calc-step-val" id="vadd-l-sub">
+                <span class="mini-frac"><span class="mf-num">0.50 + 0.60</span><span class="mf-denom">1 + 0.30</span></span> c = <span class="mini-frac"><span class="mf-num">1.10</span><span class="mf-denom">1.300</span></span> c
+              </span>
+            </div>
+            <div class="calc-result-row">
+              <span class="calc-result-label">Velocidad en S:</span>
+              <span class="calc-result-num text-success" id="vadd-lorentz">0.8462 c</span>
+            </div>
+          </div>
+
+          <!-- Gauge de velocidad con línea límite c = 1.0 -->
+          <div class="vadd-gauge">
+            <div class="gauge-track">
+              <div class="gauge-fill fill-success" id="vadd-bar-l" style="width:56.4%;"></div>
+              <div class="gauge-limit-mark">
+                <span class="gauge-limit-label">c = 1.0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nota y explicación del factor denominador -->
+          <div class="vadd-verdict verdict-success" id="vadd-l-note">
+            ✓ El denominador (1 + u'v/c² = 1.300) frena la suma asegurando u = 0.8462c &lt; c.
+          </div>
+        </div>
+
+        <div style="font-size:0.75rem;color:var(--color-text-dim);margin-top:8px;border-top:1px solid rgba(255,255,255,0.05);padding-top:6px;">
+          Deducción: <code>u = dx/dt = γ(dx'+v dt') / [γ(dt'+v dx'/c²)]</code>. Si <code>u'=c ⇒ u=c</code> (la luz es invariante). Si <code>u'&lt;c, v&lt;c ⇒ u&lt;c</code>.
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Insight de Composición de Velocidades -->
+    <div class="insight-box" id="insight-composition" style="margin-top:var(--space-md);margin-bottom:var(--space-xl);">
+      <div class="insight-title">💡 La clave de la Relatividad: ¿Por qué las velocidades NO se suman linealmente (u ≠ u' + v)?</div>
+      <div style="display:flex;flex-direction:column;gap:var(--space-sm);font-size:0.88rem;line-height:1.6;margin-top:var(--space-xs);">
+        <p style="margin:0;">
+          <strong style="color:var(--color-accent-2);">1. En el vagón (S' en movimiento a v):</strong> El pasajero lanza una sonda hacia adelante a rapidez propia <code>u'</code> (medida respecto a la cabina con sus propios relojes).
+        </p>
+        <p style="margin:0;">
+          <strong style="color:var(--color-accent);">2. En el andén (S ve pasar el vagón a +β·c):</strong> Galileo predice que la velocidad observada desde tierra es simplemente la suma directa <code>u = u' + v</code>. Pero para un vagón rápido (ej. 0.8c) y una sonda rápida (ej. 0.6c), Galileo daría <code>1.40c &gt; c</code>. El fantasma rojo en el visor 3D muestra la fantasía clásica imposible.
+        </p>
+        <p style="margin:0;">
+          <strong style="color:var(--color-success);">3. Conclusión de Einstein / Lorentz:</strong> Como el tiempo en el vagón no es absoluto y el espacio está contraído, la ley real de composición es <code>u = (u' + v) / (1 + u'·v/c²)</code> (sonda verde en el visor 3D). La velocidad observada <strong>siempre permanece estrictamente menor que c</strong>.
+        </p>
       </div>
     </div>
   </div>
 
-  <!-- Resumen: Cambios vs Invariantes (En una sola línea / dos columnas) -->
+  <!-- ═══════════════════════════════════════════════════════
+       SÍNTESIS UNIVERSAL: LO QUE CAMBIA VS LO QUE PERMANECE INVARIANTE
+  ═══════════════════════════════════════════════════════ -->
+  <hr class="divider" />
+  <h3 class="section-heading">Consecuencias de los Postulados: Relativo vs. Invariante</h3>
+
   <div class="two-col" style="margin-bottom:var(--space-lg);">
     <div class="info-box compact-box" style="margin-bottom:0;">
-      <h3>Lo que cambia entre observadores</h3>
+      <h3 style="color:var(--color-accent-2);">Lo que cambia entre observadores</h3>
       <ul class="summary-list" style="font-size:0.84rem;gap:4px;">
         <li>Coordenadas (x, t) de un evento</li>
-        <li>Simultaneidad espacial</li>
+        <li>Simultaneidad espacial de sucesos distantes</li>
         <li>Duración de intervalos temporales (dilatación)</li>
         <li>Longitud medida de objetos (contracción)</li>
       </ul>
     </div>
     <div class="info-box accent-green compact-box" style="margin-bottom:0;">
-      <h3>Lo que permanece invariante</h3>
+      <h3 style="color:var(--color-success);">Lo que permanece invariante</h3>
       <ul class="summary-list" style="font-size:0.84rem;gap:4px;">
         <li>Rapidez de la luz: c en todo sistema inercial</li>
         <li>Intervalo espacio-temporal: Δs² = c²Δt² − Δx²</li>
-        <li>Leyes físicas y orden causal</li>
+        <li>Leyes físicas y orden causal de sucesos</li>
         <li>Carga eléctrica y masa en reposo</li>
       </ul>
     </div>
