@@ -850,14 +850,16 @@
       const uGalileo = uPrime + v;
       const denom = 1 + uPrime * v;
 
-      // Actualizar tarjetas dedicadas FUSIONADAS de Composición de Velocidades (Galileo vs. Lorentz)
-      const vaddGSub = document.getElementById('vadd-g-sub');
-      const vaddLSub = document.getElementById('vadd-l-sub');
+      // ── Tarjetas Composición de Velocidades (nuevo sistema vc-*) ──
+      const elUprimeG = document.getElementById('vadd-uprime-g');
+      const elVG      = document.getElementById('vadd-v-g');
+      const elLNum    = document.getElementById('vadd-l-num');
+      const elLDenom  = document.getElementById('vadd-l-denom');
 
-      if (vaddGSub) vaddGSub.textContent = `${uPrime.toFixed(2)}c + ${v.toFixed(2)}c`;
-      if (vaddLSub) {
-        vaddLSub.innerHTML = `<span class="mini-frac"><span class="mf-num">${uPrime.toFixed(2)} + ${v.toFixed(2)}</span><span class="mf-denom">1 + ${(uPrime * v).toFixed(2)}</span></span> c = <span class="mini-frac"><span class="mf-num">${(uPrime + v).toFixed(2)}</span><span class="mf-denom">${denom.toFixed(3)}</span></span> c`;
-      }
+      if (elUprimeG) elUprimeG.textContent = `${uPrime.toFixed(2)}c`;
+      if (elVG)      elVG.textContent      = `${v.toFixed(2)}c`;
+      if (elLNum)    elLNum.textContent    = `${uPrime.toFixed(2)} + ${v.toFixed(2)} = ${(uPrime + v).toFixed(3)}c`;
+      if (elLDenom)  elLDenom.textContent  = `1 + ${(uPrime * v).toFixed(4)} = ${denom.toFixed(4)}`;
 
       if (vaddG) vaddG.textContent = uGalileo.toFixed(4) + ' c';
       if (vaddL) vaddL.textContent = uLorentz.toFixed(4) + ' c';
@@ -866,17 +868,17 @@
 
       if (vaddGWarn) {
         if (uGalileo > 1.0) {
-          vaddGWarn.innerHTML = `⚠ <strong>¡Falla física! u = ${uGalileo.toFixed(2)}c &gt; c</strong> — Supera la velocidad límite y viola la causalidad.`;
+          vaddGWarn.innerHTML = `⚠ <strong>¡Viola la causalidad!</strong> u = ${uGalileo.toFixed(4)}c &gt; c — ninguna señal física puede superar la velocidad de la luz.`;
         } else {
-          vaddGWarn.innerHTML = `u = ${uGalileo.toFixed(4)}c (predicción lineal clásica sin límite relativista).`;
+          vaddGWarn.innerHTML = `u = ${uGalileo.toFixed(4)}c — predicción lineal clásica sin límite relativista.`;
         }
       }
 
       if (vaddLNote) {
         if (Math.abs(uPrime - 1.0) < 0.001) {
-          vaddLNote.innerHTML = `✓ Para la luz (u'=c): u = (c + v) / (1 + v/c) = <strong>1.0000c</strong> invariable en todo sistema.`;
+          vaddLNote.innerHTML = `✓ Para la luz (u'=c): el denominador cancela exactamente → <strong>u = 1.0000c</strong> invariable en todo sistema.`;
         } else {
-          vaddLNote.innerHTML = `✓ El denominador (1 + u'v/c² = ${denom.toFixed(3)}) frena la suma asegurando <strong>u = ${uLorentz.toFixed(4)}c &lt; c</strong>.`;
+          vaddLNote.innerHTML = `✓ El factor (1 + u'v/c² = ${denom.toFixed(4)}) comprime el resultado: <strong>u = ${uLorentz.toFixed(4)}c &lt; c</strong> siempre.`;
         }
       }
     }

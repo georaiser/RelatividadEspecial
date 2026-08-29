@@ -243,122 +243,121 @@
 
     <!-- Grid comparativo -->
     <div class="vadd-grid" id="cards-composition" style="margin-top:var(--space-xs);">
-      <!-- Galileo -->
-      <div class="vadd-card galileo" style="display:flex;flex-direction:column;justify-content:space-between;">
-        <div>
-          <div class="vadd-header">
-            <div class="vadd-title-group">
-              <span class="vadd-icon">🏛️</span>
-              <div>
-                <h4 class="vadd-title">Predicción Clásica de Galileo</h4>
-                <span class="vadd-subtitle">Adición vectorial simple (Tiempo Absoluto)</span>
-              </div>
-            </div>
-            <span class="vadd-badge badge-danger">✗ Falla física</span>
-          </div>
 
-          <!-- Ecuación algebraica -->
-          <div class="math-display-box">
-            <div class="math-eq">
-              <span class="math-var">u</span> = <span class="math-var">u'</span> + <span class="math-var">v</span>
-            </div>
-          </div>
+      <!-- ── GALILEO ── -->
+      <div class="vadd-card galileo">
 
-          <!-- Sustitución y Resultado en vivo -->
-          <div class="calc-steps-box">
-            <div class="calc-step-row">
-              <span class="calc-step-label">Sustitución:</span>
-              <span class="calc-step-val" id="vadd-g-sub">0.50c + 0.60c</span>
-            </div>
-            <div class="calc-result-row">
-              <span class="calc-result-label">Velocidad en S:</span>
-              <span class="calc-result-num text-danger" id="vadd-galileo">1.1000 c</span>
-            </div>
+        <!-- Cabecera -->
+        <div class="vc-header">
+          <div>
+            <div class="vc-title danger-text">🏛️ Predicción Clásica de Galileo</div>
+            <div class="vc-sub">Adición vectorial · Tiempo Absoluto</div>
           </div>
+          <span class="vc-badge danger-badge">✗ Falla física</span>
+        </div>
 
-          <!-- Gauge de velocidad con línea límite c = 1.0 -->
-          <div class="vadd-gauge">
-            <div class="gauge-track">
-              <div class="gauge-fill fill-danger" id="vadd-bar-g" style="width:73.3%;"></div>
-              <div class="gauge-limit-mark">
-                <span class="gauge-limit-label">c = 1.0</span>
-              </div>
-            </div>
+        <!-- Fórmula simbólica -->
+        <div class="vc-formula-box danger-box">
+          <span class="vc-formula-sym"><em>u</em> = <em>u'</em> + <em>v</em></span>
+        </div>
+
+        <!-- Cálculo numérico -->
+        <div class="vc-calc-box danger-calc">
+          <div class="vc-calc-row">
+            <span class="vc-calc-lbl">Sonda u'</span>
+            <span class="vc-calc-val" id="vadd-uprime-g">0.50c</span>
           </div>
-
-          <!-- Diagnóstico y advertencia física -->
-          <div class="vadd-verdict verdict-danger" id="vadd-g-warn">
-            ⚠ ¡Falla física! u = 1.10c &gt; c — Supera la velocidad límite y viola la causalidad.
+          <div class="vc-calc-row">
+            <span class="vc-calc-lbl">Vagón v</span>
+            <span class="vc-calc-val" id="vadd-v-g">0.60c</span>
+          </div>
+          <div class="vc-calc-sep"></div>
+          <div class="vc-calc-row vc-calc-total">
+            <span class="vc-calc-lbl">u en S =</span>
+            <span class="vc-calc-big danger-text" id="vadd-galileo">1.1000 c</span>
           </div>
         </div>
 
-        <div style="font-size:0.75rem;color:var(--color-muted);margin-top:8px;border-top:1px solid rgba(255,255,255,0.05);padding-top:6px;">
-          Asume tiempo absoluto ($t'=t$). Falla porque si <code>u'=c</code> daría <code>u = c + v &gt; c</code> (incompatible con electromagnetismo).
+        <!-- Gauge -->
+        <div class="vc-gauge-wrap">
+          <div class="vc-gauge-labels">
+            <span>0</span><span>c</span><span>1.5c</span>
+          </div>
+          <div class="vc-gauge-track">
+            <div class="vc-gauge-fill danger-fill" id="vadd-bar-g" style="width:73%"></div>
+            <div class="vc-gauge-cmark"></div>
+          </div>
+          <div class="vc-gauge-clabel">← c (límite)</div>
         </div>
+
+        <!-- Diagnóstico -->
+        <div class="vc-verdict danger-verdict" id="vadd-g-warn">
+          ⚠ <strong>¡Viola la causalidad!</strong> u = 1.1000c &gt; c — ninguna señal física puede superar la velocidad de la luz.
+        </div>
+
       </div>
 
-      <!-- Lorentz / Einstein -->
-      <div class="vadd-card lorentz" style="display:flex;flex-direction:column;justify-content:space-between;">
-        <div>
-          <div class="vadd-header">
-            <div class="vadd-title-group">
-              <span class="vadd-icon">⚡</span>
-              <div>
-                <h4 class="vadd-title">Realidad Relativista de Einstein</h4>
-                <span class="vadd-subtitle">Transformación de Lorentz (Espacio-Tiempo Dinámico)</span>
-              </div>
-            </div>
-            <span class="vadd-badge badge-success">✓ Realidad física</span>
-          </div>
+      <!-- ── LORENTZ / EINSTEIN ── -->
+      <div class="vadd-card lorentz">
 
-          <!-- Ecuación algebraica con fracción CSS real -->
-          <div class="math-display-box">
-            <div class="math-fraction-eq">
-              <span class="math-var">u</span> = 
-              <span class="frac">
-                <span class="frac-num"><span class="math-var">u'</span> + <span class="math-var">v</span></span>
-                <span class="frac-denom">1 + (<span class="math-var">u'</span>·<span class="math-var">v</span> / <span class="math-var">c²</span>)</span>
-              </span>
-            </div>
+        <!-- Cabecera -->
+        <div class="vc-header">
+          <div>
+            <div class="vc-title success-text">⚡ Realidad Relativista de Einstein</div>
+            <div class="vc-sub">Transformación de Lorentz · Espacio-Tiempo Dinámico</div>
           </div>
+          <span class="vc-badge success-badge">✓ Realidad física</span>
+        </div>
 
-          <!-- Sustitución y Resultado en vivo con mini-fracciones -->
-          <div class="calc-steps-box">
-            <div class="calc-step-row">
-              <span class="calc-step-label">Sustitución:</span>
-              <span class="calc-step-val" id="vadd-l-sub">
-                <span class="mini-frac"><span class="mf-num">0.50 + 0.60</span><span class="mf-denom">1 + 0.30</span></span> c = <span class="mini-frac"><span class="mf-num">1.10</span><span class="mf-denom">1.300</span></span> c
-              </span>
-            </div>
-            <div class="calc-result-row">
-              <span class="calc-result-label">Velocidad en S:</span>
-              <span class="calc-result-num text-success" id="vadd-lorentz">0.8462 c</span>
-            </div>
-          </div>
-
-          <!-- Gauge de velocidad con línea límite c = 1.0 -->
-          <div class="vadd-gauge">
-            <div class="gauge-track">
-              <div class="gauge-fill fill-success" id="vadd-bar-l" style="width:56.4%;"></div>
-              <div class="gauge-limit-mark">
-                <span class="gauge-limit-label">c = 1.0</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Nota y explicación del factor denominador -->
-          <div class="vadd-verdict verdict-success" id="vadd-l-note">
-            ✓ El denominador (1 + u'v/c² = 1.300) frena la suma asegurando u = 0.8462c &lt; c.
+        <!-- Fórmula con fracción tipográfica -->
+        <div class="vc-formula-box success-box">
+          <div class="vc-frac-eq">
+            <em>u</em>&nbsp;=&nbsp;
+            <span class="vc-frac">
+              <span class="vc-frac-num"><em>u'</em> + <em>v</em></span>
+              <span class="vc-frac-denom">1 + <em>u'</em>·<em>v</em>&thinsp;/&thinsp;<em>c</em>²</span>
+            </span>
           </div>
         </div>
 
-        <div style="font-size:0.75rem;color:var(--color-text-dim);margin-top:8px;border-top:1px solid rgba(255,255,255,0.05);padding-top:6px;">
-          Deducción: <code>u = dx/dt = γ(dx'+v dt') / [γ(dt'+v dx'/c²)]</code>. Si <code>u'=c ⇒ u=c</code> (la luz es invariante). Si <code>u'&lt;c, v&lt;c ⇒ u&lt;c</code>.
+        <!-- Cálculo numérico -->
+        <div class="vc-calc-box success-calc">
+          <div class="vc-calc-row">
+            <span class="vc-calc-lbl">Numerador (u' + v)</span>
+            <span class="vc-calc-val" id="vadd-l-num">0.50 + 0.60 = 1.10c</span>
+          </div>
+          <div class="vc-calc-row">
+            <span class="vc-calc-lbl">Denominador (1 + u'v/c²)</span>
+            <span class="vc-calc-val" id="vadd-l-denom">1 + 0.300 = 1.300</span>
+          </div>
+          <div class="vc-calc-sep"></div>
+          <div class="vc-calc-row vc-calc-total">
+            <span class="vc-calc-lbl">u en S =</span>
+            <span class="vc-calc-big success-text" id="vadd-lorentz">0.8462 c</span>
+          </div>
         </div>
+
+        <!-- Gauge -->
+        <div class="vc-gauge-wrap">
+          <div class="vc-gauge-labels">
+            <span>0</span><span>c</span><span>1.5c</span>
+          </div>
+          <div class="vc-gauge-track">
+            <div class="vc-gauge-fill success-fill" id="vadd-bar-l" style="width:56%"></div>
+            <div class="vc-gauge-cmark"></div>
+          </div>
+          <div class="vc-gauge-clabel">← c (límite invariante)</div>
+        </div>
+
+        <!-- Diagnóstico -->
+        <div class="vc-verdict success-verdict" id="vadd-l-note">
+          ✓ El factor (1 + u'v/c² = 1.300) comprime el resultado: <strong>u = 0.8462c &lt; c</strong> siempre.
+        </div>
+
       </div>
     </div>
 
-    <!-- 2. Insight de Composición de Velocidades -->
+    <!-- Insight de Composición de Velocidades -->
     <div class="insight-box" id="insight-composition" style="margin-top:var(--space-md);margin-bottom:var(--space-xl);">
       <div class="insight-title">💡 La clave de la Relatividad: ¿Por qué las velocidades NO se suman linealmente (u ≠ u' + v)?</div>
       <div style="display:flex;flex-direction:column;gap:var(--space-sm);font-size:0.88rem;line-height:1.6;margin-top:var(--space-xs);">
