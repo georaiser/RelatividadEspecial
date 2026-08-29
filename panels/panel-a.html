@@ -169,35 +169,105 @@
     <!-- 2. Fundamento Teórico del Destello de Luz (Galileo vs. Lorentz) -->
     <div id="theory-simultaneity" style="margin-top:var(--space-md);">
       <h3 class="section-heading">Fundamento teórico: Simultaneidad y Tiempos de Impacto (Galileo vs. Lorentz)</h3>
-      <div class="comparison-grid" style="margin-bottom:var(--space-md);">
-        <div class="transform-box galileo" style="padding:var(--space-md);">
-          <h4>Galileo (Tiempo Absoluto Clásico)</h4>
-          <div class="transform-eq" style="font-size:0.82rem;line-height:1.6;">
-            <div><strong>Fórmula:</strong> t' = t &ensp;⇒&ensp; t<sub>A</sub> = t<sub>B</sub> = L₀/c</div>
-            <div style="margin-top:6px;padding:6px;background:rgba(255,255,255,0.03);border-radius:var(--radius-sm);">
-              <div>Impacto A en S: <span id="calc-g-ta" style="font-family:var(--font-mono);font-weight:600;">1.00 s</span></div>
-              <div>Impacto B en S: <span id="calc-g-tb" style="font-family:var(--font-mono);font-weight:600;">1.00 s</span></div>
-              <div style="color:var(--color-muted);font-weight:700;margin-top:2px;">Desfase: <span id="calc-g-dt">Δt = 0.00 s (Simultáneos)</span></div>
+
+      <div class="vadd-grid" style="margin-bottom:var(--space-md);">
+
+        <!-- ── GALILEO ── -->
+        <div class="vadd-card galileo">
+
+          <div class="vc-header">
+            <div>
+              <div class="vc-title danger-text">🏛️ Galileo — Tiempo Absoluto</div>
+              <div class="vc-sub">La luz se suma con la velocidad del vagón (c ± v)</div>
+            </div>
+            <span class="vc-badge danger-badge">✗ Incorrecto</span>
+          </div>
+
+          <!-- Fórmula -->
+          <div class="vc-formula-box danger-box">
+            <div style="font-style:italic;font-size:1.05rem;font-weight:600;letter-spacing:0.04em;">
+              t' = t &nbsp;⟹&nbsp; t<sub>A</sub> = t<sub>B</sub> = L₀ / c
             </div>
           </div>
-          <div class="transform-problem" style="font-size:0.75rem;margin-top:8px;">
-            ⚠ Asume que la velocidad de la luz se suma con la del vagón (c ± v), violando el 2.º postulado de Einstein.
+
+          <!-- Cálculo numérico -->
+          <div class="vc-calc-box danger-calc">
+            <div class="vc-calc-row">
+              <span class="vc-calc-lbl">Impacto detector trasero A</span>
+              <span class="vc-calc-val" id="calc-g-ta">1.00 s</span>
+            </div>
+            <div class="vc-calc-row">
+              <span class="vc-calc-lbl">Impacto detector delantero B</span>
+              <span class="vc-calc-val" id="calc-g-tb">1.00 s</span>
+            </div>
+            <div class="vc-calc-sep"></div>
+            <div class="vc-calc-row vc-calc-total">
+              <span class="vc-calc-lbl">Desfase Δt</span>
+              <span class="vc-calc-big danger-text" id="calc-g-dt" style="font-size:1rem;">0.00 s</span>
+            </div>
           </div>
+
+          <div class="vc-verdict danger-verdict">
+            ⚠ Asume que <strong>c se suma con v del vagón</strong>. Si la luz avanza a c+v para el andén, se viola el 2.º Postulado de Einstein — los dos impactos siempre serían simultáneos.
+          </div>
+
         </div>
 
-        <div class="transform-box lorentz-box" style="padding:var(--space-md);">
-          <h4>Lorentz / Einstein (Simultaneidad Relativa Real)</h4>
-          <div class="transform-eq" style="font-size:0.82rem;line-height:1.6;">
-            <div><strong>Fórmula:</strong> t<sub>A</sub> = (L₀/c)/k, &ensp; t<sub>B</sub> = (L₀/c)·k, &ensp; k = √((1+β)/(1−β))</div>
-            <div style="margin-top:6px;padding:6px;background:rgba(79,158,255,0.06);border-radius:var(--radius-sm);">
-              <div>Impacto A (trasero): <span id="calc-l-ta" style="font-family:var(--font-mono);font-weight:600;color:var(--color-accent);">0.50 s</span></div>
-              <div>Impacto B (delantero): <span id="calc-l-tb" style="font-family:var(--font-mono);font-weight:600;color:var(--color-accent-2);">2.00 s</span></div>
-              <div style="color:var(--color-success);font-weight:700;margin-top:2px;">Desfase real: <span id="calc-l-dt">Δt = 1.50 s (No simultáneos)</span></div>
+        <!-- ── LORENTZ / EINSTEIN ── -->
+        <div class="vadd-card lorentz">
+
+          <div class="vc-header">
+            <div>
+              <div class="vc-title success-text">⚡ Lorentz / Einstein — Simultaneidad Relativa</div>
+              <div class="vc-sub">c invariante para todo observador → tiempos se dessincronizan</div>
+            </div>
+            <span class="vc-badge success-badge">✓ Correcto</span>
+          </div>
+
+          <!-- Fórmulas con fracción -->
+          <div class="vc-formula-box success-box">
+            <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+              <div class="vc-frac-eq" style="font-size:0.92rem;">
+                t<sub>A</sub>&nbsp;=&nbsp;
+                <span class="vc-frac">
+                  <span class="vc-frac-num">L₀ / c</span>
+                  <span class="vc-frac-denom">k</span>
+                </span>
+                &ensp;,&ensp;
+                t<sub>B</sub>&nbsp;=&nbsp;
+                <span class="vc-frac">
+                  <span class="vc-frac-num">L₀ / c</span>
+                  <span class="vc-frac-denom">1 / k</span>
+                </span>
+                &ensp;=&ensp; (L₀/c)·k
+              </div>
+              <div style="font-size:0.78rem;color:var(--color-muted);font-style:italic;">
+                donde k = √((1+β)/(1−β)) &nbsp;—&nbsp; factor de corrimiento Doppler relativista
+              </div>
             </div>
           </div>
-          <div class="consequence" style="font-size:0.75rem;margin-top:8px;">
-            ✓ Como c es invariante, la luz viaja a c para ambos observadores obligando a que el tiempo se desincronice.
+
+          <!-- Cálculo numérico -->
+          <div class="vc-calc-box success-calc">
+            <div class="vc-calc-row">
+              <span class="vc-calc-lbl">Impacto detector trasero A</span>
+              <span class="vc-calc-val" style="color:var(--color-accent);" id="calc-l-ta">0.50 s</span>
+            </div>
+            <div class="vc-calc-row">
+              <span class="vc-calc-lbl">Impacto detector delantero B</span>
+              <span class="vc-calc-val" style="color:var(--color-accent-2);" id="calc-l-tb">2.00 s</span>
+            </div>
+            <div class="vc-calc-sep"></div>
+            <div class="vc-calc-row vc-calc-total">
+              <span class="vc-calc-lbl">Desfase Δt</span>
+              <span class="vc-calc-big success-text" id="calc-l-dt" style="font-size:1rem;">1.50 s</span>
+            </div>
           </div>
+
+          <div class="vc-verdict success-verdict">
+            ✓ Con <strong>c constante</strong>: el trasero A avanza al encuentro de la luz (llega antes) y el delantero B huye de ella (llega después). Los impactos <strong>no son simultáneos para S</strong>, aunque sí lo sean en S'.
+          </div>
+
         </div>
       </div>
     </div>

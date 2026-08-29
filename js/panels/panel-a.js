@@ -891,10 +891,10 @@
     const β = state.beta;
     const k = bondik(β);
 
-    // 1. Modo Simultaneidad
-    const tImpactSp = T_EMIT; // 1.00 s
-    const tImpactSA = T_EMIT / k;
-    const tImpactSB = T_EMIT * k;
+    // Modo Simultaneidad — factor k de Bondi/Doppler relativista
+    const tImpactSp = T_EMIT;          // 1.00 s (en S' los dos son iguales)
+    const tImpactSA = T_EMIT / k;      // trasero: llega antes
+    const tImpactSB = T_EMIT * k;      // delantero: llega después
     const dtS = tImpactSB - tImpactSA;
 
     const calcGTa = document.getElementById('calc-g-ta');
@@ -904,17 +904,19 @@
     const calcLTb = document.getElementById('calc-l-tb');
     const calcLDt = document.getElementById('calc-l-dt');
 
+    // Galileo — siempre simultáneos
     if (calcGTa) calcGTa.textContent = `${tImpactSp.toFixed(2)} s`;
     if (calcGTb) calcGTb.textContent = `${tImpactSp.toFixed(2)} s`;
-    if (calcGDt) calcGDt.textContent = `Δt = 0.00 s (Simultáneos)`;
+    if (calcGDt) calcGDt.textContent = `0.00 s (Simultáneos)`;
 
-    if (calcLTa) calcLTa.textContent = `${tImpactSA.toFixed(2)} s`;
-    if (calcLTb) calcLTb.textContent = `${tImpactSB.toFixed(2)} s`;
+    // Lorentz / Einstein — desfase real
+    if (calcLTa) calcLTa.textContent = `${tImpactSA.toFixed(3)} s`;
+    if (calcLTb) calcLTb.textContent = `${tImpactSB.toFixed(3)} s`;
     if (calcLDt) {
       if (β < 0.005) {
-        calcLDt.textContent = `Δt = 0.00 s (En reposo)`;
+        calcLDt.textContent = `0.000 s (En reposo, simultáneos)`;
       } else {
-        calcLDt.textContent = `Δt = ${dtS.toFixed(2)} s (No simultáneos)`;
+        calcLDt.textContent = `${dtS.toFixed(3)} s (¡No simultáneos!)`;
       }
     }
   }
