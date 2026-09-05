@@ -110,7 +110,7 @@
     </div>
 
     <!-- Fila intermedia: Tarjeta de transformación (izq.) + Tabla de Factores (der.) -->
-    <div class="two-col" style="gap:var(--space-md);margin-bottom:var(--space-md);">
+    <div class="two-col" style="gap:var(--space-md);margin-bottom:var(--space-md);align-items:stretch;">
       <!-- Tarjeta transform K → K' -->
       <div class="transform-card" style="margin-bottom:0;">
         <div class="tc-system s-system">
@@ -154,20 +154,25 @@
             </div>
           </div>
           <div class="tc-meta">
-            <span id="sp-event-label">E = (—, —)</span>
+            <span id="sp-event-label" style="color:var(--color-accent-2);">E = (?, ?)</span>
+            &ensp;<span id="sp-ds2-display" class="readout" style="font-size:0.78rem;color:var(--color-accent-2);">—</span>
+            <span id="inv-check" style="font-size:0.75rem;margin-left:4px;color:var(--color-success);">✓</span>
           </div>
         </div>
       </div>
 
-      <!-- Tabla β γ k -->
-      <div class="info-box" style="padding:0;overflow:hidden;margin-bottom:0;">
-        <table class="formula-table">
-          <thead><tr><th>Factor</th><th>Fórmula</th><th>Valor</th></tr></thead>
+      <!-- Tabla de factores y magnitudes (β, γ, γβ, k, x', t', Δs²) -->
+      <div class="info-box" style="padding:0;overflow:hidden;margin-bottom:0;display:flex;flex-direction:column;height:100%;">
+        <table class="formula-table" style="height:100%;">
+          <thead><tr><th>Factor / Magnitud</th><th>Fórmula</th><th>Valor</th></tr></thead>
           <tbody>
-            <tr><td>β</td><td>v/c</td><td id="b1-beta">0.600</td></tr>
-            <tr><td>γ</td><td>1/√(1−β²)</td><td id="b1-gamma">—</td></tr>
-            <tr><td>γβ</td><td>γ·β</td><td id="b1-gammabeta">—</td></tr>
-            <tr><td>k</td><td>√((1+β)/(1−β))</td><td id="b1-k">—</td></tr>
+            <tr><td>β</td><td>v/c</td><td id="tbl-beta">0.600</td></tr>
+            <tr><td>γ</td><td>1/√(1−β²)</td><td id="tbl-gamma">—</td></tr>
+            <tr><td>γβ</td><td>γ·β</td><td id="tbl-gammabeta">—</td></tr>
+            <tr><td>k</td><td>√((1+β)/(1−β))</td><td id="tbl-k">—</td></tr>
+            <tr><td>x'</td><td>γ(x − βt)</td><td id="tbl-xp">—</td></tr>
+            <tr><td>t'</td><td>γ(t − βx)</td><td id="tbl-tp">—</td></tr>
+            <tr><td>Δs²</td><td>t² − x²</td><td id="tbl-ds2">—</td></tr>
           </tbody>
         </table>
       </div>

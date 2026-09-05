@@ -90,18 +90,18 @@
   const sLbl    = document.getElementById('s-event-label');
   const spLbl   = document.getElementById('sp-event-label');
   const sDs2El  = document.getElementById('s-ds2-display');
-  const spDs2El = null; // eliminado del nuevo layout
-  const invChk  = null; // eliminado del nuevo layout
+  const spDs2El = document.getElementById('sp-ds2-display');
+  const invChk  = document.getElementById('inv-check');
   const sCausal = document.getElementById('s-causal-type');
 
-  // Tabla de factores B.1 (nuevos IDs)
-  const tblBeta      = document.getElementById('b1-beta');
-  const tblGamma     = document.getElementById('b1-gamma');
-  const tblGammaBeta = document.getElementById('b1-gammabeta');
-  const tblK         = document.getElementById('b1-k');
-  const tblXp        = null; // eliminado del nuevo layout
-  const tblTp        = null; // eliminado del nuevo layout
-  const tblDs2       = null; // eliminado del nuevo layout
+  // Tabla de factores y magnitudes B.1
+  const tblBeta      = document.getElementById('tbl-beta');
+  const tblGamma     = document.getElementById('tbl-gamma');
+  const tblGammaBeta = document.getElementById('tbl-gammabeta');
+  const tblK         = document.getElementById('tbl-k');
+  const tblXp        = document.getElementById('tbl-xp');
+  const tblTp        = document.getElementById('tbl-tp');
+  const tblDs2       = document.getElementById('tbl-ds2');
 
   sXInput.addEventListener('input', () => { state.E.x = parseFloat(sXInput.value) || 0; updateCoords(); drawMinkowski(); });
   sTInput.addEventListener('input', () => { state.E.t = parseFloat(sTInput.value) || 0; updateCoords(); drawMinkowski(); });
