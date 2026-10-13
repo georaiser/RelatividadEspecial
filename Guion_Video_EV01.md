@@ -85,16 +85,15 @@
 
 * **🖥️ Acción en pantalla:**
   1. Pasa al **Panel D — Dilatación, Contracción, Evidencia e Impacto**.
-  2. En el **Reloj de Luz**, pulsa **"▶ Iniciar fotones"** y señala la trayectoria vertical a la izquierda vs. diagonal a la derecha.
-  3. Baja al **Escáner de Contracción de Longitud** y mueve el slider de velocidad de la nave.
-  4. Baja a la sección **"Evidencia Experimental de la Dilatación del Tiempo"** (mostrando las 4 tarjetas: Doppler transversal 1938, Hafele-Keating 1972, Muones CERN 1977 y GPS).
+  2. En la pestaña **D.1 · Dilatación y Evidencia**, pulsa **"▶ Iniciar fotones"** en el Reloj de Luz, prueba los botones de experimentos (`🔬 Ives-Stilwell 1938`, `🌧️ Muón Cósmico`, `🧲 Muón CERN 1977`) y muestra la tabla inferior de las 4 Evidencias Experimentales.
+  3. Cambia a la pestaña **D.2 · Contracción y Muones**, haz clic en `🌧️ Muón en Atmósfera (0.998c)` y observa el Escáner de Contracción junto a la tabla interactiva del Muón Cósmico.
 
 * **🗣️ Guion hablado:**
   > «Llegamos ahora al Panel D para analizar qué pasa con la duración del tiempo y el tamaño de los objetos.
   >
-  > En esta simulación vemos dos **relojes de luz**. En el reloj de la izquierda, en reposo con el observador, el fotón sube y baja verticalmente recorriendo una distancia $2L$. Pero en el reloj de la derecha, que se mueve hacia adelante, el fotón debe recorrer un camino diagonal más largo para seguir a los espejos. Como la luz viaja exactamente a la misma rapidez $c$ en ambos casos, recorrer un camino más largo toma más tiempo. Aplicando el teorema de Pitágoras a ese triángulo se obtiene $\Delta t = \gamma \cdot \Delta t_0$: **el tiempo de un reloj en movimiento transcurre más lento** visto desde afuera.
+  > En esta simulación vemos dos **relojes de luz**. En el reloj superior, en reposo con el observador, el fotón sube y baja verticalmente recorriendo una distancia $2L$. Pero en el reloj inferior, que se mueve hacia adelante, el fotón debe recorrer un camino diagonal más largo para seguir a los espejos. Como la luz viaja exactamente a la misma rapidez $c$ en ambos casos, recorrer un camino más largo toma más tiempo. Aplicando el teorema de Pitágoras a ese triángulo se obtiene $\Delta t = \gamma \cdot \Delta t_0$: **el tiempo de un reloj en movimiento transcurre más lento** visto desde afuera.
   >
-  > De forma complementaria, en el escáner inferior vemos la **contracción de longitud de Lorentz**: todo objeto en movimiento se acorta en la dirección en que viaja según $L = L_0 / \gamma$, mientras que su altura transversal no cambia.
+  > De forma complementaria, en la pestaña **D.2** vemos la **contracción de longitud de Lorentz**: todo objeto en movimiento se acorta en la dirección en que viaja según $L = L_0 / \gamma$, mientras que su altura transversal no cambia.
   >
   > Esto no es solo teoría; aquí tenemos las **cuatro grandes pruebas experimentales** de la dilatación del tiempo:
   > 1. **El Efecto Doppler Transversal:** Predicho por Einstein en 1907 y medido por Ives y Stilwell en 1938. Cuando un átomo emite luz a $90^\circ$ de su movimiento, el efecto Doppler clásico vale cero; sin embargo, midieron que la frecuencia atómica bajaba ($f = f_0/\gamma$) exactamente porque el tiempo interno del átomo en movimiento iba más lento.
@@ -107,8 +106,8 @@
 ### ⏱️ BLOQUE 5 (5:45 – 7:00) | Impacto en la Física General y Conclusión
 
 * **🖥️ Acción en pantalla:**
-  1. En el mismo **Panel D**, baja a la **Calculadora Interactiva** y haz clic en los botones `🔬 Ives-Stilwell (0.005c)`, `🌧️ Muón Cósmico (0.998c)` y `🧲 Muón CERN (0.9994c)`, mostrando la tarjeta 3 de **Dinámica Relativista y Equivalencia Masa-Energía ($E = \gamma mc^2$)**.
-  2. Finalmente, enfoca las 4 tarjetas de **"Impacto de la Relatividad Especial en la Física General"**.
+  1. En el mismo **Panel D**, cambia a la pestaña **D.3 · Dinámica y E = mc²**.
+  2. Selecciona distintas partículas (`⚡ Electrón`, `🧲 Muón`, `⚖️ 1 gramo de materia`, `☢️ Fisión ²³⁵U`), mueve el slider $\beta$ hacia $0.99$ para ver cómo la curva verde $E = \gamma mc^2$ diverge hacia el infinito en el muro $v = c$, y muestra la tabla inferior de las 4 Áreas de Impacto.
 
 * **🗣️ Guion hablado:**
   > «Finalmente, ¿cuál fue el impacto de la Relatividad Especial en la física en general? Podemos resumirlo en cuatro grandes revoluciones:

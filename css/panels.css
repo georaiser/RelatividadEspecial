@@ -1377,12 +1377,12 @@
   /* No border-bottom propio: lo da tab-control-bar */
 }
 .tab-bar-inline .tab-btn {
-  padding: 10px 18px;
+  padding: 10px 13px;
   background: none;
   border: none;
   border-bottom: 3px solid transparent;
   color: var(--color-text-dim);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
@@ -2092,7 +2092,15 @@
   min-height: 280px;
   background: #09111e;
   display: block;
-  cursor: default;
+  cursor: ew-resize;
+}
+
+#canvas-energy {
+  width: 100%;
+  min-height: 320px;
+  background: #09111e;
+  display: block;
+  cursor: ew-resize;
 }
 
 /* Tarjeta de deducción de Pitágoras */
