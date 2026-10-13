@@ -308,36 +308,37 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
-       CALCULADORA DE TRANSFORMACIONES CINEMÁTICAS
+       CALCULADORA DE TRANSFORMACIONES CINEMÁTICAS Y DINÁMICA
   ═══════════════════════════════════════════════════════ -->
   <hr class="divider" />
-  <h3 class="section-heading">Calculadora Relativista de Tiempo y Longitud</h3>
+  <h3 class="section-heading">Calculadora Interactiva: Tiempo, Longitud, Doppler y Masa-Energía (E = γmc²)</h3>
 
   <div class="info-box" style="padding:var(--space-lg);margin-bottom:var(--space-xl);">
     <div class="slider-row">
-      <span class="anim-label">Velocidad relativa (v/c):</span>
+      <span class="anim-label">Velocidad / Escenario:</span>
       <div class="preset-row" id="presets-d-calc" style="margin-bottom:0;">
-        <button class="preset-btn" data-b="0.10">0.10c</button>
-        <button class="preset-btn" data-b="0.50">0.50c</button>
-        <button class="preset-btn active-preset" data-b="0.80">0.80c</button>
-        <button class="preset-btn" data-b="0.99">0.99c</button>
-        <button class="preset-btn" data-b="0.999">0.999c</button>
+        <button class="preset-btn" data-b="0.005" data-t0="1" data-ut="s" data-l0="100" data-ul="m">🔬 Ives-Stilwell (0.005c)</button>
+        <button class="preset-btn" data-b="0.50" data-t0="10" data-ut="años" data-l0="100" data-ul="m">0.50c</button>
+        <button class="preset-btn active-preset" data-b="0.80" data-t0="10" data-ut="años" data-l0="100" data-ul="m">0.80c</button>
+        <button class="preset-btn" data-b="0.998" data-t0="2.2" data-ut="μs" data-l0="10" data-ul="km">🌧️ Muón Cósmico (0.998c)</button>
+        <button class="preset-btn" data-b="0.9994" data-t0="2.2" data-ut="μs" data-l0="14" data-ul="m">🧲 Muón CERN (0.9994c)</button>
       </div>
-      <input type="range" id="calc-b-slider" class="slider-generic" min="0" max="0.999" step="0.001" value="0.80" />
-      <span id="calc-b-readout" class="readout" style="min-width:100px;">β = 0.8000</span>
-      <span class="gamma-badge" style="min-width:110px;">γ = <span id="calc-g-val">1.6667</span></span>
+      <input type="range" id="calc-b-slider" class="slider-generic" min="0" max="0.9995" step="0.0001" value="0.80" />
+      <span id="calc-b-readout" class="readout" style="min-width:105px;">β = 0.8000</span>
+      <span class="gamma-badge" style="min-width:115px;">γ = <span id="calc-g-val">1.6667</span></span>
     </div>
 
     <div class="d-calc-grid" style="margin-top:var(--space-md);">
       <div class="d-calc-card d-time">
-        <h4>⏱ Transformación de Tiempo</h4>
+        <h4>⏱ 1. Transformación de Tiempo y Doppler Transversal</h4>
         <div style="margin-bottom:var(--space-xs);font-size:0.8rem;color:var(--color-text-dim);">
-          Introduce el tiempo propio (en reposo):
+          Introduce el tiempo propio en reposo (Δt₀):
         </div>
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:var(--space-sm);">
-          <input type="number" id="input-t0" value="10" min="0.01" step="any"
+          <input type="number" id="input-t0" value="10" min="0.001" step="any"
                  style="background:var(--color-surface-2);border:1px solid var(--color-border);color:var(--color-text);padding:6px 10px;border-radius:var(--radius-sm);width:120px;font-family:var(--font-mono);" />
           <select id="unit-t0" style="background:var(--color-surface-2);border:1px solid var(--color-border);color:var(--color-text);padding:6px 10px;border-radius:var(--radius-sm);font-family:var(--font-mono);">
+            <option value="μs">microsegundos (μs)</option>
             <option value="s">segundos (s)</option>
             <option value="min">minutos</option>
             <option value="h">horas</option>
@@ -345,19 +346,23 @@
           </select>
         </div>
         <div class="obs-row">
-          <span class="obs-key">Tiempo medido (Δt = γ·Δt₀):</span>
+          <span class="obs-key">Tiempo dilatado (Δt = γ·Δt₀):</span>
           <span class="obs-val" id="res-t" style="color:var(--color-accent);font-weight:700;">16.667 años</span>
         </div>
         <div class="obs-row">
           <span class="obs-key">Desfase temporal acumulado:</span>
           <span class="obs-val" id="res-dt-diff">+6.667 años</span>
         </div>
+        <div class="obs-row">
+          <span class="obs-key">Doppler transversal (Δλ/λ₀ = γ − 1):</span>
+          <span class="obs-val" id="res-doppler-trans" style="color:var(--color-success);">+0.6667 (f = 0.6000·f₀)</span>
+        </div>
       </div>
 
       <div class="d-calc-card d-space">
-        <h4>📏 Transformación de Longitud</h4>
+        <h4>📏 2. Contracción de Longitud</h4>
         <div style="margin-bottom:var(--space-xs);font-size:0.8rem;color:var(--color-text-dim);">
-          Introduce la longitud propia (en reposo):
+          Introduce la longitud propia en reposo (L₀):
         </div>
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:var(--space-sm);">
           <input type="number" id="input-l0" value="100" min="0.01" step="any"
@@ -369,12 +374,54 @@
           </select>
         </div>
         <div class="obs-row">
-          <span class="obs-key">Longitud observada (L = L₀/γ):</span>
+          <span class="obs-key">Longitud contraída (L = L₀/γ):</span>
           <span class="obs-val" id="res-l" style="color:var(--color-accent-2);font-weight:700;">60.000 m</span>
         </div>
         <div class="obs-row">
           <span class="obs-key">Porcentaje contraído:</span>
           <span class="obs-val" id="res-l-pct">-40.00%</span>
+        </div>
+        <div class="obs-row">
+          <span class="obs-key">Dimensiones transversales (y, z):</span>
+          <span class="obs-val" style="color:var(--color-muted);">100% Invariantes</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Tarjeta interactiva de Dinámica Relativista y E = mc² -->
+    <div class="d-calc-card" style="margin-top:var(--space-md);border-color:rgba(52,211,153,0.35);">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:var(--space-sm);">
+        <h4 style="margin:0;">⚡ 3. Dinámica Relativista y Equivalencia Masa-Energía (E = γmc²)</h4>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:0.78rem;color:var(--color-text-dim);">Partícula / Cuerpo:</span>
+          <select id="select-particle" style="background:var(--color-surface-2);border:1px solid var(--color-border);color:var(--color-text);padding:5px 10px;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:0.82rem;">
+            <option value="electron" selected>Electrón (m₀c² = 0.511 MeV)</option>
+            <option value="muon">Muón (m₀c² = 105.66 MeV)</option>
+            <option value="proton">Protón (m₀c² = 938.27 MeV)</option>
+            <option value="gram">1 gramo de materia (E₀ = 8.99 × 10¹³ J)</option>
+          </select>
+        </div>
+      </div>
+      <div class="d-calc-grid">
+        <div>
+          <div class="obs-row">
+            <span class="obs-key">Energía en reposo (E₀ = mc²):</span>
+            <span class="obs-val" id="res-e0">0.5110 MeV</span>
+          </div>
+          <div class="obs-row">
+            <span class="obs-key">Energía cinética (K = (γ − 1)mc²):</span>
+            <span class="obs-val" id="res-ek" style="color:#fbbf24;font-weight:700;">0.3407 MeV</span>
+          </div>
+        </div>
+        <div>
+          <div class="obs-row">
+            <span class="obs-key">Energía total (E = γmc² = E₀ + K):</span>
+            <span class="obs-val" id="res-etot" style="color:var(--color-success);font-weight:700;">0.8517 MeV</span>
+          </div>
+          <div class="obs-row">
+            <span class="obs-key">Momentum (pc = γβmc²) e Invariante:</span>
+            <span class="obs-val" id="res-mom" style="color:var(--color-accent);">0.6813 MeV (✓ E²−(pc)² = E₀²)</span>
+          </div>
         </div>
       </div>
     </div>

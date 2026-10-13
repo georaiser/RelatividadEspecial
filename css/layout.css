@@ -45,14 +45,20 @@
   margin: 0 auto;
 }
 
-/* ── Panel Grid (index) ─────────────────────────────────── */
+/* ── Panel Grid (index: 2 x 2) ──────────────────────────── */
 .panel-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-lg);
-  max-width: 1200px;
+  max-width: 960px;
   margin: var(--space-xl) auto;
   padding: 0 var(--space-lg);
+}
+
+@media (max-width: 640px) {
+  .panel-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── Panel Layout (inside a panel page) ─────────────────── */

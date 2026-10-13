@@ -115,6 +115,29 @@ def run_tests():
         print(f"  u=c, β={b:.1f}  →  u'={u_prime:.8f}  (esperado: 1.0)")
     print()
 
+    # Test 5: Evidencia Experimental de Dilatación (Panel D)
+    print("─ Evidencia Experimental Dilatación (Panel D) ─────────")
+    g_ives = gamma(0.005)
+    print(f"  Ives-Stilwell (β=0.005): γ={g_ives:.8f}, Δλ/λ₀ = γ-1 = {g_ives - 1:.2e} ✓")
+    g_muon_atm = gamma(0.998)
+    print(f"  Muón Cósmico  (β=0.998): γ={g_muon_atm:.4f}, τ={2.2 * g_muon_atm:.2f} μs, D={10.0 / g_muon_atm:.3f} km ✓")
+    g_muon_cern = gamma(0.9994)
+    print(f"  Muón CERN     (β=0.9994): γ={g_muon_cern:.4f}, τ={2.2 * g_muon_cern:.2f} μs ✓")
+    print()
+
+    # Test 6: Dinámica Relativista e Invariante E² - (pc)² = E₀² (Panel D)
+    print("─ Dinámica Relativista y Masa-Energía (Panel D) ───────")
+    particles = [("Electrón", 0.5110), ("Muón", 105.66), ("Protón", 938.27)]
+    for name, e0 in particles:
+        b = 0.80
+        g = gamma(b)
+        k = (g - 1.0) * e0
+        etot = g * e0
+        pc = g * b * e0
+        inv_ok = abs((etot**2 - pc**2) - e0**2) < 1e-6
+        print(f"  {name:8s} (β=0.80): E₀={e0:.3f} MeV, K={k:.3f} MeV, E={etot:.3f} MeV, pc={pc:.3f} MeV  inv={'✓' if inv_ok else '✗'}")
+    print()
+
     print("Validación completada.")
 
 

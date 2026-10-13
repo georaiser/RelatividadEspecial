@@ -87,15 +87,22 @@
   const calcGVal      = document.getElementById('calc-g-val');
   const presetsDCalc  = document.getElementById('presets-d-calc');
 
-  const inputT0       = document.getElementById('input-t0');
-  const unitT0        = document.getElementById('unit-t0');
-  const resT          = document.getElementById('res-t');
-  const resDtDiff     = document.getElementById('res-dt-diff');
+  const inputT0         = document.getElementById('input-t0');
+  const unitT0          = document.getElementById('unit-t0');
+  const resT            = document.getElementById('res-t');
+  const resDtDiff       = document.getElementById('res-dt-diff');
+  const resDopplerTrans = document.getElementById('res-doppler-trans');
 
-  const inputL0       = document.getElementById('input-l0');
-  const unitL0        = document.getElementById('unit-l0');
-  const resL          = document.getElementById('res-l');
-  const resLPct       = document.getElementById('res-l-pct');
+  const inputL0         = document.getElementById('input-l0');
+  const unitL0          = document.getElementById('unit-l0');
+  const resL            = document.getElementById('res-l');
+  const resLPct         = document.getElementById('res-l-pct');
+
+  const selectParticle  = document.getElementById('select-particle');
+  const resE0           = document.getElementById('res-e0');
+  const resEk           = document.getElementById('res-ek');
+  const resEtot         = document.getElementById('res-etot');
+  const resMom          = document.getElementById('res-mom');
 
   /* ══════════════════════════════════════════════════════════
      RESIZE HANDLERS
@@ -562,8 +569,15 @@
   });
 
   /* ══════════════════════════════════════════════════════════
-     CALCULADORA RELATIVISTA DE TIEMPO Y LONGITUD
+     CALCULADORA RELATIVISTA DE TIEMPO, LONGITUD, DOPPLER Y E=mc²
   ══════════════════════════════════════════════════════════ */
+  const PARTICLES = {
+    electron: { e0: 0.5110,  unit: 'MeV', dec: 4 },
+    muon:     { e0: 105.66,  unit: 'MeV', dec: 2 },
+    proton:   { e0: 938.27,  unit: 'MeV', dec: 2 },
+    gram:     { e0: 8.988e13, unit: 'J',  sci: true },
+  };
+
   function updateCalculator() {
     const β = parseFloat(calcBSlider.value);
     const γ = Lorentz.gamma(β);
@@ -571,14 +585,23 @@
     calcBRd.textContent = `β = ${β.toFixed(4)}`;
     calcGVal.textContent = γ.toFixed(4);
 
-    // 1. Tiempo
+    // 1. Tiempo y Doppler Transversal
     const valT0 = parseFloat(inputT0.value) || 0;
     const uT = unitT0.value;
     const valT = valT0 * γ;
     const diffT = valT - valT0;
 
     resT.textContent = `${valT.toFixed(3)} ${uT}`;
-    resDtDiff.textContent = `+${diffT.toFixed(3)} ${uT} (Atraso: ${(diffT / valT * 100).toFixed(1)}%)`;
+    resDtDiff.textContent = `+${diffT.toFixed(3)} ${uT} (Atraso: ${(diffT / valT * 100).toFixed(2)}%)`;
+
+    if (resDopplerTrans) {
+      const dLambda = γ - 1;
+      const fRatio  = 1 / γ;
+      const dLambdaStr = (dLambda > 0 && dLambda < 0.001)
+        ? `+${dLambda.toExponential(2)}`
+        : `+${dLambda.toFixed(4)}`;
+      resDopplerTrans.textContent = `${dLambdaStr} (f = ${fRatio.toFixed(5)}·f₀)`;
+    }
 
     // 2. Longitud
     const valL0 = parseFloat(inputL0.value) || 0;
@@ -588,13 +611,36 @@
 
     resL.textContent = `${valL.toFixed(3)} ${uL}`;
     resLPct.textContent = `-${pctContracted.toFixed(2)}% (Factor: ${(1/γ).toFixed(4)})`;
+
+    // 3. Dinámica Relativista y Masa-Energía (E = γmc²)
+    if (selectParticle && resE0 && resEk && resEtot && resMom) {
+      const pKey = selectParticle.value || 'electron';
+      const pObj = PARTICLES[pKey] || PARTICLES.electron;
+      const E0   = pObj.e0;
+      const K    = (γ - 1) * E0;
+      const Etot = γ * E0;
+      const pc   = γ * β * E0;
+
+      if (pObj.sci) {
+        resE0.textContent   = `${E0.toExponential(3)} ${pObj.unit} (~25 millones kWh)`;
+        resEk.textContent   = `${K.toExponential(3)} ${pObj.unit}`;
+        resEtot.textContent = `${Etot.toExponential(3)} ${pObj.unit}`;
+        resMom.textContent  = `${pc.toExponential(3)} ${pObj.unit} (✓ E²−(pc)² = E₀²)`;
+      } else {
+        const d = pObj.dec;
+        resE0.textContent   = `${E0.toFixed(d)} ${pObj.unit}`;
+        resEk.textContent   = `${K.toFixed(d)} ${pObj.unit}`;
+        resEtot.textContent = `${Etot.toFixed(d)} ${pObj.unit}`;
+        resMom.textContent  = `${pc.toFixed(d)} ${pObj.unit} (✓ E²−(pc)² = E₀²)`;
+      }
+    }
   }
 
   calcBSlider.addEventListener('input', () => {
     if (presetsDCalc) {
       const bVal = parseFloat(calcBSlider.value);
       presetsDCalc.querySelectorAll('.preset-btn').forEach(b => {
-        if (Math.abs(parseFloat(b.dataset.b) - bVal) < 0.005) {
+        if (Math.abs(parseFloat(b.dataset.b) - bVal) < 0.0005) {
           b.classList.add('active-preset');
         } else {
           b.classList.remove('active-preset');
@@ -610,6 +656,13 @@
         presetsDCalc.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active-preset'));
         btn.classList.add('active-preset');
         calcBSlider.value = btn.dataset.b;
+        if (btn.dataset.t0) inputT0.value = btn.dataset.t0;
+        if (btn.dataset.ut) unitT0.value  = btn.dataset.ut;
+        if (btn.dataset.l0) inputL0.value = btn.dataset.l0;
+        if (btn.dataset.ul) unitL0.value  = btn.dataset.ul;
+        if (selectParticle && parseFloat(btn.dataset.b) >= 0.998) {
+          selectParticle.value = 'muon';
+        }
         updateCalculator();
       });
     });
@@ -619,6 +672,7 @@
   unitT0.addEventListener('change', updateCalculator);
   inputL0.addEventListener('input', updateCalculator);
   unitL0.addEventListener('change', updateCalculator);
+  if (selectParticle) selectParticle.addEventListener('change', updateCalculator);
 
   /* ══════════════════════════════════════════════════════════
      INICIALIZACIÓN
