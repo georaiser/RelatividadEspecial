@@ -349,6 +349,75 @@
       </div>
     </div>
 
+    <!-- El mismo muón, tres maneras de calcularlo -->
+    <h4 class="section-heading sm-heading" style="margin-bottom:var(--space-xs);">
+      El mismo muón, tres maneras de calcularlo
+    </h4>
+    <p class="mk-desc" style="margin-bottom:var(--space-sm);">
+      Datos medidos en la Tierra: altura <code>h</code> y velocidad <code>β</code> (barra superior).
+      Las tres vías deben dar <strong>el mismo tiempo propio Δt'</strong> del muón (lo que marca su reloj).
+    </p>
+
+    <div class="preset-section" style="margin-bottom:var(--space-sm);">
+      <span class="preset-label">Ejemplo y altura:</span>
+      <div class="preset-row" id="presets-m3" style="margin-bottom:4px;">
+        <button class="preset-btn" data-beta="0.995" data-h="15">🌧️ Ejemplo de clase (15 km, 0.995c)</button>
+        <button class="preset-btn" data-beta="0.998" data-h="10">☁️ 10 km, 0.998c</button>
+        <button class="preset-btn" data-beta="0.60"  data-h="15">🐢 Sin efecto relativista claro (0.60c)</button>
+      </div>
+      <div class="tc-row" style="max-width:240px;">
+        <span class="tc-key">h =</span>
+        <input type="number" id="m3-h" class="coord-input tc-input" value="15" min="0.1" step="1" />
+        <span class="tc-unit">km</span>
+      </div>
+    </div>
+
+    <div class="info-box" style="padding:0;overflow:hidden;margin-bottom:var(--space-md);">
+      <table class="formula-table">
+        <thead><tr><th>Vía</th><th>Cómo se calcula</th><th>Resultado (en vivo)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Datos (Tierra)</td>
+            <td>Δx = h &nbsp;·&nbsp; Δt = h / (β·c)</td>
+            <td id="m3-data">—</td>
+          </tr>
+          <tr>
+            <td>① Lorentz</td>
+            <td>Δt' = Δt / γ &nbsp; (dilatación del tiempo)</td>
+            <td id="m3-v1">—</td>
+          </tr>
+          <tr>
+            <td>② Intervalo Δs²</td>
+            <td>Δs² = (cΔt)² − Δx². Para el muón Δx' = 0, así que Δs² = (cΔt')²</td>
+            <td id="m3-v2">—</td>
+          </tr>
+          <tr>
+            <td>③ Factor K (Bondi)</td>
+            <td>K = √((1+β)/(1−β)) &nbsp;→&nbsp; γ = ½(K + 1/K) &nbsp;→&nbsp; Δt' = Δt / γ</td>
+            <td id="m3-v3">—</td>
+          </tr>
+          <tr>
+            <td>¿Coinciden?</td>
+            <td>Δt'<sub>①</sub> = Δt'<sub>②</sub> = Δt'<sub>③</sub></td>
+            <td id="m3-same">—</td>
+          </tr>
+          <tr>
+            <td>Supervivencia</td>
+            <td>N/N₀ = e<sup>−Δt'/τ₀</sup>, con τ₀ = 2.2 μs</td>
+            <td id="m3-surv">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="insight-box" style="margin-bottom:var(--space-md);">
+      <div class="insight-title">💡 Lo importante</div>
+      <p style="margin:0;font-size:0.86rem;line-height:1.55;">
+        El muón «siente» solo <code>Δt'</code> (unos pocos μs), no los ~50 μs que mide la Tierra. Por eso una fracción apreciable llega al suelo.
+        El signo menos de <code>Δs² = (cΔt)² − Δx²</code> es el que le «resta» tiempo al reloj del muón: el movimiento en el espacio se descuenta del tiempo propio.
+      </p>
+    </div>
+
     <!-- Deducción Algebraica paso a paso de la Contracción de Longitud -->
     <div class="pythagoras-card py-highlight" style="margin-bottom:var(--space-md);">
       <div class="insight-title" style="margin-bottom:var(--space-sm);">

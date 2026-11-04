@@ -103,6 +103,16 @@
   const muonDEarth     = document.getElementById('muon-d-earth');
   const muonAtmCont    = document.getElementById('muon-atm-cont');
   const muonVerdict    = document.getElementById('muon-verdict');
+
+  // D.2 — El mismo muón, tres maneras de calcularlo
+  const presetsM3      = document.getElementById('presets-m3');
+  const inputM3H       = document.getElementById('m3-h');
+  const m3Data         = document.getElementById('m3-data');
+  const m3V1           = document.getElementById('m3-v1');
+  const m3V2           = document.getElementById('m3-v2');
+  const m3V3           = document.getElementById('m3-v3');
+  const m3Same         = document.getElementById('m3-same');
+  const m3Surv         = document.getElementById('m3-surv');
   const scanCanvas     = document.getElementById('canvas-contraction');
   const scanCtx        = scanCanvas ? scanCanvas.getContext('2d') : null;
 
@@ -236,6 +246,58 @@
       } else {
         muonVerdict.style.color = '#fbbf24';
         muonVerdict.textContent = `✗ Se desintegra a los ${dEarth.toFixed(2)} km (sube β a 0.998)`;
+      }
+    }
+
+    // 3b. D.2 — El mismo muón por tres vías: Lorentz, intervalo Δs² y factor K de Bondi
+    if (m3Data) {
+      const hKm   = parseFloat(inputM3H ? inputM3H.value : 15) || 0;
+      const tau0m = 2.2;                               // μs (vida media en reposo)
+      const fx = (v, d) => v.toFixed(d);
+
+      // Sincroniza el botón de ejemplo activo (β y h iguales)
+      if (presetsM3) {
+        presetsM3.querySelectorAll('.preset-btn').forEach(btn => {
+          const same = Math.abs(parseFloat(btn.dataset.beta) - β) < 0.0004 &&
+                       Math.abs(parseFloat(btn.dataset.h) - hKm) < 0.01;
+          btn.classList.toggle('active-preset', same);
+        });
+      }
+
+      if (β < 0.0005 || hKm <= 0) {
+        [m3Data, m3V1, m3V2, m3V3, m3Same, m3Surv].forEach(e => { if (e) e.textContent = '— (sube β y h > 0)'; });
+      } else {
+        const dtEarth = hKm / (β * C_KM_PER_US);       // μs: tiempo en la Tierra
+        const cdt     = hKm / β;                       // km: c·Δt
+
+        // ① Lorentz
+        const dtp1 = dtEarth / γ;
+
+        // ② Intervalo Δs² = (cΔt)² − Δx²  →  cΔt' = √Δs²
+        const ds2   = cdt * cdt - hKm * hKm;           // km²
+        const cdtp  = Math.sqrt(Math.max(0, ds2));     // km
+        const dtp2  = cdtp / C_KM_PER_US;              // μs
+
+        // ③ Bondi: K, γ = ½(K+1/K)
+        const K     = Math.sqrt((1 + β) / (1 - β));
+        const gK    = 0.5 * (K + 1 / K);
+        const dtp3  = dtEarth / gK;
+
+        const fmtDs = ds2 >= 1000 ? ds2.toExponential(3) : fx(ds2, 3);
+        m3Data.textContent = `Δx = ${fx(hKm, 1)} km · cΔt = ${fx(cdt, 3)} km · Δt = ${fx(dtEarth, 2)} μs`;
+        m3V1.textContent   = `γ = ${fx(γ, 3)} → Δt' = ${fx(dtp1, 3)} μs`;
+        m3V2.textContent   = `Δs² = ${fmtDs} km² → cΔt' = ${fx(cdtp, 3)} km → Δt' = ${fx(dtp2, 3)} μs`;
+        m3V3.textContent   = `K = ${fx(K, 3)} → γ = ${fx(gK, 3)} → Δt' = ${fx(dtp3, 3)} μs`;
+
+        const ok = Math.abs(dtp1 - dtp2) < 1e-6 * Math.max(1, dtp1) &&
+                   Math.abs(dtp1 - dtp3) < 1e-6 * Math.max(1, dtp1);
+        m3Same.style.color = ok ? '#34d399' : '#f87171';
+        m3Same.textContent = `${ok ? '✓ Las 3 vías coinciden' : '✗ No coinciden'}: Δt' = ${fx(dtp1, 3)} μs = ${fx(dtp1 / tau0m, 2)} vidas medias`;
+
+        const survRel = Math.exp(-dtp1 / tau0m) * 100;      // %
+        const survCl  = Math.exp(-dtEarth / tau0m) * 100;   // % (sin relatividad, viaja Δt de Tierra)
+        const pct = (p) => (p >= 0.01 ? fx(p, 2) : p.toExponential(1)) + ' %';
+        m3Surv.textContent = `Con relatividad: ${pct(survRel)} · Sin relatividad (usando Δt de la Tierra): ${pct(survCl)}`;
       }
     }
 
@@ -1063,6 +1125,18 @@
       });
     });
   }
+
+  // Presets del muón por tres vías (fijan β y altura h)
+  if (presetsM3) {
+    presetsM3.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const h = parseFloat(btn.dataset.h);
+        if (inputM3H && !isNaN(h)) inputM3H.value = h;
+        setGlobalBeta(parseFloat(btn.dataset.beta));
+      });
+    });
+  }
+  if (inputM3H) inputM3H.addEventListener('input', updateAll);
 
   // Inputs numéricos directos
   if (inputT0) inputT0.addEventListener('input', updateAll);

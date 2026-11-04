@@ -2103,6 +2103,15 @@
   cursor: ew-resize;
 }
 
+/* Panel B.4 — Radar de Bondi y Gemelos */
+#canvas-bondi {
+  width: 100%;
+  min-height: 360px;
+  background: #09111e;
+  display: block;
+  cursor: default;
+}
+
 /* Tarjeta de deducción de Pitágoras */
 .pythagoras-card {
   background: var(--color-surface);

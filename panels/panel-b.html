@@ -70,6 +70,7 @@
       <button class="tab-btn active" data-tab="tab-coords"  >B.1 · Coordenadas</button>
       <button class="tab-btn"        data-tab="tab-simul"   >B.2 · Simultaneidad</button>
       <button class="tab-btn"        data-tab="tab-interval">B.3 · Intervalo Δs²</button>
+      <button class="tab-btn"        data-tab="tab-bondi">B.4 · Radar K y Gemelos</button>
     </div>
     <div class="beta-inline-ctrl">
       <label for="global-beta-slider">β</label>
@@ -439,6 +440,147 @@
   </div><!-- /tab-interval -->
 
 
+  <!-- ══════════════════════════════════════════════
+       TAB B.4 — RADAR DE BONDI (FACTOR K) Y GEMELOS
+  ══════════════════════════════════════════════ -->
+  <div id="tab-bondi" class="tab-panel">
+
+    <div style="margin-bottom:var(--space-md);">
+      <h3 class="section-heading sm-heading">Radar de Bondi: el factor K y la Paradoja de los Gemelos</h3>
+      <p class="mk-desc" style="margin-bottom:var(--space-xs);">
+        <strong>Idea:</strong> el Viajero manda un destello de luz por cada año de <em>su</em> reloj.
+        Gema, en la Tierra, los recibe <strong>más espaciados</strong> mientras él se aleja
+        y <strong>más juntos</strong> cuando regresa. Ese factor es <code>K</code> (efecto Doppler),
+        y con solo él salen <code>γ</code> y el invariante <code>Δs²</code>.
+      </p>
+
+      <div class="preset-section" style="margin-bottom:var(--space-sm);">
+        <span class="preset-label">Velocidad del Viajero (o usa el control β de arriba):</span>
+        <div class="preset-row" id="presets-b4" style="margin-bottom:4px;">
+          <button class="preset-btn" data-beta="0.60">🚶 0.60c (K = 2)</button>
+          <button class="preset-btn" data-beta="0.80">🚀 0.80c (K = 3)</button>
+          <button class="preset-btn" data-beta="0.96">⚡ 0.96c (K = 7)</button>
+          <button class="preset-btn" data-beta="0.99">☄️ 0.99c (K ≈ 14)</button>
+        </div>
+        <span class="preset-label">Duración de cada tramo (años propios del Viajero):</span>
+        <div class="tc-row" style="max-width:180px;">
+          <span class="tc-key">n =</span>
+          <select id="b4-leg" class="coord-input" style="width:auto;padding:4px 6px;font-size:0.8rem;">
+            <option value="1">1 año</option>
+            <option value="2">2 años</option>
+            <option value="3" selected>3 años</option>
+            <option value="4">4 años</option>
+            <option value="5">5 años</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reglas de K (izq.) + Tabla en vivo (der.) -->
+    <div class="two-col" style="gap:var(--space-md);margin-bottom:var(--space-md);align-items:stretch;">
+      <div class="vadd-card lorentz" style="margin:0;display:flex;flex-direction:column;justify-content:space-between;">
+        <div class="vc-header">
+          <div>
+            <div class="vc-title success-text">La regla de K</div>
+            <div class="vc-sub">Tiempo entre destellos: emitido → recibido</div>
+          </div>
+          <span class="vc-badge success-badge">K · (1/K) = 1</span>
+        </div>
+        <div class="vc-formula-box success-box" style="flex-direction:column;gap:6px;padding:10px;">
+          <div style="font-family:var(--font-mono);font-size:0.9rem;color:#f87171;">
+            Se alejan: &nbsp; t<sub>recibido</sub> = K · t<sub>emitido</sub> &nbsp; (K &gt; 1, rojo)
+          </div>
+          <div style="font-family:var(--font-mono);font-size:0.9rem;color:#60a5fa;">
+            Se acercan: t<sub>recibido</sub> = t<sub>emitido</sub> / K &nbsp; (destellos juntos, azul)
+          </div>
+          <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--color-accent);">
+            K = √((1+β)/(1−β)) &emsp;|&emsp; γ = ½ (K + 1/K)
+          </div>
+        </div>
+        <div class="vc-verdict success-verdict" id="b4-verdict">—</div>
+      </div>
+
+      <div class="info-box" style="padding:0;overflow:hidden;margin-bottom:0;display:flex;flex-direction:column;height:100%;">
+        <table class="formula-table" style="height:100%;">
+          <thead><tr><th>Magnitud (<span id="b4-n-label">n = 3 años</span> por tramo)</th><th>Fórmula</th><th>Valor</th></tr></thead>
+          <tbody>
+            <tr><td>K (se alejan)</td><td>√((1+β)/(1−β))</td><td id="b4-k">—</td></tr>
+            <tr><td>1/K (se acercan)</td><td>√((1−β)/(1+β))</td><td id="b4-invk">—</td></tr>
+            <tr><td>γ</td><td>½ (K + 1/K)</td><td id="b4-gamma">—</td></tr>
+            <tr><td>Ida: Gema recibe cada</td><td>K · 1 año</td><td id="b4-gap-out">—</td></tr>
+            <tr><td>Vuelta: Gema recibe cada</td><td>(1/K) · 1 año</td><td id="b4-gap-ret">—</td></tr>
+            <tr><td>Tiempo de Gema en la ida</td><td>n · K</td><td id="b4-t-out">—</td></tr>
+            <tr><td>Tiempo de Gema en la vuelta</td><td>n / K</td><td id="b4-t-ret">—</td></tr>
+            <tr><td>Total Gema</td><td>n (K + 1/K) = 2γn</td><td id="b4-t-total">—</td></tr>
+            <tr><td>Total Viajero</td><td>2n</td><td id="b4-tau-total">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CANVAS: animación -->
+    <div class="canvas-wrapper" style="margin-bottom:var(--space-md);">
+      <div class="canvas-title">
+        Animación: destellos de luz del Viajero hacia Gema
+        <span class="canvas-subtitle">Izquierda: diagrama espacio-tiempo (la luz va a 45°) · Derecha: cuándo se emite cada destello vs. cuándo lo recibe Gema</span>
+      </div>
+      <canvas id="canvas-bondi"></canvas>
+      <div class="anim-controls">
+        <button id="btn-b4-play"  class="btn btn-primary"><span class="btn-icon">▶</span> Reproducir viaje</button>
+        <button id="btn-b4-pause" class="btn btn-secondary" disabled><span class="btn-icon">⏸</span> Pausar</button>
+        <button id="btn-b4-end"   class="btn btn-secondary"><span class="btn-icon">⏭</span> Ver resultado final</button>
+        <span class="readout" style="color:var(--color-accent);">Gema: <span id="b4-clock-earth">—</span></span>
+        <span class="readout k-readout">Viajero: <span id="b4-clock-trav">—</span></span>
+        <span class="readout" style="color:#f87171;">Ida recibidos: <span id="b4-count-out">—</span></span>
+        <span class="readout" style="color:#60a5fa;">Vuelta recibidos: <span id="b4-count-ret">—</span></span>
+      </div>
+    </div>
+
+    <!-- Deducción simple: de K a γ y a Δs² -->
+    <div class="pythagoras-card py-highlight" style="margin-bottom:var(--space-md);">
+      <div class="insight-title" style="margin-bottom:var(--space-sm);">
+        📐 De K a γ y a Δs² en tres pasos (solo con señales de luz)
+      </div>
+      <div class="py-step">
+        <span class="py-step-num">1</span>
+        <div>
+          <strong>K es el efecto Doppler.</strong> Si el Viajero se aleja, los destellos llegan espaciados:
+          <code>t<sub>rec</sub> = K · t<sub>em</sub></code> con <code>K = √((1+β)/(1−β)) &gt; 1</code>
+          (corrimiento al rojo). Al regresar se usa <code>1/K &lt; 1</code>: los destellos se juntan (corrimiento al azul).
+        </div>
+      </div>
+      <div class="py-step">
+        <span class="py-step-num">2</span>
+        <div>
+          <strong>Radar: aparece γ.</strong> Gema envía un destello en <code>T₁</code>, rebota en la nave y vuelve en
+          <code>T₂ = K²·T₁</code>. La nave lo recibe en su tiempo propio <code>τ = K·T₁</code>, y para Gema ese evento ocurre en
+          <code>t = (T₁+T₂)/2</code>. Entonces:
+          <br/><code>t = ½ (K + 1/K) · τ = γ · τ</code> &nbsp; (y de ahí <code>γ = 1/√(1−β²)</code>)
+        </div>
+      </div>
+      <div class="py-step">
+        <span class="py-step-num">3</span>
+        <div>
+          <strong>El intervalo con signo menos.</strong> Con luz: <code>ct + x = K·(ct' + x')</code> y
+          <code>ct − x = (ct' − x') / K</code>. Al multiplicar, <code>K · (1/K) = 1</code>:
+          <br/><code>c²t² − x² = c²t'² − x'² = Δs²</code> ✓ &nbsp; (por eso el signo menos es el que no cambia con el movimiento)
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box" style="margin-bottom:var(--space-lg);">
+      <div class="insight-title">💡 ¿Por qué los gemelos no son simétricos?</div>
+      <p style="margin:0;font-size:0.86rem;line-height:1.55;">
+        • <strong>Gema</strong> recibe señales «lentas» (K) durante casi toda su espera y señales «rápidas» (1/K) solo al final.<br/>
+        • <strong>Viajero</strong> emite la mitad de sus destellos alejándose y la otra mitad acercándose.<br/>
+        • Al <strong>girar</strong> en la estrella, el Viajero cambia de sistema inercial: esa es la asimetría. El resultado es siempre
+        <code>t<sub>Gema</sub> = 2γn &gt; 2n = t<sub>Viajero</sub></code>: el Viajero envejece menos.
+      </p>
+    </div>
+
+  </div><!-- /tab-bondi -->
+
+
   <div class="transition-box">
     <p>
       Las transformaciones de Lorentz muestran que espacio y tiempo son coordenadas de un mismo
@@ -456,6 +598,7 @@
 
 <script src="../js/physics/lorentz.js"></script>
 <script src="../js/panels/panel-b.js"></script>
+<script src="../js/panels/panel-b-bondi.js"></script>
 
 </body>
 </html>

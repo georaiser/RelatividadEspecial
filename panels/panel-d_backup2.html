@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel D — Dilatación, Contracción, Evidencia e Impacto</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/panels.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <h1 class="site-title">Laboratorio de Relatividad Especial</h1>
+    <p class="site-subtitle">Consecuencias físicas, confirmaciones experimentales e impacto en la física moderna</p>
+  </div>
+</header>
+
+<main class="panel-page">
+
+  <a href="../index.html" class="panel-back-link">Volver al índice</a>
+
+  <div class="panel-header">
+    <div class="panel-heading">
+      <span class="panel-tag">Panel D</span>
+      <h2 class="panel-title-large">Dilatación, Contracción, Evidencia e Impacto</h2>
+    </div>
+    <p class="panel-question">
+      A partir de las transformaciones de <a href="panel-b.html" style="color:var(--color-accent);">Panel B</a>
+      y la geometría de <a href="panel-c.html" style="color:var(--color-accent-2);">Panel C</a>,
+      aquí exploramos interactivamente las consecuencias físicas sobre relojes, longitudes, partículas y energía:
+      dilatación temporal, contracción de Lorentz, pruebas experimentales y equivalencia masa-energía <code>E = mc²</code>.
+    </p>
+  </div>
+
+  <!-- Fórmulas maestras de referencia -->
+  <div class="two-col formula-header">
+    <div class="formula-box">
+      <div class="formula-label">Cinemática Relativista y Doppler Transversal</div>
+      Δt = γ · Δt₀ &nbsp;|&nbsp; L = L₀ / γ &nbsp;|&nbsp; f<sub>⊥</sub> = f₀ / γ
+    </div>
+    <div class="formula-box" style="border-color:rgba(52,211,153,0.35);">
+      <div class="formula-label">Dinámica Relativista y Masa-Energía</div>
+      p = γmv &nbsp;|&nbsp; E = γmc² = K + mc² &nbsp;|&nbsp; E² = (pc)² + (mc²)²
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       BARRA STICKY: TABS + SLIDER β GLOBAL
+  ══════════════════════════════════════════════ -->
+  <div class="tab-control-bar">
+    <div class="tab-bar-inline">
+      <button class="tab-btn active" data-tab="tab-dilation"   >D.1 · Dilatación y Evidencia</button>
+      <button class="tab-btn"        data-tab="tab-contraction">D.2 · Contracción y Muones</button>
+      <button class="tab-btn"        data-tab="tab-dynamics"   >D.3 · Dinámica y E = mc²</button>
+    </div>
+    <div class="beta-inline-ctrl">
+      <label for="global-beta-slider">β</label>
+      <input type="range" id="global-beta-slider" class="beta-slider"
+             min="0" max="0.9995" step="0.0005" value="0.6" />
+      <span class="readout" id="beta-label">β = 0.6000</span>
+      <span class="gamma-badge">γ = <span id="gamma-label">1.2500</span></span>
+      <span class="readout k-readout" id="invgamma-label">1/γ = 0.8000</span>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       TAB D.1 — DILATACIÓN TEMPORAL Y EVIDENCIA EXPERIMENTAL
+  ══════════════════════════════════════════════ -->
+  <div id="tab-dilation" class="tab-panel active">
+
+    <!-- Fila superior: Idea principal y Presets experimentales -->
+    <div style="margin-bottom:var(--space-md);">
+      <h3 class="section-heading sm-heading">Dilatación del Tiempo (Δt = γ · Δt₀) y Efecto Doppler Transversal</h3>
+      <p class="mk-desc" style="margin-bottom:var(--space-xs);">
+        <strong>Idea principal:</strong> El <em>tiempo propio</em> <code>Δt₀</code> lo mide un reloj en reposo respecto al evento (<code>Δx' = 0</code>).
+        Visto desde el laboratorio a velocidad <code>v = βc</code>, el fotón recorre una diagonal más larga a la misma rapidez <code>c</code>:
+        por Pitágoras <code>(cΔt/2)² = (vΔt/2)² + (cΔt₀/2)² ⟹ Δt = γ·Δt₀</code>. Todo reloj en movimiento marcha más lento.
+      </p>
+
+      <div class="preset-section" style="margin-bottom:var(--space-sm);">
+        <span class="preset-label">Experimentos reales:</span>
+        <div class="preset-row" id="presets-d1" style="margin-bottom:0;">
+          <button class="preset-btn" data-beta="0.005" data-t0="1.0">🔬 Ives-Stilwell 1938 (0.005c)</button>
+          <button class="preset-btn active-preset" data-beta="0.60" data-t0="1.0">💡 Reloj de Luz (0.60c)</button>
+          <button class="preset-btn" data-beta="0.80" data-t0="10.0">🚀 Viaje Espacial (0.80c)</button>
+          <button class="preset-btn" data-beta="0.998" data-t0="2.2">🌧️ Muón Cósmico (0.998c)</button>
+          <button class="preset-btn" data-beta="0.9994" data-t0="2.2">🧲 Muón CERN 1977 (0.9994c)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fila intermedia: Transform Card (izq.) + Tabla de Magnitudes (der.) -->
+    <div class="two-col" style="gap:var(--space-md);margin-bottom:var(--space-md);align-items:stretch;">
+      <!-- Tarjeta S' → S -->
+      <div class="transform-card" style="margin-bottom:0;">
+        <div class="tc-system sp-system">
+          <div class="tc-sys-label">S' — Reloj en reposo propio (Δx' = 0)</div>
+          <div class="tc-inputs">
+            <div class="tc-row">
+              <span class="tc-key">Δt₀</span>
+              <input type="number" id="input-t0" class="coord-input tc-input" value="1.0" min="0.01" step="0.5" />
+              <select id="unit-t0" class="coord-input" style="width:auto;padding:4px 6px;font-size:0.8rem;">
+                <option value="μs">μs</option>
+                <option value="s" selected>s</option>
+                <option value="años">años</option>
+              </select>
+            </div>
+          </div>
+          <div class="tc-meta">
+            <span>Trayectoria vertical: <code>2L = c · Δt₀</code></span>
+            &ensp;<span class="annotation annotation-purple" id="clock-sp-ticks">0 ticks</span>
+          </div>
+        </div>
+
+        <div class="tc-arrow">
+          <span>⟶</span>
+          <code>Δt = Δt₀ / √(1 − β²) = γ · Δt₀</code>
+        </div>
+
+        <div class="tc-system s-system">
+          <div class="tc-sys-label">S — Medido en laboratorio (movimiento a β·c)</div>
+          <div class="tc-inputs">
+            <div class="tc-row">
+              <span class="tc-key">Δt</span>
+              <div class="coord-output tc-output" id="res-t" style="color:var(--color-accent);">1.250 s</div>
+            </div>
+            <div class="tc-row">
+              <span class="tc-key">Δt−Δt₀</span>
+              <div class="coord-output tc-output" id="res-dt-diff" style="color:#fbbf24;">+0.250 s</div>
+            </div>
+          </div>
+          <div class="tc-meta">
+            <span>Trayectoria diagonal: <code>c · Δt</code></span>
+            &ensp;<span style="color:var(--color-success);font-weight:600;" id="clock-s-ratio">γ = 1.2500</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de magnitudes de dilatación y Doppler transversal -->
+      <div class="info-box" style="padding:0;overflow:hidden;margin-bottom:0;display:flex;flex-direction:column;height:100%;">
+        <table class="formula-table" style="height:100%;">
+          <thead><tr><th>Magnitud</th><th>Fórmula</th><th>Valor</th></tr></thead>
+          <tbody>
+            <tr><td>β (Velocidad)</td><td>v / c</td><td id="d1-tbl-beta">0.6000</td></tr>
+            <tr><td>γ (Factor Lorentz)</td><td>1 / √(1 − β²)</td><td id="d1-tbl-gamma">1.2500</td></tr>
+            <tr><td>Ritmo del reloj móvil</td><td>Δt₀ / Δt = 1 / γ</td><td id="d1-tbl-rate">0.8000 (80.0%)</td></tr>
+            <tr><td>Doppler transversal (90°)</td><td>f<sub>obs</sub> = f₀ / γ</td><td id="d1-tbl-freq">0.80000 · f₀</td></tr>
+            <tr><td>Corrimiento Δλ / λ₀</td><td>γ − 1</td><td id="d1-tbl-dlambda">+0.2500</td></tr>
+            <tr><td>Reloj sim. (S' vs S)</td><td>t' vs t</td><td><span id="clock-sp-t">0.00 s</span> / <span id="clock-s-t">0.00 s</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CANVAS FULL WIDTH: El Reloj de Luz -->
+    <div class="canvas-wrapper" style="margin-bottom:var(--space-md);">
+      <div class="canvas-title">
+        Simulación Interactiva: El Reloj de Luz (Light Clock)
+        <span class="canvas-subtitle">Izquierda: S' en reposo (vertical 2L) &nbsp;·&nbsp; Derecha: S en movimiento (diagonal c·Δt con triángulo de Pitágoras)</span>
+      </div>
+      <canvas id="canvas-light-clock"></canvas>
+      <div class="anim-controls">
+        <button id="btn-clock-play"  class="btn btn-primary"><span class="btn-icon">▶</span> Iniciar fotones</button>
+        <button id="btn-clock-pause" class="btn btn-secondary" disabled><span class="btn-icon">⏸</span> Pausar</button>
+        <button id="btn-clock-reset" class="btn btn-secondary"><span class="btn-icon">↺</span> Reiniciar</button>
+        <span style="font-size:0.8rem;color:var(--color-text-dim);margin-left:auto;">
+          Deducción: <code>(cΔt/2)² = (vΔt/2)² + L² ⟹ Δt²(1 − β²) = Δt₀² ⟹ Δt = γ·Δt₀</code>
+        </span>
+      </div>
+    </div>
+
+    <!-- Deducción Geométrica y Algebraica paso a paso -->
+    <div class="pythagoras-card py-highlight" style="margin-bottom:var(--space-md);">
+      <div class="insight-title" style="margin-bottom:var(--space-sm);">
+        📐 Deducción Paso a Paso de la Dilatación del Tiempo (Geometría y Lorentz)
+      </div>
+      <div class="py-step">
+        <span class="py-step-num">1</span>
+        <div>
+          <strong>En el marco propio S' (reloj en reposo, <code>Δx' = 0</code>):</strong> El pulso de luz sube y baja verticalmente una distancia <code>2L</code> a rapidez <code>c</code>. Ese intervalo medido en el mismo punto espacial es el <strong>tiempo propio</strong>:
+          <br/><code>Δt₀ = 2L / c  ⟹  L = c · Δt₀ / 2</code>
+        </div>
+      </div>
+      <div class="py-step">
+        <span class="py-step-num">2</span>
+        <div>
+          <strong>En el laboratorio S (reloj moviéndose a velocidad <code>v = βc</code>):</strong> Mientras el fotón sube al espejo superior en un tiempo <code>Δt / 2</code>, el reloj avanza horizontalmente <code>v · Δt / 2</code>. Por el <strong>2.º postulado</strong>, el fotón viaja por la hipotenusa a la <em>misma rapidez invariante</em> <code>c</code>, recorriendo <code>c · Δt / 2</code>.
+        </div>
+      </div>
+      <div class="py-step">
+        <span class="py-step-num">3</span>
+        <div>
+          <strong>Por el Teorema de Pitágoras (y por Transformación de Lorentz <code>Δt = γ(Δt' + vΔx'/c²)</code> con <code>Δx' = 0</code>):</strong>
+          <br/><code>(c·Δt / 2)² = (v·Δt / 2)² + (c·Δt₀ / 2)²  ⟹  Δt² · (1 − v²/c²) = Δt₀²  ⟹  <strong>Δt = Δt₀ / √(1 − β²) = γ · Δt₀</strong> ✓</code>
+          <br/><span style="color:var(--color-text-dim);font-size:0.82rem;">Como <code>γ &gt; 1</code>, se cumple siempre <code>Δt &gt; Δt₀</code>: para el observador en reposo, el reloj en movimiento marcha más lento.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Las 4 Evidencias Experimentales de la Dilatación del Tiempo (RE.pdf diaps. 8, 61–62) -->
+    <h4 class="section-heading sm-heading" style="margin-bottom:var(--space-xs);">
+      Confirmaciones Experimentales de la Dilatación del Tiempo
+    </h4>
+    <p class="mk-desc" style="margin-bottom:var(--space-sm);">
+      La dilatación temporal no es una ilusión óptica; ha sido verificada directamente en átomos, relojes atómicos, aceleradores de partículas y satélites:
+    </p>
+
+    <div class="evidence-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:var(--space-lg);">
+      <!-- 1. Doppler Transversal -->
+      <div class="evidence-card">
+        <div class="ev-year">Predicción 1907 (Einstein) · Experimento 1938 (Ives &amp; Stilwell)</div>
+        <div class="ev-title">1. Efecto Doppler Transversal</div>
+        <div class="ev-body">
+          Cuando una fuente luminosa se observa perpendicularmente a su movimiento (<code>θ = 90°</code>), no se acerca ni se aleja, por lo que la física clásica predice <strong>cero efecto Doppler</strong>. Sin embargo, Einstein predijo en 1907 que, al atrasarse el tiempo interno del átomo en movimiento, su frecuencia de emisión disminuye por el factor de Lorentz:
+          <br/><code>f<sub>⊥</sub> = f₀ / γ = f₀√(1 − β²)</code> &nbsp;|&nbsp; <code>Δλ / λ₀ = γ − 1 ≈ ½β²</code>.
+          <br/>En <strong>1938, H. Ives y G. Stilwell</strong> midieron rayos canales de hidrógeno a <code>v ≈ 0.005c</code> (<code>Δλ/λ₀ ≈ 1.25×10⁻⁵</code>), logrando la primera prueba experimental directa de la dilatación del tiempo.
+        </div>
+      </div>
+
+      <!-- 2. Hafele & Keating + Relojes Ópticos -->
+      <div class="evidence-card">
+        <div class="ev-year">1972 — Hafele &amp; Keating · 2010 — Chou et al.</div>
+        <div class="ev-title">2. Relojes Atómicos en Aviones y Relojes Ópticos</div>
+        <div class="ev-body">
+          En <strong>1972, J. Hafele y R. Keating</strong> transportaron cuatro relojes atómicos de cesio (<code>¹³³Cs</code>) en aviones comerciales alrededor del mundo (hacia el este y hacia el oeste) y los compararon con relojes idénticos en tierra en el Observatorio Naval de EE. UU. Los relojes viajeros registraron exactamente la diferencia en nanosegundos predicha por la relatividad. En <strong>2010, Chou et al.</strong> usaron relojes ópticos de iones de aluminio (<code>Al⁺</code>) y midieron la dilatación del tiempo a tan solo <code>v ≈ 10 m/s</code> (velocidad de un ciclista, <code>γ − 1 ≈ 4×10⁻¹⁶</code>).
+        </div>
+      </div>
+
+      <!-- 3. Muones en Rayos Cósmicos y Anillo CERN -->
+      <div class="evidence-card">
+        <div class="ev-year">1941 — Rossi &amp; Hall · 1977 — CERN (Bailey et al.)</div>
+        <div class="ev-title">3. Muones Cósmicos y Anillo de Almacenamiento del CERN</div>
+        <div class="ev-body">
+          Los muones tienen una vida media en reposo de solo <code>τ₀ = 2.2 μs</code>. Creados por rayos cósmicos a <code>10 km</code> de altura viajando a <code>0.998c</code> (<code>γ ≈ 15.8</code>), logran llegar a la superficie terrestre porque su vida vista desde la Tierra se dilata a <code>τ = γτ₀ ≈ 34.8 μs</code>. En <strong>1977, en el CERN</strong> (Bailey et al.), se almacenaron muones en un anillo magnético a <code>v = 0.9994c</code> (<code>γ ≈ 29.3</code>): su vida media aumentó casi <strong>30 veces</strong> hasta <code>τ ≈ 64.4 μs</code>, confirmando <code>Δt = γΔt₀</code> con una precisión del <code>0.1%</code>.
+        </div>
+      </div>
+
+      <!-- 4. GPS -->
+      <div class="evidence-card">
+        <div class="ev-year">Tecnología Cotidiana — Satélites a 20 200 km</div>
+        <div class="ev-title">4. Sistema de Posicionamiento Global (GPS)</div>
+        <div class="ev-body">
+          Los satélites GPS orbitan la Tierra a <code>v ≈ 3.9 km/s</code>. Por la <strong>Relatividad Especial</strong>, sus relojes atómicos en movimiento se atrasan <code>−7.2 μs por día</code> respecto a la superficie terrestre (mientras que por menor gravedad en la Relatividad General se adelantan <code>+45.6 μs/día</code>). Los ingenieros programan una corrección relativista neta de <code>+38.4 μs/día</code> en los relojes de los satélites; sin ella, el GPS acumularía un error de posición de <strong>más de 10 km cada día</strong>.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-dilation -->
+
+
+  <!-- ══════════════════════════════════════════════
+       TAB D.2 — CONTRACCIÓN DE LONGITUD Y MUONES
+  ══════════════════════════════════════════════ -->
+  <div id="tab-contraction" class="tab-panel">
+
+    <!-- Fila superior: Idea principal y Presets -->
+    <div style="margin-bottom:var(--space-md);">
+      <h3 class="section-heading sm-heading">Contracción de Lorentz (L = L₀ / γ) y Dualidad Tierra–Muón</h3>
+      <p class="mk-desc" style="margin-bottom:var(--space-xs);">
+        <strong>Idea principal:</strong> La <em>longitud propia</em> <code>L₀</code> de un cuerpo es la que mide un observador en reposo respecto a él.
+        Para cualquier observador respecto al cual el objeto se mueva con velocidad <code>v = βc</code>, su longitud en la dirección del movimiento se acorta según <code>L = L₀ / γ = L₀√(1 − β²)</code>, mientras que sus dimensiones perpendiculares (<code>y, z</code>) permanecen intactas.
+      </p>
+
+      <div class="preset-section" style="margin-bottom:var(--space-sm);">
+        <span class="preset-label">Escenarios de contracción:</span>
+        <div class="preset-row" id="presets-d2" style="margin-bottom:0;">
+          <button class="preset-btn active-preset" data-beta="0.60" data-l0="100" data-ul="m">🚀 Nave (0.60c → 80%)</button>
+          <button class="preset-btn" data-beta="0.866" data-l0="10" data-ul="m">🎪 Pértiga y Granero (0.866c, γ=2)</button>
+          <button class="preset-btn" data-beta="0.990" data-l0="10" data-ul="km">⚡ Alta Velocidad (0.990c)</button>
+          <button class="preset-btn" data-beta="0.998" data-l0="10" data-ul="km">🌧️ Muón en Atmósfera (0.998c)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fila intermedia: Transform Card Longitud (izq.) + Tabla Dualidad Muón (der.) -->
+    <div class="two-col" style="gap:var(--space-md);margin-bottom:var(--space-md);align-items:stretch;">
+      <!-- Tarjeta L0 → L -->
+      <div class="transform-card" style="margin-bottom:0;">
+        <div class="tc-system sp-system">
+          <div class="tc-sys-label">S' — Longitud Propia en Reposo (L₀)</div>
+          <div class="tc-inputs">
+            <div class="tc-row">
+              <span class="tc-key">L₀</span>
+              <input type="number" id="input-l0" class="coord-input tc-input" value="100" min="0.1" step="5" />
+              <select id="unit-l0" class="coord-input" style="width:auto;padding:4px 6px;font-size:0.8rem;">
+                <option value="m" selected>m</option>
+                <option value="km">km</option>
+                <option value="al">años luz</option>
+              </select>
+            </div>
+          </div>
+          <div class="tc-meta">
+            <span>Altura transversal: <code>H = H₀</code> (100% invariante)</span>
+          </div>
+        </div>
+
+        <div class="tc-arrow">
+          <span>⟶</span>
+          <code>Δt = 0  ⟹  L = L₀ · √(1 − β²) = L₀ / γ</code>
+        </div>
+
+        <div class="tc-system s-system">
+          <div class="tc-sys-label">S — Longitud Medida en Movimiento (L)</div>
+          <div class="tc-inputs">
+            <div class="tc-row">
+              <span class="tc-key">L</span>
+              <div class="coord-output tc-output" id="res-l" style="color:#fbbf24;">80.000 m</div>
+            </div>
+            <div class="tc-row">
+              <span class="tc-key">ΔL/L₀</span>
+              <div class="coord-output tc-output" id="res-l-pct" style="color:var(--color-accent-2);">-20.00%</div>
+            </div>
+          </div>
+          <div class="tc-meta">
+            <span id="c-ratio-val" style="color:var(--color-success);font-weight:600;">L = 80.0% de L₀</span>
+            &ensp;<span>Escáner: <code id="scan-l">80.0 m</code> (<span id="scan-pct">-20.0%</span>)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla interactiva: Caso Muón Atmosférico (h = 10 km, τ₀ = 2.2 μs) a la velocidad β actual -->
+      <div class="info-box" style="padding:0;overflow:hidden;margin-bottom:0;display:flex;flex-direction:column;height:100%;">
+        <table class="formula-table" style="height:100%;">
+          <thead><tr><th>Test Muón Cósmico (h = 10 km, τ₀ = 2.2 μs)</th><th>Fórmula</th><th>Valor a β actual</th></tr></thead>
+          <tbody>
+            <tr><td>Distancia clásica sin relatividad</td><td>v · τ₀</td><td id="muon-d-clas">0.396 km</td></tr>
+            <tr><td>Marco Tierra: Vida dilatada</td><td>τ = γ · τ₀</td><td id="muon-t-earth">2.75 μs</td></tr>
+            <tr><td>Marco Tierra: Recorrido real</td><td>d = v · γτ₀</td><td id="muon-d-earth">0.495 km</td></tr>
+            <tr><td>Marco Muón: Atmósfera contraída</td><td>D = 10 km / γ</td><td id="muon-atm-cont">8.000 km</td></tr>
+            <tr><td>Veredicto (¿Cruza los 10 km?)</td><td>d ≥ 10 km  ó  vτ₀ ≥ D</td><td id="muon-verdict">✗ Se desintegra antes (sube β a 0.998)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CANVAS FULL WIDTH: Escáner de Contracción -->
+    <div class="canvas-wrapper" style="margin-bottom:var(--space-md);">
+      <div class="canvas-title">
+        Escáner Relativista de Contracción de Longitud (L = L₀ / γ)
+        <span class="canvas-subtitle">Sombra punteada: Longitud propia L₀ &nbsp;·&nbsp; Nave sólida: Longitud contraída L en dirección x</span>
+      </div>
+      <canvas id="canvas-contraction"></canvas>
+      <div class="controls-bar">
+        Mueve el control superior de β o elige el escenario del Muón (0.998c). Observa que el alto vertical H de la nave no cambia.
+      </div>
+    </div>
+
+    <!-- Deducción Algebraica paso a paso de la Contracción de Longitud -->
+    <div class="pythagoras-card py-highlight" style="margin-bottom:var(--space-md);">
+      <div class="insight-title" style="margin-bottom:var(--space-sm);">
+        📐 Deducción de la Contracción de Longitud desde las Transformaciones de Lorentz
+      </div>
+      <div class="py-step">
+        <span class="py-step-num">1</span>
+        <div>
+          <strong>¿Cómo se mide la longitud de un objeto en movimiento?</strong> Si una barra está fija en <code>S'</code>, su longitud propia es <code>L₀ = x₂' − x₁' = Δx'</code>. Para medir su longitud <code>L = x₂ − x₁ = Δx</code> desde el laboratorio <code>S</code> mientras se mueve, debemos registrar las posiciones de sus dos extremos <strong>en el mismo instante en S</strong>, es decir, con <code>Δt = t₂ − t₁ = 0</code>.
+        </div>
+      </div>
+      <div class="py-step">
+        <span class="py-step-num">2</span>
+        <div>
+          <strong>Aplicando la Transformación de Lorentz de posiciones:</strong>
+          <br/><code>Δx' = γ · (Δx − v · Δt)</code>. Sustituyendo <code>Δx' = L₀</code>, <code>Δx = L</code> y la condición de simultaneidad <code>Δt = 0</code>:
+          <br/><code>L₀ = γ · (L − 0)  ⟹  <strong>L = L₀ / γ = L₀ · √(1 − β²)</strong> ✓</code>
+        </div>
+      </div>
+      <div class="py-step">
+        <span class="py-step-num">3</span>
+        <div>
+          <strong>Invariancia transversal:</strong> Como las coordenadas perpendiculares cumplen <code>y' = y</code> y <code>z' = z</code>, el ancho y el alto del objeto no se alteran; la contracción ocurre únicamente a lo largo del eje del movimiento relativo.
+        </div>
+      </div>
+    </div>
+
+    <!-- Casos de Estudio: Muones Atmosféricos y Paradoja del Granero -->
+    <div class="case-study-grid" style="margin-bottom:var(--space-lg);">
+      <!-- Caso 1: Muones Atmosféricos -->
+      <div class="case-study-card cs-muon">
+        <div class="cs-header">
+          <h4>🌧️ Caso 1: Lluvia de Muones Cósmicos (Doble Perspectiva)</h4>
+          <span class="cs-badge badge-green">Dilatación ↔ Contracción</span>
+        </div>
+        <p style="font-size:0.84rem;line-height:1.5;color:var(--color-text-dim);margin-bottom:var(--space-xs);">
+          Los rayos cósmicos crean muones a <code>h = 10 km</code> de altura que viajan hacia el suelo a <code>v = 0.998c (γ ≈ 15.8)</code> con una vida media en reposo de <code>τ₀ = 2.2 μs</code>. Sin relatividad solo recorrerían <code>v·τ₀ ≈ 660 m</code> y casi ninguno llegaría a la Tierra. ¿Por qué los detectamos a nivel del mar?
+        </p>
+        <div class="cs-perspective-box">
+          <strong style="color:var(--color-accent);">Perspectiva Tierra (Dilatación del tiempo):</strong>
+          <br/>Para el observador en la Tierra la atmósfera mide <code>10 km</code>, pero el reloj interno del muón va más lento: su vida se dilata a <code>τ = γ·τ₀ ≈ 34.8 μs</code>, recorriendo <code>d = v·τ ≈ 10.4 km</code> y llegando a la superficie.
+        </div>
+        <div class="cs-perspective-box" style="margin-top:6px;">
+          <strong style="color:var(--color-accent-2);">Perspectiva Muón (Contracción de la longitud):</strong>
+          <br/>En su propio marco el muón está en reposo y vive solo <code>τ₀ = 2.2 μs</code>, pero ve a la atmósfera acercarse a <code>0.998c</code> contraída a <code>D = 10 km / γ ≈ 632 m</code>. En sus <code>2.2 μs</code> el suelo recorre <code>660 m &gt; 632 m</code> y lo alcanza.
+        </div>
+      </div>
+
+      <!-- Caso 2: Paradoja del Granero y la Pértiga -->
+      <div class="case-study-card cs-barn">
+        <div class="cs-header">
+          <h4>🎪 Caso 2: Paradoja de la Pértiga y el Granero</h4>
+          <span class="cs-badge badge-amber">Simultaneidad Relativa</span>
+        </div>
+        <p style="font-size:0.84rem;line-height:1.5;color:var(--color-text-dim);margin-bottom:var(--space-xs);">
+          Un atleta corre a <code>β = 0.866c (γ = 2)</code> con una pértiga de longitud propia <code>10 m</code> hacia un granero de <code>5 m</code> que tiene puertas delantera y trasera. ¿Puede encerrarse la pértiga entera dentro del granero?
+        </p>
+        <div class="cs-perspective-box">
+          <strong style="color:var(--color-accent);">Perspectiva del Granero (S):</strong>
+          <br/>La pértiga en movimiento se contrae a <code>L = 10 m / 2 = 5 m</code>. Cabe exactamente en el granero de <code>5 m</code> y ambas puertas se cierran y abren en el mismo instante (<code>Δt = 0</code>).
+        </div>
+        <div class="cs-perspective-box" style="margin-top:6px;">
+          <strong style="color:var(--color-accent-2);">Perspectiva del Corredor (S'):</strong>
+          <br/>La pértiga mide <code>10 m</code> y el granero se contrae a <code>5 m / 2 = 2.5 m</code>. ¿Cómo no choca? Porque por transformación de Lorentz (<code>Δt' = −γvΔx/c² ≠ 0</code>) <strong>las dos puertas no se cierran simultáneamente</strong>: la puerta de salida se cierra y vuelve a abrirse cuando entra la punta, y recién después se cierra la puerta de entrada cuando pasa la cola.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-contraction -->
+
+
+  <!-- ══════════════════════════════════════════════
+       TAB D.3 — DINÁMICA RELATIVISTA, E = mc² E IMPACTO
+  ══════════════════════════════════════════════ -->
+  <div id="tab-dynamics" class="tab-panel">
+
+    <!-- Fila superior: Idea principal y Selector de Partícula -->
+    <div style="margin-bottom:var(--space-md);">
+      <h3 class="section-heading sm-heading">Momentum (p = γmv), Equivalencia Masa-Energía (E₀ = mc²) e Impacto</h3>
+      <p class="mk-desc" style="margin-bottom:var(--space-xs);">
+        <strong>Idea principal:</strong> La mecánica de Newton (<code>p = mv</code>, <code>K = ½mv²</code>) no se conserva bajo transformaciones de Lorentz y permitiría acelerar cuerpos más allá de <code>c</code>. Einstein reformuló la dinámica introduciendo el momentum relativista <code>p = γmv</code> y demostró que la masa en reposo es una reserva concentrada de energía <code>E₀ = mc²</code>.
+      </p>
+
+      <div class="preset-section" style="margin-bottom:var(--space-sm);">
+        <span class="preset-label">Partícula / Sistema:</span>
+        <div class="preset-row" id="presets-d3-part" style="margin-bottom:4px;">
+          <button class="preset-btn active-preset" data-part="electron">⚡ Electrón (0.511 MeV)</button>
+          <button class="preset-btn" data-part="muon">🧲 Muón (105.66 MeV)</button>
+          <button class="preset-btn" data-part="proton">⚛️ Protón (938.27 MeV)</button>
+          <button class="preset-btn" data-part="gram">⚖️ 1 gramo de materia (9×10¹³ J)</button>
+          <button class="preset-btn" data-part="u235">☢️ Fisión ²³⁵U (ΔE ≈ 200 MeV)</button>
+        </div>
+        <span class="preset-label">Régimen de velocidad (β):</span>
+        <div class="preset-row" id="presets-d3-beta" style="margin-bottom:0;">
+          <button class="preset-btn" data-beta="0.10">🐢 Clásico (0.10c → K ≈ ½mv²)</button>
+          <button class="preset-btn active-preset" data-beta="0.60">🚀 Relativista (0.60c, γ=1.25)</button>
+          <button class="preset-btn" data-beta="0.866">⚖️ K = E₀ (0.866c, γ=2)</button>
+          <button class="preset-btn" data-beta="0.990">⚡ Acelerador (0.990c, γ=7.09)</button>
+          <button class="preset-btn" data-beta="0.998">🧲 Ultra-relativista (0.998c, γ=15.8)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fila intermedia: Fórmulas vc-* (izq.) + Tabla Dinámica en vivo (der.) -->
+    <div class="two-col" style="gap:var(--space-md);margin-bottom:var(--space-md);align-items:stretch;">
+      <!-- Tarjeta de Fórmulas y Desglose Energético -->
+      <div class="vadd-card lorentz" style="margin:0;display:flex;flex-direction:column;justify-content:space-between;">
+        <div class="vc-header">
+          <div>
+            <div class="vc-title success-text">Leyes de la Dinámica Relativista</div>
+            <div class="vc-sub">Unificación de Masa, Energía y Momentum</div>
+          </div>
+          <span class="vc-badge success-badge">E² − (pc)² = E₀² ✓</span>
+        </div>
+
+        <div class="vc-formula-box success-box" style="flex-direction:column;gap:6px;padding:10px;">
+          <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--color-text);">
+            <strong>p</strong> = γm<strong>v</strong> &emsp;|&emsp; E = γmc² = E₀ + K
+          </div>
+          <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--color-accent);">
+            E₀ = mc² &emsp;|&emsp; K = (γ − 1)mc² ≈ ½mv²
+          </div>
+        </div>
+
+        <div class="vc-verdict success-verdict" id="d3-verdict">
+          ✓ Para <strong>β = 0.6000 (γ = 1.2500)</strong>, la energía cinética es el <strong>25.0%</strong> de la energía en reposo E₀.
+        </div>
+      </div>
+
+      <!-- Tabla numérica en vivo -->
+      <div class="info-box" style="padding:0;overflow:hidden;margin-bottom:0;display:flex;flex-direction:column;height:100%;">
+        <table class="formula-table" style="height:100%;">
+          <thead><tr><th>Magnitud Dinámica</th><th>Fórmula</th><th>Valor a β actual</th></tr></thead>
+          <tbody>
+            <tr><td>Energía en reposo (E₀)</td><td>m · c²</td><td id="res-e0">0.5110 MeV</td></tr>
+            <tr><td>Energía cinética relativista (K)</td><td>(γ − 1) · mc²</td><td id="res-ek">0.1278 MeV</td></tr>
+            <tr><td>Energía cinética clásica (K<sub>cl</sub>)</td><td>½ m v² = ½ β² E₀</td><td id="res-ek-clas">0.0920 MeV</td></tr>
+            <tr><td>Energía total (E)</td><td>γ · mc² = E₀ + K</td><td id="res-etot">0.6388 MeV</td></tr>
+            <tr><td>Momentum (p·c)</td><td>γ · β · mc²</td><td id="res-mom">0.3833 MeV</td></tr>
+            <tr><td>Invariante Energía-Momentum</td><td>√(E² − (pc)²) = E₀</td><td id="res-inv-e">0.5110 MeV ✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CANVAS FULL WIDTH: Curva E = γmc² vs Clásica -->
+    <div class="canvas-wrapper" style="margin-bottom:var(--space-md);">
+      <div class="canvas-title">
+        Gráfica Interactiva: Energía Total Relativista (E = γmc²) vs. Aproximación Clásica (E₀ + ½mv²)
+        <span class="canvas-subtitle">Verde: E = γmc² (diverge en el muro v = c) &nbsp;·&nbsp; Rojo punteado: Predicción de Newton &nbsp;·&nbsp; Punto actual en β</span>
+      </div>
+      <canvas id="canvas-energy"></canvas>
+      <div class="controls-bar">
+        Aumenta β hacia 0.99: la energía relativista se dispara hacia el infinito en la barrera amarilla (v = c), impidiendo que cualquier masa alcance la velocidad de la luz.
+      </div>
+    </div>
+
+    <!-- Deducción de las Fórmulas de Dinámica Relativista -->
+    <div class="pythagoras-card py-highlight" style="margin-bottom:var(--space-md);">
+      <div class="insight-title" style="margin-bottom:var(--space-sm);">
+        📐 Deducción y Significado de las Ecuaciones de la Dinámica Relativista
+      </div>
+      <div class="py-step">
+        <span class="py-step-num">1</span>
+        <div>
+          <strong>Momentum Relativista (<code>p = γmv</code>) y Límite de Velocidad <code>c</code>:</strong> Para que la conservación del momentum en colisiones se cumpla en todos los marcos inerciales bajo transformaciones de Lorentz, el momentum debe definirse usando el tiempo propio <code>dτ = dt / γ</code>:
+          <br/><code><strong>p = m · (dx / dτ) = γ · m · v</strong></code>. Cuando <code>v → c</code>, el factor <code>γ → ∞</code>, por lo que acelerar una partícula con masa hasta <code>c</code> requeriría un impulso y una energía infinitos.
+        </div>
+      </div>
+      <div class="py-step">
+        <span class="py-step-num">2</span>
+        <div>
+          <strong>Trabajo, Energía Cinética y Equivalencia Masa-Energía (<code>E = γmc²</code>):</strong> Al integrar el trabajo de una fuerza <code>K = ∫ F dx = ∫ (dp/dt) dx = ∫ v dp</code> desde el reposo hasta velocidad <code>v</code> se obtiene:
+          <br/><code><strong>K = (γ − 1)mc² = γmc² − mc²</strong></code>.
+          <br/>• A bajas velocidades (<code>β ≪ 1</code>), por serie de Taylor <code>γ = (1 − β²)⁻¹/² ≈ 1 + ½β²</code>, recuperando la energía cinética clásica: <code>K ≈ ½m(βc)² = ½mv²</code>.
+          <br/>• En reposo (<code>v = 0, γ = 1</code>), el cuerpo posee una <strong>energía en reposo intrínseca <code>E₀ = mc²</code></strong>, y su energía total es <code><strong>E = K + mc² = γmc²</strong></code>.
+        </div>
+      </div>
+      <div class="py-step">
+        <span class="py-step-num">3</span>
+        <div>
+          <strong>Invariante Energía-Momentum (<code>E² = (pc)² + (mc²)²</code>):</strong> Elevando al cuadrado <code>E = γmc²</code> y <code>pc = γβmc²</code> y restando ambas expresiones (usando la identidad <code>γ²(1 − β²) = 1</code>):
+          <br/><code><strong>E² − (pc)² = γ²(1 − β²)(mc²)² = (mc²)²  ⟹  E² = (pc)² + (mc²)²</strong> ✓</code>
+          <br/>Esta relación es válida incluso para partículas sin masa (<code>m = 0</code>), como el fotón, para el cual se cumple <code><strong>E = p · c</strong></code>.
+        </div>
+      </div>
+    </div>
+
+    <!-- Las 4 Áreas de Impacto en la Física General -->
+    <h4 class="section-heading sm-heading" style="margin-bottom:var(--space-xs);">
+      Impacto de la Relatividad Especial en la Física General
+    </h4>
+    <p class="mk-desc" style="margin-bottom:var(--space-sm);">
+      La Teoría Especial de la Relatividad transformó los cimientos de toda la física del siglo XX y XXI en cuatro grandes áreas:
+    </p>
+
+    <div class="case-study-grid" style="margin-bottom:var(--space-lg);">
+      <!-- 1. Equivalencia Masa-Energía y Fotones -->
+      <div class="case-study-card cs-muon">
+        <div class="cs-header">
+          <h4>⚡ 1. Unificación de Masa, Energía y Luz</h4>
+          <span class="cs-badge badge-green">E₀ = mc² · E = pc</span>
+        </div>
+        <p style="font-size:0.84rem;line-height:1.55;color:var(--color-text-dim);margin:0;">
+          Antes de 1905, la conservación de la masa y la conservación de la energía eran dos leyes separadas. Einstein las unificó en una sola ley de <strong>conservación de masa-energía</strong>: la masa es energía altamente concentrada (<code>1 g ≈ 9×10¹³ J ≈ 25 millones de kWh</code>). Además, la ecuación <code>E² = (pc)² + (mc²)²</code> explicó cómo los <strong>fotones de luz</strong>, aun sin tener masa en reposo (<code>m = 0</code>), transportan energía y ejercen presión de radiación con momentum <code>p = E / c = h / λ</code>.
+        </p>
+      </div>
+
+      <!-- 2. Física Nuclear y Astrofísica -->
+      <div class="case-study-card cs-barn">
+        <div class="cs-header">
+          <h4>☀️ 2. Física Nuclear y Energía de las Estrellas</h4>
+          <span class="cs-badge badge-amber">ΔE = Δm · c²</span>
+        </div>
+        <p style="font-size:0.84rem;line-height:1.55;color:var(--color-text-dim);margin:0;">
+          En las reacciones nucleares la masa no se conserva por sí sola: una fracción de masa (<em>defecto de masa</em> <code>Δm</code>) se convierte directamente en energía según <code>ΔE = Δm·c²</code> (comprobado por Rainville et al., 2005 con error <code>&lt; 0.00004%</code>). Esto explica tanto la <strong>fisión nuclear</strong> del Uranio-235 en reactores (<code>~200 MeV</code> por núcleo) como la <strong>fusión nuclear</strong> en el Sol y las estrellas, donde 4 protones forman helio convirtiendo el <code>0.7%</code> de su masa en luz y calor.
+        </p>
+      </div>
+
+      <!-- 3. Espacio-Tiempo 4D y Relatividad General -->
+      <div class="case-study-card" style="border-color:rgba(79,158,255,0.35);">
+        <div class="cs-header">
+          <h4>🌌 3. Espacio-Tiempo 4D y Relatividad General (1908–1915)</h4>
+          <span class="cs-badge badge-green">Δs² = c²Δt² − Δx²</span>
+        </div>
+        <p style="font-size:0.84rem;line-height:1.55;color:var(--color-text-dim);margin:0;">
+          Al eliminar el tiempo absoluto, Hermann Minkowski demostró en 1908 que el espacio y el tiempo están entrelazados en un único <strong>espacio-tiempo de 4 dimensiones</strong> cuyo intervalo <code>Δs²</code> es invariante. Esta estructura geométrica fue la base indispensable para que Einstein formulara en <strong>1915 la Teoría General de la Relatividad</strong>, en la que la gravedad deja de ser una fuerza instantánea a distancia y se explica como la <strong>curvatura del espacio-tiempo</strong> producida por la masa y la energía.
+        </p>
+      </div>
+
+      <!-- 4. Mecánica Cuántica Relativista y Antimateria -->
+      <div class="case-study-card" style="border-color:rgba(167,139,250,0.35);">
+        <div class="cs-header">
+          <h4>⚛️ 4. Cuántica Relativista, Espín y Antimateria (1928)</h4>
+          <span class="cs-badge badge-amber">Ecuación de Dirac</span>
+        </div>
+        <p style="font-size:0.84rem;line-height:1.55;color:var(--color-text-dim);margin:0;">
+          Cuando Paul Dirac combinó en 1928 la Relatividad Especial (<code>E² = p²c² + m²c⁴</code>) con la mecánica cuántica, dedujo de forma natural el <strong>espín del electrón</strong> y predijo la existencia de la <strong>antimateria</strong> (el positrón <code>e⁺</code>, descubierto por Anderson en 1932, donde par electrón-positrón se aniquila en dos fotones de <code>0.511 MeV</code>). De esta unión nació la Teoría Cuántica de Campos, el Modelo Estándar de partículas (CERN) y la tomografía médica por emisión de positrones (<strong>PET</strong>).
+        </p>
+      </div>
+    </div>
+
+  </div><!-- /tab-dynamics -->
+
+
+  <!-- Transición de cierre -->
+  <div class="transition-box">
+    <p>
+      Recorrido completo del Laboratorio de Relatividad Especial: de los postulados a la geometría del espacio-tiempo y la equivalencia masa-energía.
+    </p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="panel-a.html" class="next-link">Panel A — Postulados</a>
+      <a href="panel-b.html" class="next-link">Panel B — Transformaciones de Lorentz</a>
+      <a href="panel-c.html" class="next-link">Panel C — Diagrama de Minkowski</a>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <p>Laboratorio de Relatividad Especial · Panel D — Dilatación, Contracción, Evidencia e Impacto</p>
+  <p class="footer-credit">Powered by <a href="https://github.com/georaiser/" target="_blank" rel="noopener">github.com/georaiser</a></p>
+</footer>
+
+<script src="../js/physics/lorentz.js"></script>
+<script src="../js/panels/panel-d.js"></script>
+
+</body>
+</html>
