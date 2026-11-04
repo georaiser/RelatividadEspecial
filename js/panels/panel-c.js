@@ -3,7 +3,7 @@
  *
  * Submódulos:
  *  C.1 Eventos       — evento A draggable, coordenadas K y K', Δs²
- *  C.2 Cono de Luz   — eventos A y B, cono desde A, clasificación causal
+ *  C.2 Cono de Luz   — eventos A y B, cono desde A relleno por región causal
  *  C.3 Simultaneidad — líneas de simultaneidad K (horizontal) y K' (inclinada)
  *
  * Depende de: js/physics/lorentz.js (IIFE: Lorentz.gamma, .transform, .spacetimeInterval, .classifyInterval)
@@ -65,7 +65,7 @@
   }
 
   /* ══════════════════════════════════════════════════════════
-     CAPAS DE DIBUJO
+     CAPAS DE DIBUJO COMUNES
   ══════════════════════════════════════════════════════════ */
 
   function drawBackground(ctx, d) {
@@ -91,31 +91,72 @@
     ctx.restore();
   }
 
-  function drawLightConeRegions(ctx, d) {
-    /* Rellena suavemente las regiones causales desde el ORIGEN */
+  /* ══════════════════════════════════════════════════════════
+     C.1 — REGIONES DEL CONO DESDE EL ORIGEN (con etiquetas)
+  ══════════════════════════════════════════════════════════ */
+
+  function drawOriginConeRegions(ctx, d) {
     const { cx, cy, W, H } = d;
     ctx.save();
 
-    // Región futura (ct > |x|): triángulo superior
-    ctx.fillStyle = 'rgba(253,224,71,0.035)';
+    // ── Región FUTURO (triángulo superior, entre las dos diagonales) ──
+    ctx.fillStyle = 'rgba(253,224,71,0.09)';
     ctx.beginPath();
     ctx.moveTo(cx, cy);
-    ctx.lineTo(0,  clamp(cy + cx, 0, H));
-    ctx.lineTo(0,  0); ctx.lineTo(W, 0);
-    ctx.lineTo(W,  clamp(cy - (W - cx), 0, H));
+    ctx.lineTo(cx - Math.min(cx, cy), cy - Math.min(cx, cy)); // diag superior izq
+    ctx.lineTo(0, 0);
+    ctx.lineTo(W, 0);
+    ctx.lineTo(cx + Math.min(W - cx, cy), cy - Math.min(W - cx, cy)); // diag superior der
     ctx.closePath();
     ctx.fill();
 
-    // Región pasada (ct < -|x|): triángulo inferior
-    ctx.fillStyle = 'rgba(253,224,71,0.02)';
+    // ── Región PASADO (triángulo inferior) ──
+    ctx.fillStyle = 'rgba(253,224,71,0.045)';
     ctx.beginPath();
     ctx.moveTo(cx, cy);
-    ctx.lineTo(0,  clamp(cy - cx, 0, H));
-    ctx.lineTo(0,  H); ctx.lineTo(W, H);
-    ctx.lineTo(W,  clamp(cy + (W - cx), 0, H));
+    ctx.lineTo(cx - Math.min(cx, H - cy), cy + Math.min(cx, H - cy)); // diag inf izq
+    ctx.lineTo(0, H);
+    ctx.lineTo(W, H);
+    ctx.lineTo(cx + Math.min(W - cx, H - cy), cy + Math.min(W - cx, H - cy)); // diag inf der
     ctx.closePath();
     ctx.fill();
 
+    // ── Etiquetas de región dentro del canvas ──
+    ctx.textAlign = 'center';
+
+    // FUTURO
+    ctx.font = 'bold 11px Consolas, monospace';
+    ctx.fillStyle = 'rgba(253,224,71,0.55)';
+    ctx.fillText('▲ FUTURO', cx, 22);
+    ctx.font = '10px Consolas, monospace';
+    ctx.fillStyle = 'rgba(253,224,71,0.35)';
+    ctx.fillText('ct > |x|  —  causal', cx, 36);
+
+    // PASADO
+    ctx.font = 'bold 11px Consolas, monospace';
+    ctx.fillStyle = 'rgba(253,224,71,0.40)';
+    ctx.fillText('▼ PASADO', cx, H - 24);
+    ctx.font = '10px Consolas, monospace';
+    ctx.fillStyle = 'rgba(253,224,71,0.25)';
+    ctx.fillText('ct < −|x|  —  causal', cx, H - 10);
+
+    // ZONA ESPACIAL (izquierda)
+    ctx.font = 'bold 10px Consolas, monospace';
+    ctx.fillStyle = 'rgba(192,132,252,0.45)';
+    ctx.save();
+    ctx.translate(28, cy);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('ZONA ESPACIAL', 0, 0);
+    ctx.restore();
+
+    // ZONA ESPACIAL (derecha)
+    ctx.save();
+    ctx.translate(d.W - 28, cy);
+    ctx.rotate(Math.PI / 2);
+    ctx.fillText('ZONA ESPACIAL', 0, 0);
+    ctx.restore();
+
+    ctx.textAlign = 'left';
     ctx.restore();
   }
 
@@ -173,16 +214,16 @@
     const γ = Lorentz.gamma(β);
 
     ctx.save();
-    ctx.strokeStyle = 'rgba(192,132,252,0.75)';
-    ctx.lineWidth = 1.6;
+    ctx.strokeStyle = 'rgba(192,132,252,0.80)';
+    ctx.lineWidth = 2;
 
-    // Eje ct': dirección (β, 1) en espacio físico → (β·ext, -ext) en canvas
+    // Eje ct': dirección (β, 1) en espacio físico
     ctx.beginPath();
     ctx.moveTo(cx - β * ext, cy + ext);
     ctx.lineTo(cx + β * ext, cy - ext);
     ctx.stroke();
 
-    // Eje x': dirección (1, β) en espacio físico → (ext, -β·ext) en canvas
+    // Eje x': dirección (1, β) en espacio físico
     ctx.beginPath();
     ctx.moveTo(cx - ext,     cy + β * ext);
     ctx.lineTo(cx + ext,     cy - β * ext);
@@ -229,8 +270,8 @@
   function drawLightConeLines(ctx, d) {
     const { W, H, cx, cy } = d;
     ctx.save();
-    ctx.strokeStyle = 'rgba(253,224,71,0.75)';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(253,224,71,0.85)';
+    ctx.lineWidth = 2;
     ctx.setLineDash([6, 5]);
 
     // ct = +x: de (0, cy+cx) a (W, cy-(W-cx))
@@ -245,7 +286,15 @@
     ctx.lineTo(W, cy + (W - cx));
     ctx.stroke();
 
+    // Etiqueta del cono de luz
     ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(253,224,71,0.65)';
+    ctx.font = 'italic 10px Consolas, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('luz  ct = x', d.W * 0.75, d.cy - d.scale * 1.5);
+    ctx.fillText('luz  ct = −x', d.W * 0.25, d.cy - d.scale * 1.5);
+    ctx.textAlign = 'left';
+
     ctx.restore();
   }
 
@@ -261,7 +310,6 @@
     if (ds2 > 0) {
       // Rama superior/inferior: ct = ±√(x² + ds2)
       ctx.strokeStyle = 'rgba(96,165,250,0.3)';
-      const s = Math.sqrt(ds2);
       ctx.beginPath();
       let first = true;
       for (let x = -RANGE; x <= RANGE; x += 0.1) {
@@ -386,33 +434,115 @@
     ctx.restore();
   }
 
+  /* ══════════════════════════════════════════════════════════
+     C.2 — CONO DE LUZ CENTRADO EN A (relleno por regiones)
+  ══════════════════════════════════════════════════════════ */
+
   function drawLightConeAtEvent(ctx, d, event) {
     const { px: ox, py: oy } = toCanvas(d, event.x, event.ct);
-    const ext = Math.max(d.W, d.H) * 2;
+    const { W, H } = d;
 
     ctx.save();
-    ctx.strokeStyle = '#fde047';
-    ctx.lineWidth = 1.5;
-    ctx.globalAlpha = 0.6;
-    ctx.setLineDash([5, 4]);
 
-    // Cono futuro
-    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + ext, oy - ext); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox - ext, oy - ext); ctx.stroke();
-    // Cono pasado
-    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + ext, oy + ext); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox - ext, oy + ext); ctx.stroke();
+    // ── Clip al canvas ──
+    ctx.beginPath();
+    ctx.rect(0, 0, W, H);
+    ctx.clip();
 
-    // Relleno sutil del cono futuro desde A
-    ctx.globalAlpha = 0.05;
-    ctx.fillStyle = '#fde047';
+    const ext = Math.max(W, H) * 2.5;
+
+    // ── Relleno FUTURO CAUSAL (cono superior desde A) ──
+    ctx.fillStyle = 'rgba(96,165,250,0.12)';
     ctx.beginPath();
     ctx.moveTo(ox, oy);
     ctx.lineTo(ox - ext, oy - ext);
     ctx.lineTo(ox + ext, oy - ext);
-    ctx.closePath(); ctx.fill();
+    ctx.closePath();
+    ctx.fill();
+
+    // ── Relleno PASADO CAUSAL (cono inferior desde A) ──
+    ctx.fillStyle = 'rgba(100,100,120,0.12)';
+    ctx.beginPath();
+    ctx.moveTo(ox, oy);
+    ctx.lineTo(ox - ext, oy + ext);
+    ctx.lineTo(ox + ext, oy + ext);
+    ctx.closePath();
+    ctx.fill();
+
+    // ── Relleno ZONA ESPACIAL (laterales, usando "even-odd" rule) ──
+    // Izquierda
+    ctx.fillStyle = 'rgba(192,132,252,0.08)';
+    ctx.beginPath();
+    ctx.moveTo(ox, oy);
+    ctx.lineTo(ox - ext, oy - ext);
+    ctx.lineTo(ox - ext, oy + ext);
+    ctx.closePath();
+    ctx.fill();
+    // Derecha
+    ctx.beginPath();
+    ctx.moveTo(ox, oy);
+    ctx.lineTo(ox + ext, oy - ext);
+    ctx.lineTo(ox + ext, oy + ext);
+    ctx.closePath();
+    ctx.fill();
+
+    // ── Líneas del cono (más gruesas y sólidas) ──
+    ctx.strokeStyle = 'rgba(253,224,71,0.90)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([7, 5]);
+
+    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + ext, oy - ext); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox - ext, oy - ext); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + ext, oy + ext); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox - ext, oy + ext); ctx.stroke();
 
     ctx.setLineDash([]);
+
+    // ── Etiquetas de región dentro del canvas ──
+    ctx.textAlign = 'center';
+
+    // Futuro Causal (dentro del triángulo superior)
+    const futLy = clamp(oy - 55, 14, H - 10);
+    if (futLy < oy - 20) {
+      ctx.font = 'bold 11px Consolas, monospace';
+      ctx.fillStyle = 'rgba(96,165,250,0.85)';
+      ctx.fillText('FUTURO CAUSAL', ox, futLy);
+      ctx.font = '9px Consolas, monospace';
+      ctx.fillStyle = 'rgba(96,165,250,0.55)';
+      ctx.fillText('Δs² > 0  ·  v < c', ox, futLy + 13);
+    }
+
+    // Pasado Causal
+    const pasLy = clamp(oy + 68, 14, H - 4);
+    if (pasLy > oy + 20) {
+      ctx.font = 'bold 11px Consolas, monospace';
+      ctx.fillStyle = 'rgba(160,160,160,0.75)';
+      ctx.fillText('PASADO CAUSAL', ox, pasLy);
+      ctx.font = '9px Consolas, monospace';
+      ctx.fillStyle = 'rgba(160,160,160,0.50)';
+      ctx.fillText('Δs² > 0  ·  v < c', ox, pasLy + 13);
+    }
+
+    // Zona Espacial izquierda
+    const leftLx = clamp(ox - 70, 10, W / 2 - 10);
+    ctx.font = 'bold 10px Consolas, monospace';
+    ctx.fillStyle = 'rgba(192,132,252,0.70)';
+    ctx.textAlign = 'center';
+    ctx.fillText('ESPACIAL', leftLx, oy);
+    ctx.font = '9px Consolas, monospace';
+    ctx.fillStyle = 'rgba(192,132,252,0.45)';
+    ctx.fillText('Δs² < 0', leftLx, oy + 13);
+
+    // Zona Espacial derecha
+    const rightLx = clamp(ox + 70, W / 2 + 10, W - 10);
+    ctx.fillStyle = 'rgba(192,132,252,0.70)';
+    ctx.font = 'bold 10px Consolas, monospace';
+    ctx.fillText('ESPACIAL', rightLx, oy);
+    ctx.font = '9px Consolas, monospace';
+    ctx.fillStyle = 'rgba(192,132,252,0.45)';
+    ctx.fillText('Δs² < 0', rightLx, oy + 13);
+
+    ctx.textAlign = 'left';
     ctx.restore();
   }
 
@@ -433,20 +563,150 @@
     ctx.strokeStyle = color;
     ctx.lineWidth = 2.5;
     ctx.setLineDash([6, 4]);
-    ctx.globalAlpha = 0.85;
+    ctx.globalAlpha = 0.9;
     ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
     ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
 
     // Badge informativo en el centro del vector A→B
     const mx = (ax + bx) / 2;
     const my = (ay + by) / 2;
+
+    // Fondo del badge
+    const label1 = type === 'temporal' ? `Δτ = ${fmt(Math.sqrt(Math.max(0, ds2)), 2)}`
+                 : type === 'espacial' ? `ΔL = ${fmt(Math.sqrt(Math.max(0, -ds2)), 2)}`
+                 : `Tiempo propio = 0`;
+    const label2 = `Δs² = ${fmt(ds2, 2)}`;
+
+    ctx.fillStyle = 'rgba(9,17,30,0.75)';
+    ctx.beginPath();
+    ctx.roundRect(mx - 58, my - 24, 116, 32, 4);
+    ctx.fill();
+
     ctx.fillStyle = color;
     ctx.font = 'bold 10px Consolas, monospace';
     ctx.textAlign = 'center';
-    const extraLabel = type === 'temporal' ? `Δτ = ${fmt(Math.sqrt(Math.max(0, ds2)), 2)}`
-                     : type === 'espacial' ? `ΔL = ${fmt(Math.sqrt(Math.max(0, -ds2)), 2)}`
-                     : `Luz (Δτ = 0)`;
-    ctx.fillText(`Δs² = ${fmt(ds2, 2)} · ${extraLabel}`, mx, my - 8);
+    ctx.fillText(label2, mx, my - 10);
+    ctx.font = '10px Consolas, monospace';
+    ctx.fillText(label1, mx, my + 3);
+    ctx.textAlign = 'left';
+
+    ctx.restore();
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     C.3 — LÍNEAS DE SIMULTANEIDAD (con resaltado)
+  ══════════════════════════════════════════════════════════ */
+  function drawSimulLines(ctx, d, β, A, B) {
+    const { W, H } = d;
+    const ext = Math.max(W, H) * 1.5;
+
+    // Calcular si A y B son simultáneos en cada marco
+    const EPS = 0.05;
+    const dtK  = B.ct - A.ct;
+    const Ap = Lorentz.transform(A.x, A.ct, β);
+    const Bp = Lorentz.transform(B.x, B.ct, β);
+    const dtKp = Bp.t - Ap.t;
+
+    const simultK  = Math.abs(dtK)  < EPS;
+    const simultKp = Math.abs(dtKp) < EPS;
+
+    ctx.save();
+    const events = [A, B];
+    const lblsK  = ['A', 'B'];
+
+    // ── K: líneas horizontales ──
+    events.forEach((ev, i) => {
+      const { py } = toCanvas(d, 0, ev.ct);
+      if (py < 0 || py > H) return;
+
+      // Resaltado si son simultáneos en K
+      if (simultK && i === 1) {
+        ctx.strokeStyle = 'rgba(96,165,250,0.85)';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#60a5fa';
+        ctx.shadowBlur = 8;
+      } else {
+        ctx.strokeStyle = i === 0 ? 'rgba(96,165,250,0.55)' : 'rgba(96,165,250,0.40)';
+        ctx.lineWidth = i === 0 ? 2 : 1.5;
+        ctx.shadowBlur = 0;
+      }
+      ctx.setLineDash([6, 5]);
+      ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(W, py); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = 'rgba(96,165,250,0.90)';
+      ctx.font = 'bold 10px Consolas, monospace';
+      ctx.fillText(`ct_${lblsK[i]} = ${ev.ct.toFixed(1)} (K)`, 6, py - 4);
+    });
+
+    // ── Mensaje si simultáneos en K ──
+    if (simultK) {
+      const { py } = toCanvas(d, 0, A.ct);
+      ctx.fillStyle = 'rgba(96,165,250,0.90)';
+      ctx.font = 'bold 11px Consolas, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('✓  A y B son simultáneos en K', W / 2, clamp(py - 14, 14, H - 10));
+      ctx.textAlign = 'left';
+    }
+
+    // ── K': líneas inclinadas ──
+    if (β > 0.005) {
+      events.forEach((ev, i) => {
+        const { px: epx, py: epy } = toCanvas(d, ev.x, ev.ct);
+        const ctp = Lorentz.transform(ev.x, ev.ct, β).t;
+
+        if (simultKp && i === 1) {
+          ctx.strokeStyle = 'rgba(192,132,252,0.95)';
+          ctx.lineWidth = 3;
+          ctx.shadowColor = '#c084fc';
+          ctx.shadowBlur = 10;
+        } else {
+          ctx.strokeStyle = i === 0 ? 'rgba(192,132,252,0.60)' : 'rgba(192,132,252,0.45)';
+          ctx.lineWidth = i === 0 ? 2 : 1.5;
+          ctx.shadowBlur = 0;
+        }
+        ctx.setLineDash([6, 5]);
+        ctx.beginPath();
+        ctx.moveTo(epx - ext, epy + β * ext);
+        ctx.lineTo(epx + ext, epy - β * ext);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.shadowBlur = 0;
+
+        ctx.fillStyle = 'rgba(192,132,252,0.95)';
+        ctx.font = 'bold 10px Consolas, monospace';
+        const lx = clamp(epx + 35, 6, W - 110);
+        const ly = clamp(epy - β * 35 - 4, 14, H - 6);
+        ctx.fillText(`ct'_${lblsK[i]} = ${ctp.toFixed(1)} (K')`, lx, ly);
+      });
+
+      // ── Mensaje si simultáneos en K' ──
+      if (simultKp) {
+        const { px: epx, py: epy } = toCanvas(d, A.x, A.ct);
+        const midY = clamp(epy + 18, 14, H - 10);
+        ctx.fillStyle = 'rgba(192,132,252,0.95)';
+        ctx.font = 'bold 11px Consolas, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText("✓  A y B son simultáneos en K'", W / 2, midY);
+        ctx.textAlign = 'left';
+      }
+    }
+
+    // ── Overlay: relación Δt' si β > 0 ──
+    if (β > 0.005) {
+      const formula = `Δt' = γ(Δt − β·Δx) = ${fmt(dtKp, 2)}`;
+      ctx.fillStyle = 'rgba(9,17,30,0.70)';
+      ctx.beginPath();
+      ctx.roundRect(W - 240, 8, 232, 24, 4);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(192,132,252,0.90)';
+      ctx.font = '10px Consolas, monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(formula, W - 10, 24);
+      ctx.textAlign = 'left';
+    }
 
     ctx.restore();
   }
@@ -462,14 +722,14 @@
     // Capas base
     drawBackground(ctx, d);
     drawGrid(ctx, d);
-    drawLightConeRegions(ctx, d);
-    drawKAxes(ctx, d);
-    if (β > 0.005) drawKprimeAxes(ctx, d, β);
-    drawLightConeLines(ctx, d);
 
     // Capas específicas por modo
     switch (mode) {
       case 'events':
+        drawOriginConeRegions(ctx, d);           // regiones + etiquetas del cono desde origen
+        drawKAxes(ctx, d);
+        if (β > 0.005) drawKprimeAxes(ctx, d, β);
+        drawLightConeLines(ctx, d);
         drawCalibrationHyperbola(ctx, d, A);
         drawWorldlineKprime(ctx, d, β);
         drawEventProjections(ctx, d, A, β);
@@ -477,65 +737,23 @@
         break;
 
       case 'causal':
-        drawLightConeAtEvent(ctx, d, A);
+        drawKAxes(ctx, d);
+        if (β > 0.005) drawKprimeAxes(ctx, d, β);
+        drawLightConeAtEvent(ctx, d, A);         // cono relleno desde A con etiquetas
         drawIntervalLine(ctx, d, A, B);
         drawEventDot(ctx, d, A, 'A', '#60a5fa');
         drawEventDot(ctx, d, B, 'B', '#c084fc');
         break;
 
       case 'simul':
-        drawSimulLines(ctx, d, β, A, B);
+        drawKAxes(ctx, d);
+        if (β > 0.005) drawKprimeAxes(ctx, d, β);
+        drawLightConeLines(ctx, d);
+        drawSimulLines(ctx, d, β, A, B);         // líneas + resaltado simultáneo + overlay
         drawEventDot(ctx, d, A, 'A', '#60a5fa');
         drawEventDot(ctx, d, B, 'B', '#c084fc');
         break;
     }
-  }
-
-  /* Líneas de simultaneidad */
-  function drawSimulLines(ctx, d, β, A, B) {
-    const { W, H } = d;
-    const ext = Math.max(W, H) * 1.5;
-
-    ctx.save();
-    const events = [A, B];
-    const lblsK  = ['A', 'B'];
-
-    // K: líneas horizontales
-    events.forEach((ev, i) => {
-      const { py } = toCanvas(d, 0, ev.ct);
-      if (py < 0 || py > H) return;
-      ctx.strokeStyle = i === 0 ? 'rgba(96,165,250,0.45)' : 'rgba(96,165,250,0.35)';
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([5, 5]);
-      ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(W, py); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = 'rgba(96,165,250,0.85)';
-      ctx.font = 'bold 10px Consolas, monospace';
-      ctx.fillText(`ct_${lblsK[i]} = ${ev.ct.toFixed(1)} (K)`, 6, py - 4);
-    });
-
-    // K': líneas inclinadas (pendiente β en ct vs x)
-    if (β > 0.005) {
-      events.forEach((ev, i) => {
-        const { px: epx, py: epy } = toCanvas(d, ev.x, ev.ct);
-        const ctp = Lorentz.transform(ev.x, ev.ct, β).t;
-        ctx.strokeStyle = i === 0 ? 'rgba(192,132,252,0.5)' : 'rgba(192,132,252,0.4)';
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([5, 5]);
-        ctx.beginPath();
-        ctx.moveTo(epx - ext, epy + β * ext);
-        ctx.lineTo(epx + ext, epy - β * ext);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.fillStyle = 'rgba(192,132,252,0.9)';
-        ctx.font = 'bold 10px Consolas, monospace';
-        const lx = clamp(epx + 35, 6, W - 90);
-        const ly = clamp(epy - β * 35 - 4, 14, H - 6);
-        ctx.fillText(`ct'_${lblsK[i]} = ${ctp.toFixed(1)} (K')`, lx, ly);
-      });
-    }
-
-    ctx.restore();
   }
 
   /* ══════════════════════════════════════════════════════════
@@ -588,7 +806,6 @@
 
       if (drag.target === 'A') {
         state.A.x = phys.x; state.A.ct = phys.ct;
-        // Sincronizar inputs
         syncInputs('A');
       } else {
         state.B.x = phys.x; state.B.ct = phys.ct;
