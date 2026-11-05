@@ -121,20 +121,23 @@
     var ARR = 10;
     ctx.save();
 
+    ctx.globalAlpha = 0.50;
     ctx.strokeStyle = PAL.kAxis;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(6, cy); ctx.lineTo(W - ARR - 4, cy); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(cx, H - 6); ctx.lineTo(cx, ARR + 4); ctx.stroke();
 
     ctx.fillStyle = PAL.kAxis;
     arrowHead(ctx, 0, cy, W - 2, cy, ARR);
     arrowHead(ctx, cx, H, cx, 2, ARR);
+    ctx.globalAlpha = 1;
 
     ctx.font = 'bold 14px Consolas, monospace';
+    ctx.fillStyle = PAL.kAxis;
     ctx.fillText('x', W - 18, cy - 10);
     ctx.fillText('ct', cx + 8, 16);
 
-    ctx.strokeStyle = K(0.35);
+    ctx.strokeStyle = K(0.25);
     ctx.lineWidth = 1;
     ctx.font = '10px Consolas, monospace';
 
@@ -144,12 +147,12 @@
       var py = cy - i * scale;
       if (px >= 4 && px <= W - 4) {
         ctx.beginPath(); ctx.moveTo(px, cy - 4); ctx.lineTo(px, cy + 4); ctx.stroke();
-        ctx.fillStyle = K(0.65);
+        ctx.fillStyle = K(0.45);
         ctx.fillText(i, px - (i < 0 ? 10 : 3), cy + 15);
       }
       if (py >= 4 && py <= H - 4) {
         ctx.beginPath(); ctx.moveTo(cx - 4, py); ctx.lineTo(cx + 4, py); ctx.stroke();
-        ctx.fillStyle = K(0.65);
+        ctx.fillStyle = K(0.45);
         ctx.fillText(i, cx - 20, py + 4);
       }
     }
@@ -165,8 +168,9 @@
     var ARR = 10;
 
     ctx.save();
+    ctx.globalAlpha = 0.50;
     ctx.strokeStyle = PAL.kpAxis;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1.5;
 
     /* Eje ct': direccion fisica (beta, 1) */
     var ct_end_px = cx + beta * Math.min(cy - ARR - 4, ext);
@@ -186,6 +190,7 @@
     ctx.lineTo(xp_end_px, xp_end_py);
     ctx.stroke();
     arrowHead(ctx, cx, cy, xp_end_px, xp_end_py, ARR);
+    ctx.globalAlpha = 1;
 
     /* Etiquetas K' — solo nombres de ejes */
     ctx.fillStyle = PAL.kpAxis;
@@ -194,16 +199,75 @@
     ctx.fillText("x'",  clamp(xp_end_px - 4, 6, W - 24), clamp(xp_end_py - 10, 14, H - 10));
 
     /* Marcas de calibracion hiperbólica: solo puntos, sin numeros */
-    ctx.fillStyle = KP(0.70);
+    ctx.fillStyle = KP(0.40);
     for (var n = -4; n <= 4; n++) {
       if (n === 0) continue;
       var pCt = toCanvas(d, n * gamma * beta, n * gamma);
       if (pCt.px >= 10 && pCt.px <= W - 10 && pCt.py >= 10 && pCt.py <= H - 10) {
-        ctx.beginPath(); ctx.arc(pCt.px, pCt.py, 2.5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(pCt.px, pCt.py, 2, 0, Math.PI * 2); ctx.fill();
+        ctx.font = '9px Consolas, monospace';
+        ctx.fillText(n, pCt.px + 4, pCt.py - 3);
       }
       var pX = toCanvas(d, n * gamma, n * gamma * beta);
       if (pX.px >= 10 && pX.px <= W - 10 && pX.py >= 10 && pX.py <= H - 10) {
-        ctx.beginPath(); ctx.arc(pX.px, pX.py, 2.5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(pX.px, pX.py, 2, 0, Math.PI * 2); ctx.fill();
+        ctx.font = '9px Consolas, monospace';
+        ctx.fillText(n, pX.px + 4, pX.py - 3);
+      }
+    }
+    ctx.restore();
+  }
+
+  /* -- Ejes K' simplificados: solo lineas + etiquetas, sin puntitos -- */
+  function drawKprimeAxesSimple(ctx, d, beta) {
+    if (beta < 0.005) return;
+    var W = d.W, H = d.H, cx = d.cx, cy = d.cy;
+    var ext = Math.max(W, H) * 1.5;
+    var ARR = 10;
+    ctx.save();
+    ctx.globalAlpha = 0.50;
+    ctx.strokeStyle = PAL.kpAxis;
+    ctx.lineWidth = 1.5;
+
+    var ct_end_px = cx + beta * Math.min(cy - ARR - 4, ext);
+    var ct_end_py = cy - Math.min(cy - ARR - 4, ext);
+    ctx.beginPath();
+    ctx.moveTo(cx - beta * Math.min(cy, ext) * 0.8, cy + Math.min(cy, ext) * 0.8);
+    ctx.lineTo(ct_end_px, ct_end_py);
+    ctx.stroke();
+    ctx.fillStyle = PAL.kpAxis;
+    arrowHead(ctx, cx, cy, ct_end_px, ct_end_py, ARR);
+
+    var xp_end_px = cx + Math.min(W - cx - ARR - 4, ext);
+    var xp_end_py = cy - beta * Math.min(W - cx - ARR - 4, ext);
+    ctx.beginPath();
+    ctx.moveTo(cx - Math.min(cx, ext) * 0.8, cy + beta * Math.min(cx, ext) * 0.8);
+    ctx.lineTo(xp_end_px, xp_end_py);
+    ctx.stroke();
+    arrowHead(ctx, cx, cy, xp_end_px, xp_end_py, ARR);
+    ctx.globalAlpha = 1;
+
+    ctx.fillStyle = PAL.kpAxis;
+    ctx.font = 'bold 13px Consolas, monospace';
+    ctx.fillText("ct'", clamp(ct_end_px + 6, 6, W - 36), clamp(ct_end_py - 4, 14, H - 10));
+    ctx.fillText("x'",  clamp(xp_end_px - 4, 6, W - 24), clamp(xp_end_py - 10, 14, H - 10));
+
+    /* Marcas de calibracion: puntitos + numeros en ct' y x' */
+    var gamma = Lorentz.gamma(beta);
+    ctx.fillStyle = KP(0.50);
+    for (var n = -4; n <= 4; n++) {
+      if (n === 0) continue;
+      var pCt = toCanvas(d, n * gamma * beta, n * gamma);
+      if (pCt.px >= 10 && pCt.px <= W - 10 && pCt.py >= 10 && pCt.py <= H - 10) {
+        ctx.beginPath(); ctx.arc(pCt.px, pCt.py, 2, 0, Math.PI * 2); ctx.fill();
+        ctx.font = '9px Consolas, monospace';
+        ctx.fillText(n, pCt.px + 4, pCt.py - 3);
+      }
+      var pX = toCanvas(d, n * gamma, n * gamma * beta);
+      if (pX.px >= 10 && pX.px <= W - 10 && pX.py >= 10 && pX.py <= H - 10) {
+        ctx.beginPath(); ctx.arc(pX.px, pX.py, 2, 0, Math.PI * 2); ctx.fill();
+        ctx.font = '9px Consolas, monospace';
+        ctx.fillText(n, pX.px + 4, pX.py - 3);
       }
     }
     ctx.restore();
@@ -244,8 +308,8 @@
 
     /* -- Lineas del cono: segmentadas, amarillo -- */
     ctx.strokeStyle = PAL.light;
-    ctx.lineWidth = 2;
-    ctx.globalAlpha = 0.80;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.45;
     ctx.setLineDash([8, 5]);
     ctx.beginPath(); ctx.moveTo(0, cy + cx);        ctx.lineTo(W, cy - (W - cx)); ctx.stroke(); /* ct = +x */
     ctx.beginPath(); ctx.moveTo(0, cy - cx);        ctx.lineTo(W, cy + (W - cx)); ctx.stroke(); /* ct = -x */
@@ -291,7 +355,7 @@
   }
 
   /* -- Punto de evento con halo --------------------------------------- */
-  function drawEventDot(ctx, d, event, label, color) {
+  function drawEventDot(ctx, d, event, label, color, extra) {
     var p = toCanvas(d, event.x, event.ct);
     var px = p.px, py = p.py;
     if (px < -30 || px > d.W + 30 || py < -30 || py > d.H + 30) return;
@@ -307,18 +371,18 @@
     ctx.fillStyle = color; ctx.strokeStyle = PAL.white; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
-    /* Etiqueta con fondo */
-    var coordTxt = '(' + event.x.toFixed(1) + ', ' + event.ct.toFixed(1) + ')';
+    /* Etiqueta sin fondo */
+    var coordTxt = '(' + event.x.toFixed(2) + ', ' + event.ct.toFixed(2) + ')';
     var lFont = 'bold 11px Consolas, monospace';
     var cFont = '10px Consolas, monospace';
-    ctx.font = lFont;
-    var lw = Math.max(ctx.measureText(label).width, ctx.measureText(coordTxt).width);
-    ctx.fillStyle = PAL.overlay;
-    ctx.beginPath(); ctx.roundRect(px + 10, py - 20, lw + 8, 30, 3); ctx.fill();
     ctx.fillStyle = PAL.white; ctx.font = lFont;
     ctx.fillText(label, px + 14, py - 8);
     ctx.fillStyle = color; ctx.font = cFont;
     ctx.fillText(coordTxt, px + 14, py + 5);
+    if (extra) {
+      ctx.fillStyle = KP(0.70); ctx.font = cFont;
+      ctx.fillText(extra, px + 14, py + 18);
+    }
 
     ctx.restore();
   }
@@ -334,7 +398,7 @@
     ctx.setLineDash([4, 5]);
 
     if (ds2 > 0) {
-      ctx.strokeStyle = K(0.45);
+      ctx.strokeStyle = K(0.28);
       ctx.beginPath();
       var first1 = true;
       for (var x = -RANGE; x <= RANGE; x += 0.08) {
@@ -353,7 +417,7 @@
         ctx.fillText(htxt, hp.px + 6, hp.py);
       }
     } else {
-      ctx.strokeStyle = KP(0.45);
+      ctx.strokeStyle = KP(0.28);
       var absDs2 = -ds2;
       ctx.beginPath();
       var first2 = true;
@@ -380,7 +444,7 @@
 
     /* Proyecciones K (punteado azul) */
     ctx.strokeStyle = K(0.55);
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1;
     ctx.setLineDash([6, 4]);
     ctx.beginPath(); ctx.moveTo(epx, epy); ctx.lineTo(epx, py0); ctx.stroke(); /* vertical al eje x */
     ctx.beginPath(); ctx.moveTo(epx, epy); ctx.lineTo(px0, epy); ctx.stroke(); /* horizontal al eje ct */
@@ -413,14 +477,14 @@
       var x_int_ctp  = beta * ct_int_ctp;
       var pctp = toCanvas(d, x_int_ctp, ct_int_ctp);
 
-      ctx.strokeStyle = KP(0.60);
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = KP(0.55);
+      ctx.lineWidth = 1;
       ctx.setLineDash([6, 4]);
       ctx.beginPath(); ctx.moveTo(epx, epy); ctx.lineTo(pxp.px,  pxp.py);  ctx.stroke();
       ctx.beginPath(); ctx.moveTo(epx, epy); ctx.lineTo(pctp.px, pctp.py); ctx.stroke();
       ctx.setLineDash([]);
 
-      ctx.fillStyle = KP(0.95);
+      ctx.fillStyle = KP(0.70);
       ctx.beginPath(); ctx.arc(pxp.px,  pxp.py,  4, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.arc(pctp.px, pctp.py, 4, 0, Math.PI * 2); ctx.fill();
 
@@ -439,7 +503,7 @@
     var cx = d.cx, cy = d.cy;
     var ext = Math.max(d.W, d.H) * 1.5;
     ctx.save();
-    ctx.strokeStyle = KP(0.30);
+    ctx.strokeStyle = KP(0.20);
     ctx.lineWidth = 1;
     ctx.setLineDash([3, 5]);
     ctx.beginPath();
@@ -491,8 +555,8 @@
 
     /* Lineas del cono: segmentadas, amarillo */
     ctx.strokeStyle = PAL.light;
-    ctx.lineWidth = 2.5;
-    ctx.globalAlpha = 0.90;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.45;
     ctx.setLineDash([8, 5]);
     ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + ext, oy - ext); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox - ext, oy - ext); ctx.stroke();
@@ -597,56 +661,50 @@
   ===================================================================== */
   function drawSimulLines(ctx, d, beta, A, B) {
     var W = d.W, H = d.H;
-    var ext = Math.max(W, H) * 1.5;
 
-    var EPS    = 0.05;
-    var dtK    = B.ct - A.ct;
-    var trA    = Lorentz.transform(A.x, A.ct, beta);
-    var trB    = Lorentz.transform(B.x, B.ct, beta);
-    var dtKp   = trB.t - trA.t;
-    var gamma  = Lorentz.gamma(beta);
+    var EPS   = 0.05;
+    var dtK   = B.ct - A.ct;
+    var trA   = Lorentz.transform(A.x, A.ct, beta);
+    var trB   = Lorentz.transform(B.x, B.ct, beta);
+    var dtKp  = trB.t - trA.t;
+    var gamma = Lorentz.gamma(beta);
 
     var simultK  = Math.abs(dtK)  < EPS;
     var simultKp = Math.abs(dtKp) < EPS;
 
     ctx.save();
 
-    /* == LINEAS K  (horizontales, azul) == */
-    var evList = [A, B];
+    /* == LINEAS K: evento -> eje ct (x=0), horizontal == */
+    var evList  = [A, B];
     var lblList = ['A', 'B'];
     for (var ki = 0; ki < evList.length; ki++) {
-      var ev = evList[ki];
-      var pK = toCanvas(d, 0, ev.ct);
-      var pyK = pK.py;
-      if (pyK < 0 || pyK > H) continue;
+      var ev  = evList[ki];
+      var pEv = toCanvas(d, ev.x,  ev.ct);  /* punto evento */
+      var pAx = toCanvas(d, 0,     ev.ct);  /* pie en eje ct */
+      if (pAx.py < 0 || pAx.py > H) continue;
 
       var isSameK = simultK && ki === 1;
       if (isSameK) {
-        ctx.strokeStyle = PAL.kAxis;
-        ctx.lineWidth   = 3.5;
-        ctx.shadowColor = PAL.kAxis;
-        ctx.shadowBlur  = 12;
+        ctx.strokeStyle = PAL.kAxis; ctx.lineWidth = 2;
+        ctx.shadowColor = PAL.kAxis; ctx.shadowBlur = 8;
       } else {
-        ctx.strokeStyle = ki === 0 ? K(0.70) : K(0.50);
-        ctx.lineWidth   = ki === 0 ? 2.5 : 2;
-        ctx.shadowBlur  = 0;
+        ctx.strokeStyle = ki === 0 ? K(0.55) : K(0.40);
+        ctx.lineWidth = 1; ctx.shadowBlur = 0;
       }
-      ctx.setLineDash([10, 6]);
-      ctx.beginPath(); ctx.moveTo(0, pyK); ctx.lineTo(W, pyK); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.shadowBlur = 0;
+      ctx.setLineDash([8, 5]);
+      ctx.beginPath(); ctx.moveTo(pEv.px, pEv.py); ctx.lineTo(pAx.px, pAx.py); ctx.stroke();
+      ctx.setLineDash([]); ctx.shadowBlur = 0;
 
-      ctx.font = 'bold 10px Consolas, monospace';
-      ctx.fillStyle = K(0.90);
-      ctx.fillText('t_' + lblList[ki] + ' = ' + ev.ct.toFixed(2), 8, pyK - 3);
+      /* Punto de pie en eje ct */
+      ctx.fillStyle = K(0.80);
+      ctx.beginPath(); ctx.arc(pAx.px, pAx.py, 3, 0, Math.PI * 2); ctx.fill();
     }
 
     /* Mensaje simultaneos K */
     if (simultK) {
       var pyKs = toCanvas(d, 0, A.ct).py;
       var msgK = '\u2713 Simult\u00e1neos en K';
-      var mfontK = 'bold 11px Consolas, monospace';
-      ctx.font = mfontK;
+      ctx.font = 'bold 11px Consolas, monospace';
       var mwK = ctx.measureText(msgK).width;
       var mxK = W / 2 - mwK / 2;
       var myK = clamp(pyKs - 18, 14, H - 14);
@@ -656,45 +714,49 @@
       ctx.fillText(msgK, mxK, myK);
     }
 
-    /* == LINEAS K'  (inclinadas, violeta) == */
+    /* == LINEAS K': evento -> pie sobre eje ct', inclinado == */
     if (beta > 0.005) {
       for (var kpi = 0; kpi < evList.length; kpi++) {
-        var evKP = evList[kpi];
-        var epKP = toCanvas(d, evKP.x, evKP.ct);
-        var epxKP = epKP.px, epyKP = epKP.py;
-        var ctpKP = Lorentz.transform(evKP.x, evKP.ct, beta).t;
+        var evKP  = evList[kpi];
+        var pEvKP = toCanvas(d, evKP.x, evKP.ct);
+        var trKP  = Lorentz.transform(evKP.x, evKP.ct, beta);
+        var ctpKP = trKP.t;
+        var xpKP  = trKP.x;
+
+        /* Pie sobre eje ct' (linea paralela a x') */
+        var ct_int_ctp = gamma * ctpKP;
+        var x_int_ctp  = beta * ct_int_ctp;
+        var pFootCtp = toCanvas(d, x_int_ctp, ct_int_ctp);
+
+        /* Pie sobre eje x' (linea paralela a ct') */
+        var x_int_xp  = gamma * xpKP;
+        var ct_int_xp = beta * x_int_xp;
+        var pFootXp  = toCanvas(d, x_int_xp, ct_int_xp);
 
         var isSameKp = simultKp && kpi === 1;
-        if (isSameKp) {
-          ctx.strokeStyle = PAL.kpAxis;
-          ctx.lineWidth   = 3.5;
-          ctx.shadowColor = PAL.kpAxis;
-          ctx.shadowBlur  = 12;
-        } else {
-          ctx.strokeStyle = kpi === 0 ? KP(0.70) : KP(0.50);
-          ctx.lineWidth   = kpi === 0 ? 2.5 : 2;
-          ctx.shadowBlur  = 0;
-        }
-        ctx.setLineDash([10, 6]);
-        ctx.beginPath();
-        ctx.moveTo(epxKP - ext, epyKP + beta * ext);
-        ctx.lineTo(epxKP + ext, epyKP - beta * ext);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.shadowBlur = 0;
+        var lineCol  = isSameKp ? PAL.kpAxis : (kpi === 0 ? KP(0.55) : KP(0.40));
+        var lineW    = isSameKp ? 2 : 1;
+        ctx.strokeStyle = lineCol; ctx.lineWidth = lineW;
+        if (isSameKp) { ctx.shadowColor = PAL.kpAxis; ctx.shadowBlur = 8; }
+        else { ctx.shadowBlur = 0; }
 
-        var lxKP = clamp(epxKP + 30, 6, W - 180);
-        var lyKP = clamp(epyKP - beta * 30 - 2, 14, H - 10);
-        ctx.font = 'bold 10px Consolas, monospace';
-        ctx.fillStyle = KP(0.90);
-        ctx.fillText("t'_" + lblList[kpi] + ' = ' + ctpKP.toFixed(2), lxKP, lyKP);
+        ctx.setLineDash([8, 5]);
+        /* → ct' */
+        ctx.beginPath(); ctx.moveTo(pEvKP.px, pEvKP.py); ctx.lineTo(pFootCtp.px, pFootCtp.py); ctx.stroke();
+        /* → x'  */
+        ctx.beginPath(); ctx.moveTo(pEvKP.px, pEvKP.py); ctx.lineTo(pFootXp.px,  pFootXp.py);  ctx.stroke();
+        ctx.setLineDash([]); ctx.shadowBlur = 0;
+
+        /* Puntos de pie */
+        ctx.fillStyle = KP(0.80);
+        ctx.beginPath(); ctx.arc(pFootCtp.px, pFootCtp.py, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(pFootXp.px,  pFootXp.py,  3, 0, Math.PI * 2); ctx.fill();
       }
 
       /* Mensaje simultaneos K' */
       if (simultKp) {
         var msgKP = "\u2713 Simult\u00e1neos en K'";
-        var mfontKP = 'bold 11px Consolas, monospace';
-        ctx.font = mfontKP;
+        ctx.font = 'bold 11px Consolas, monospace';
         var mwKP = ctx.measureText(msgKP).width;
         var mxKP = W / 2 - mwKP / 2;
         var epAKP = toCanvas(d, A.x, A.ct);
@@ -706,28 +768,65 @@
       }
     }
 
-    /* == Panel de formula (esquina superior derecha) == */
-    var panW = 240, panH = 54;
-    ctx.fillStyle = PAL.overlay;
-    ctx.beginPath(); ctx.roundRect(W - panW - 6, 6, panW, panH, 5); ctx.fill();
+    /* == Panel de explicacion (parte inferior centrado) == */
+    var dx      = B.x - A.x;
+    var betaDx  = beta * dx;
+    var okK     = simultK;
+    var okKp    = simultKp;
 
+    var panW = 258, panH = 100;
+    var panX = W - panW - 6;
+    var panY = H - panH - 6;
+    ctx.fillStyle = PAL.overlay;
+    ctx.beginPath(); ctx.roundRect(panX, panY, panW, panH, 5); ctx.fill();
+
+    var tx = panX + 7;
+
+    /* Linea 1: formula + beta + gamma */
     ctx.font = '10px Consolas, monospace';
     ctx.fillStyle = KP(0.95);
-    ctx.fillText("\u0394t' = \u03b3(\u0394t \u2212 \u03b2\u00b7\u0394x)   \u03b2=" + fmt(beta,2) + ' \u03b3=' + fmt(gamma,2), W - panW + 4, 24);
+    ctx.fillText("\u0394ct' = \u03b3(\u0394ct \u2212 \u03b2\u00b7\u0394x)", tx, panY + 16);
+    ctx.fillStyle = PAL.white;
+    ctx.fillText('\u03b2 = ' + fmt(beta, 2) + '   \u03b3 = ' + fmt(gamma, 2), tx + 148, panY + 16);
 
+    /* Linea 2: valores actuales */
     ctx.fillStyle = K(0.90);
-    ctx.fillText('\u0394t  = ' + fmt(dtK,  3), W - panW + 4, 42);
+    ctx.fillText('\u0394ct  = ' + fmt(dtK,  2), tx, panY + 30);
     ctx.fillStyle = KP(0.90);
-    ctx.fillText("\u0394t' = " + fmt(dtKp, 3), W - panW + 4 + panW / 2 - 10, 42);
+    ctx.fillText("\u0394ct' = " + fmt(dtKp, 2), tx + 128, panY + 30);
 
-    /* Segmento A-B tenue */
-    var paAB = toCanvas(d, A.x, A.ct);
-    var pbAB = toCanvas(d, B.x, B.ct);
-    ctx.strokeStyle = 'rgba(255,255,255,0.20)';
+    /* Separador */
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
     ctx.lineWidth = 1;
-    ctx.setLineDash([3, 4]);
-    ctx.beginPath(); ctx.moveTo(paAB.px, paAB.py); ctx.lineTo(pbAB.px, pbAB.py); ctx.stroke();
-    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(panX + 6, panY + 38); ctx.lineTo(panX + panW - 6, panY + 38); ctx.stroke();
+
+    /* Linea 3: condicion K */
+    var iconK = okK  ? '\u2713' : '\u2715';
+    var colK  = okK  ? PAL.kAxis : 'rgba(255,255,255,0.35)';
+    ctx.font = 'bold 10px Consolas, monospace';
+    ctx.fillStyle = colK;
+    ctx.fillText(iconK, tx, panY + 54);
+    ctx.font = '10px Consolas, monospace';
+    ctx.fillStyle = PAL.white;
+    ctx.fillText(' Sim. en K  si \u0394ct = 0', tx + 10, panY + 54);
+    ctx.fillStyle = K(0.75);
+    ctx.fillText('\u0394ct = ' + fmt(dtK, 2), tx + 185, panY + 54);
+
+    /* Linea 4: condicion K' */
+    var iconKp = okKp ? '\u2713' : '\u2715';
+    var colKp  = okKp ? PAL.kpAxis : 'rgba(255,255,255,0.35)';
+    ctx.font = 'bold 10px Consolas, monospace';
+    ctx.fillStyle = colKp;
+    ctx.fillText(iconKp, tx, panY + 70);
+    ctx.font = '10px Consolas, monospace';
+    ctx.fillStyle = PAL.white;
+    ctx.fillText(" Sim. en K' si \u0394ct = \u03b2\u00b7\u0394x", tx + 10, panY + 70);
+
+    /* Linea 5: valores comparados */
+    ctx.fillStyle = K(0.75);
+    ctx.fillText('\u0394ct = '       + fmt(dtK,    2), tx,       panY + 85);
+    ctx.fillStyle = KP(0.75);
+    ctx.fillText('\u03b2\u00b7\u0394x = ' + fmt(betaDx, 2), tx + 128,  panY + 85);
 
     ctx.restore();
   }
@@ -767,11 +866,13 @@
 
       case 'simul':
         drawKAxes(ctx, d);
-        if (beta > 0.005) drawKprimeAxes(ctx, d, beta);
+        if (beta > 0.005) drawKprimeAxesSimple(ctx, d, beta);
         drawOriginLightCone(ctx, d);
         drawSimulLines(ctx, d, beta, A, B);
-        drawEventDot(ctx, d, A, 'A', PAL.kAxis);
-        drawEventDot(ctx, d, B, 'B', PAL.kpAxis);
+        var trSA = Lorentz.transform(A.x, A.ct, beta);
+        var trSB = Lorentz.transform(B.x, B.ct, beta);
+        drawEventDot(ctx, d, A, 'A', PAL.kAxis,  "x'=" + fmt(trSA.x,2) + "  ct'=" + fmt(trSA.t,2));
+        drawEventDot(ctx, d, B, 'B', PAL.kpAxis, "x'=" + fmt(trSB.x,2) + "  ct'=" + fmt(trSB.t,2));
         break;
     }
   }
