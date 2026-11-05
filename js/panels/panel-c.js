@@ -242,25 +242,25 @@
     ctx.moveTo(cx, cy); ctx.lineTo(W, cy - (W - cx)); ctx.lineTo(W, cy + (W - cx));
     ctx.closePath(); ctx.fill();
 
-    /* -- Lineas del cono: solidas, amarillo -- */
+    /* -- Lineas del cono: segmentadas, amarillo -- */
     ctx.strokeStyle = PAL.light;
     ctx.lineWidth = 2;
     ctx.globalAlpha = 0.80;
+    ctx.setLineDash([8, 5]);
     ctx.beginPath(); ctx.moveTo(0, cy + cx);        ctx.lineTo(W, cy - (W - cx)); ctx.stroke(); /* ct = +x */
     ctx.beginPath(); ctx.moveTo(0, cy - cx);        ctx.lineTo(W, cy + (W - cx)); ctx.stroke(); /* ct = -x */
+    ctx.setLineDash([]);
     ctx.globalAlpha = 1;
 
     /* -- Etiquetas sobre las lineas del cono -- */
     ctx.font = 'bold 10px Consolas, monospace';
     ctx.fillStyle = LT(0.90);
     var lx1 = W * 0.73, ly1 = cy - (W * 0.73 - cx);
-    labelBg(ctx, 'ct = x  (luz)', lx1, ly1 - 2, 'bold 10px Consolas, monospace', 3, 11);
     ctx.fillText('ct = x  (luz)', lx1, ly1 - 2);
 
     var lx2 = W * 0.27, ly2 = cy - (cx - W * 0.27);
     var ltxt2 = 'ct = \u2212x  (luz)';
     ctx.textAlign = 'right';
-    labelBg(ctx, ltxt2, lx2, ly2 - 2, 'bold 10px Consolas, monospace', 3, 11);
     ctx.fillText(ltxt2, lx2, ly2 - 2);
     ctx.textAlign = 'left';
 
@@ -489,14 +489,16 @@
     ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox - ext, oy - ext); ctx.lineTo(ox - ext, oy + ext); ctx.closePath(); ctx.fill();
     ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + ext, oy - ext); ctx.lineTo(ox + ext, oy + ext); ctx.closePath(); ctx.fill();
 
-    /* Lineas del cono: solidas, amarillo */
+    /* Lineas del cono: segmentadas, amarillo */
     ctx.strokeStyle = PAL.light;
     ctx.lineWidth = 2.5;
     ctx.globalAlpha = 0.90;
+    ctx.setLineDash([8, 5]);
     ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + ext, oy - ext); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox - ext, oy - ext); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + ext, oy + ext); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox - ext, oy + ext); ctx.stroke();
+    ctx.setLineDash([]);
     ctx.globalAlpha = 1;
 
     /* Puntito en el vertice A */
