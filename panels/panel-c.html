@@ -442,6 +442,115 @@
 
 </main>
 
+  <!-- ================================================================
+       RESUMEN COMPARATIVO C.1 / C.2 / C.3
+  ================================================================ -->
+  <section style="max-width:960px;margin:0 auto var(--space-xl);padding:0 var(--space-md);">
+
+    <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text);margin-bottom:var(--space-md);border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:var(--space-sm);">
+      Gu&iacute;a de los tres diagramas
+    </h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--space-md);">
+
+      <!-- C.1 -->
+      <div style="background:rgba(96,165,250,0.05);border:1px solid rgba(96,165,250,0.20);border-radius:10px;padding:var(--space-md);">
+        <div style="display:flex;align-items:center;gap:var(--space-sm);margin-bottom:var(--space-sm);">
+          <span style="background:rgba(96,165,250,0.15);color:#60a5fa;font-weight:700;font-size:0.78rem;padding:3px 10px;border-radius:20px;">C.1</span>
+          <span style="font-weight:700;color:#60a5fa;">Eventos y Coordenadas</span>
+        </div>
+        <p style="font-size:0.84rem;color:var(--color-text-muted);margin:0 0 4px;">
+          <strong style="color:var(--color-text);">Pregunta:</strong> &iquest;C&oacute;mo lee cada observador las coordenadas de un mismo evento?
+        </p>
+        <div style="background:rgba(96,165,250,0.10);border-left:3px solid #60a5fa;border-radius:0 6px 6px 0;padding:8px 12px;margin-bottom:var(--space-sm);font-size:0.83rem;">
+          <div style="color:var(--color-text);font-weight:600;margin-bottom:4px;">Respuesta:</div>
+          <div style="color:var(--color-text-muted);line-height:1.6;">
+            Cada observador obtiene coordenadas distintas, relacionadas por las <strong style="color:var(--color-text);">Transformaciones de Lorentz</strong>:
+          </div>
+          <div style="font-family:Consolas,monospace;font-size:0.80rem;color:#60a5fa;margin-top:6px;line-height:1.8;">
+            x&prime; &nbsp;= &gamma;(x &minus; &beta;&middot;ct)<br>
+            ct&prime; = &gamma;(ct &minus; &beta;&middot;x)
+          </div>
+          <div style="color:var(--color-text-muted);font-size:0.80rem;margin-top:4px;">
+            Lo &uacute;nico invariante (igual para todos): <code>&Delta;s&sup2; = (c&Delta;t)&sup2; &minus; &Delta;x&sup2;</code>
+          </div>
+        </div>
+        <ul style="font-size:0.83rem;color:var(--color-text-muted);margin:0 0 var(--space-sm);padding-left:1.2em;line-height:1.7;">
+          <li>Proyecciones punteadas &rarr; pies en <code>x, ct</code> (K) y <code>x&prime;, ct&prime;</code> (K&prime;)</li>
+          <li>Hip&eacute;rbola de calibraci&oacute;n: muestra el invariante <code>&Delta;s&sup2;</code></li>
+        </ul>
+        <div style="background:rgba(96,165,250,0.08);border-radius:6px;padding:8px 12px;font-size:0.82rem;">
+          <strong style="color:#60a5fa;">Consecuencia:</strong>
+          <span style="color:var(--color-text-muted);"> Un mismo evento tiene coordenadas distintas seg&uacute;n el sistema. No hay &ldquo;coordenadas absolutas&rdquo;.</span>
+        </div>
+      </div>
+
+      <!-- C.2 -->
+      <div style="background:rgba(253,224,71,0.04);border:1px solid rgba(253,224,71,0.18);border-radius:10px;padding:var(--space-md);">
+        <div style="display:flex;align-items:center;gap:var(--space-sm);margin-bottom:var(--space-sm);">
+          <span style="background:rgba(253,224,71,0.12);color:#fde047;font-weight:700;font-size:0.78rem;padding:3px 10px;border-radius:20px;">C.2</span>
+          <span style="font-weight:700;color:#fde047;">Cono de Luz e Intervalo</span>
+        </div>
+        <p style="font-size:0.84rem;color:var(--color-text-muted);margin:0 0 4px;">
+          <strong style="color:var(--color-text);">Pregunta:</strong> &iquest;Pueden dos eventos estar causalmente conectados?
+        </p>
+        <div style="background:rgba(253,224,71,0.08);border-left:3px solid #fde047;border-radius:0 6px 6px 0;padding:8px 12px;margin-bottom:var(--space-sm);font-size:0.83rem;">
+          <div style="color:var(--color-text);font-weight:600;margin-bottom:4px;">Respuesta:</div>
+          <div style="color:var(--color-text-muted);line-height:1.6;">
+            Depende del signo del <strong style="color:var(--color-text);">intervalo espacio-temporal</strong>:
+          </div>
+          <div style="font-family:Consolas,monospace;font-size:0.80rem;margin-top:6px;line-height:2.0;">
+            <span style="color:#4ade80;">&Delta;s&sup2; &gt; 0</span> <span style="color:var(--color-text-muted);">&rarr; <strong style="color:var(--color-text);">tipo temporal</strong> &rarr; causal, &Delta;&tau; = &radic;&Delta;s&sup2;/c</span><br>
+            <span style="color:#fde047;">&Delta;s&sup2; = 0</span> <span style="color:var(--color-text-muted);">&rarr; <strong style="color:var(--color-text);">tipo luz</strong> &rarr; solo con fotones</span><br>
+            <span style="color:#f87171;">&Delta;s&sup2; &lt; 0</span> <span style="color:var(--color-text-muted);">&rarr; <strong style="color:var(--color-text);">tipo espacial</strong> &rarr; no causal, &Delta;L = &radic;&minus;&Delta;s&sup2;</span>
+          </div>
+        </div>
+        <ul style="font-size:0.83rem;color:var(--color-text-muted);margin:0 0 var(--space-sm);padding-left:1.2em;line-height:1.7;">
+          <li>Cono de luz en A: regiones <em>Futuro, Pasado, Espacial</em></li>
+          <li>Vector A&rarr;B clasificado y medido en tiempo real</li>
+        </ul>
+        <div style="background:rgba(253,224,71,0.06);border-radius:6px;padding:8px 12px;font-size:0.82rem;">
+          <strong style="color:#fde047;">Consecuencia:</strong>
+          <span style="color:var(--color-text-muted);"> El tipo de intervalo es invariante. Ning&uacute;n cambio de observador puede transformar un intervalo temporal en espacial ni viceversa.</span>
+        </div>
+      </div>
+
+      <!-- C.3 -->
+      <div style="background:rgba(192,132,252,0.05);border:1px solid rgba(192,132,252,0.20);border-radius:10px;padding:var(--space-md);">
+        <div style="display:flex;align-items:center;gap:var(--space-sm);margin-bottom:var(--space-sm);">
+          <span style="background:rgba(192,132,252,0.15);color:#c084fc;font-weight:700;font-size:0.78rem;padding:3px 10px;border-radius:20px;">C.3</span>
+          <span style="font-weight:700;color:#c084fc;">Simultaneidad Relativa</span>
+        </div>
+        <p style="font-size:0.84rem;color:var(--color-text-muted);margin:0 0 4px;">
+          <strong style="color:var(--color-text);">Pregunta:</strong> &iquest;Pueden dos eventos ocurrir &ldquo;al mismo tiempo&rdquo; para ambos observadores?
+        </p>
+        <div style="background:rgba(192,132,252,0.10);border-left:3px solid #c084fc;border-radius:0 6px 6px 0;padding:8px 12px;margin-bottom:var(--space-sm);font-size:0.83rem;">
+          <div style="color:var(--color-text);font-weight:600;margin-bottom:4px;">Respuesta:</div>
+          <div style="color:var(--color-text-muted);line-height:1.6;">
+            <strong style="color:var(--color-text);">No, en general.</strong> La condici&oacute;n de simultaneidad depende del observador:
+          </div>
+          <div style="font-family:Consolas,monospace;font-size:0.80rem;margin-top:6px;line-height:2.0;">
+            <span style="color:#60a5fa;">En K &nbsp;:</span> <span style="color:var(--color-text-muted);">&Delta;ct = 0</span><br>
+            <span style="color:#c084fc;">En K&prime;:</span> <span style="color:var(--color-text-muted);">&Delta;ct&prime; = 0 &nbsp;&hArr;&nbsp; &Delta;ct = &beta;&middot;&Delta;x</span>
+          </div>
+          <div style="color:var(--color-text-muted);font-size:0.80rem;margin-top:6px;">
+            Ambas s&oacute;lo coinciden cuando <code>&beta; = 0</code>. Para cualquier <code>&beta; &ne; 0</code>, si A y B son simult&aacute;neos en K, en general <strong style="color:#c084fc;">&Delta;ct&prime; = &minus;&gamma;&beta;&Delta;x &ne; 0</strong>.
+          </div>
+        </div>
+        <ul style="font-size:0.83rem;color:var(--color-text-muted);margin:0 0 var(--space-sm);padding-left:1.2em;line-height:1.7;">
+          <li>L&iacute;neas punteadas &rarr; pies en <code>ct</code> y <code>ct&prime;, x&prime;</code></li>
+          <li>Condiciones verificadas en tiempo real con <span style="color:#4ade80;">&#10003;</span>/<span style="color:#f87171;">&#10005;</span></li>
+        </ul>
+        <div style="background:rgba(192,132,252,0.08);border-radius:6px;padding:8px 12px;font-size:0.82rem;">
+          <strong style="color:#c084fc;">Consecuencia:</strong>
+          <span style="color:var(--color-text-muted);"> Si el intervalo A&rarr;B es <em>espacial</em>, el orden temporal puede invertirse en K&prime;. Si es <em>temporal</em>, el orden es absoluto.</span>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
 <footer class="site-footer">
   <p>Laboratorio de Relatividad Especial · Panel C — Diagrama de Minkowski</p>
   <p class="footer-credit">Powered by <a href="https://github.com/georaiser/" target="_blank" rel="noopener">github.com/georaiser</a></p>
