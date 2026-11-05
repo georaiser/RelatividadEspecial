@@ -134,10 +134,6 @@
     ctx.fillText('x', W - 18, cy - 10);
     ctx.fillText('ct', cx + 8, 16);
 
-    ctx.font = '10px Consolas, monospace';
-    ctx.fillStyle = K(0.55);
-    ctx.fillText('(sistema K  reposo)', cx + 14, 30);
-
     ctx.strokeStyle = K(0.35);
     ctx.lineWidth = 1;
     ctx.font = '10px Consolas, monospace';
@@ -191,31 +187,23 @@
     ctx.stroke();
     arrowHead(ctx, cx, cy, xp_end_px, xp_end_py, ARR);
 
-    /* Etiquetas K' */
+    /* Etiquetas K' — solo nombres de ejes */
     ctx.fillStyle = PAL.kpAxis;
     ctx.font = 'bold 13px Consolas, monospace';
     ctx.fillText("ct'", clamp(ct_end_px + 6, 6, W - 36), clamp(ct_end_py - 4, 14, H - 10));
     ctx.fillText("x'",  clamp(xp_end_px - 4, 6, W - 24), clamp(xp_end_py - 10, 14, H - 10));
 
-    ctx.font = '10px Consolas, monospace';
-    ctx.fillStyle = KP(0.55);
-    var sub_x = clamp(ct_end_px + 6, 6, W - 130);
-    ctx.fillText("(K'  \u03b2=" + beta.toFixed(2) + "  \u03b3=" + gamma.toFixed(2) + ")", sub_x, clamp(ct_end_py + 12, 24, H - 10));
-
-    /* Marcas de calibracion hiperbólica */
-    ctx.fillStyle = PAL.kpAxis;
-    ctx.font = 'bold 9px Consolas, monospace';
+    /* Marcas de calibracion hiperbólica: solo puntos, sin numeros */
+    ctx.fillStyle = KP(0.70);
     for (var n = -4; n <= 4; n++) {
       if (n === 0) continue;
       var pCt = toCanvas(d, n * gamma * beta, n * gamma);
       if (pCt.px >= 10 && pCt.px <= W - 10 && pCt.py >= 10 && pCt.py <= H - 10) {
         ctx.beginPath(); ctx.arc(pCt.px, pCt.py, 2.5, 0, Math.PI * 2); ctx.fill();
-        ctx.fillText(n, pCt.px + 5, pCt.py + 3);
       }
       var pX = toCanvas(d, n * gamma, n * gamma * beta);
       if (pX.px >= 10 && pX.px <= W - 10 && pX.py >= 10 && pX.py <= H - 10) {
         ctx.beginPath(); ctx.arc(pX.px, pX.py, 2.5, 0, Math.PI * 2); ctx.fill();
-        ctx.fillText(n, pX.px - 3, pX.py + 13);
       }
     }
     ctx.restore();
@@ -281,29 +269,22 @@
 
     /* FUTURO */
     ctx.font = 'bold 11px Consolas, monospace';
-    ctx.fillStyle = LT(0.65);
-    ctx.fillText('\u25b2 FUTURO CAUSAL', cx, 22);
-    ctx.font = '9px Consolas, monospace';
-    ctx.fillStyle = LT(0.40);
-    ctx.fillText('ct > |x|  \u00b7  \u0394s\u00b2 > 0', cx, 34);
+    ctx.fillStyle = LT(0.60);
+    ctx.fillText('\u25b2 FUTURO', cx, 20);
 
     /* PASADO */
-    ctx.font = 'bold 11px Consolas, monospace';
-    ctx.fillStyle = PST(0.65);
-    ctx.fillText('\u25bc PASADO CAUSAL', cx, H - 20);
-    ctx.font = '9px Consolas, monospace';
-    ctx.fillStyle = PST(0.45);
-    ctx.fillText('ct < \u2212|x|  \u00b7  \u0394s\u00b2 > 0', cx, H - 8);
+    ctx.fillStyle = PST(0.55);
+    ctx.fillText('\u25bc PASADO', cx, H - 12);
 
     /* ZONA ESPACIAL izquierda */
     ctx.font = 'bold 10px Consolas, monospace';
-    ctx.fillStyle = KP(0.60);
-    ctx.save(); ctx.translate(22, cy); ctx.rotate(-Math.PI / 2);
-    ctx.fillText('\u25c4 ZONA ESPACIAL', 0, 0); ctx.restore();
+    ctx.fillStyle = KP(0.55);
+    ctx.save(); ctx.translate(16, cy); ctx.rotate(-Math.PI / 2);
+    ctx.fillText('ESPACIAL', 0, 0); ctx.restore();
 
     /* ZONA ESPACIAL derecha */
-    ctx.save(); ctx.translate(W - 22, cy); ctx.rotate(Math.PI / 2);
-    ctx.fillText('ZONA ESPACIAL \u25ba', 0, 0); ctx.restore();
+    ctx.save(); ctx.translate(W - 16, cy); ctx.rotate(Math.PI / 2);
+    ctx.fillText('ESPACIAL', 0, 0); ctx.restore();
 
     ctx.textAlign = 'left';
     ctx.restore();
@@ -366,10 +347,9 @@
       /* Etiqueta de hiperbola */
       var hp = toCanvas(d, 0, Math.sqrt(ds2));
       if (hp.px > 0 && hp.px < d.W && hp.py > 10 && hp.py < d.H - 10) {
-        var htxt = '\u0394s\u00b2 = ' + fmt(ds2, 2) + ' (igual en todos los K)';
-        labelBg(ctx, htxt, hp.px + 6, hp.py, '10px Consolas, monospace', 3, 11);
-        ctx.fillStyle = K(0.75);
-        ctx.font = '10px Consolas, monospace';
+        var htxt = '\u0394s\u00b2 = ' + fmt(ds2, 2);
+        ctx.fillStyle = K(0.65);
+        ctx.font = '9px Consolas, monospace';
         ctx.fillText(htxt, hp.px + 6, hp.py);
       }
     } else {
@@ -411,16 +391,11 @@
     ctx.beginPath(); ctx.arc(epx, py0, 4, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(px0, epy, 4, 0, Math.PI * 2); ctx.fill();
 
-    /* Etiquetas K */
-    var lfK = 'bold 10px Consolas, monospace';
-    ctx.font = lfK;
-    ctx.fillStyle = K(0.90);
-    var xtxt  = 'x\u2090 = ' + fmt(event.x, 2);
-    var cttxt = 'ct\u2090 = ' + fmt(event.ct, 2);
-    labelBg(ctx, xtxt,  epx + 3, py0 + 13, lfK, 2, 11);
-    ctx.fillText(xtxt,  epx + 3, py0 + 13);
-    labelBg(ctx, cttxt, px0 + 4, epy - 2,  lfK, 2, 11);
-    ctx.fillText(cttxt, px0 + 4, epy - 2);
+    /* Etiquetas K — valores de coordenadas */
+    ctx.font = '10px Consolas, monospace';
+    ctx.fillStyle = K(0.85);
+    ctx.fillText(fmt(event.x,  2), epx + 3, py0 + 13);
+    ctx.fillText(fmt(event.ct, 2), px0 + 4, epy - 3);
 
     /* Proyecciones K' (punteado violeta) */
     if (beta > 0.005) {
@@ -449,15 +424,11 @@
       ctx.beginPath(); ctx.arc(pxp.px,  pxp.py,  4, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.arc(pctp.px, pctp.py, 4, 0, Math.PI * 2); ctx.fill();
 
-      var lfKP = 'bold 10px Consolas, monospace';
-      ctx.font = lfKP;
-      ctx.fillStyle = KP(0.95);
-      var xptxt  = "x'\u2090 = " + fmt(xp, 2);
-      var ctptxt = "ct'\u2090 = " + fmt(ctp, 2);
-      labelBg(ctx, xptxt,  pxp.px  + 4, pxp.py  + 13, lfKP, 2, 11);
-      ctx.fillText(xptxt,  pxp.px  + 4, pxp.py  + 13);
-      labelBg(ctx, ctptxt, pctp.px + 4, pctp.py - 2,  lfKP, 2, 11);
-      ctx.fillText(ctptxt, pctp.px + 4, pctp.py - 2);
+      /* Etiquetas K' — valores de coordenadas */
+      ctx.font = '10px Consolas, monospace';
+      ctx.fillStyle = KP(0.90);
+      ctx.fillText(fmt(xp,  2), pxp.px  + 4, pxp.py  + 13);
+      ctx.fillText(fmt(ctp, 2), pctp.px + 4, pctp.py - 3);
     }
     ctx.restore();
   }
@@ -532,57 +503,32 @@
     ctx.fillStyle = PAL.light;
     ctx.beginPath(); ctx.arc(ox, oy, 4, 0, Math.PI * 2); ctx.fill();
 
-    /* Etiquetas de region (con fondo) */
+    /* Etiquetas de region -- una sola linea por region */
     ctx.textAlign = 'center';
 
     /* Futuro */
-    var fy = clamp(oy - 60, 14, H - 30);
+    var fy = clamp(oy - 50, 14, H - 20);
     if (fy < oy - 20) {
-      var ftxt1 = 'FUTURO CAUSAL';
-      var ftxt2 = '\u0394s\u00b2 > 0  \u00b7  v < c  \u00b7  causalidad posible';
-      ctx.font = 'bold 12px Consolas, monospace';
-      labelBg(ctx, ftxt1, ox - ctx.measureText(ftxt1).width / 2, fy, 'bold 12px Consolas, monospace', 6, 13);
-      ctx.fillStyle = K(0.90);
-      ctx.fillText(ftxt1, ox, fy);
-      ctx.font = '9px Consolas, monospace';
-      labelBg(ctx, ftxt2, ox - ctx.measureText(ftxt2).width / 2, fy + 14, '9px Consolas, monospace', 4, 10);
-      ctx.fillStyle = K(0.60);
-      ctx.fillText(ftxt2, ox, fy + 14);
+      ctx.font = 'bold 11px Consolas, monospace';
+      ctx.fillStyle = K(0.85);
+      ctx.fillText('FUTURO  \u0394s\u00b2 > 0', ox, fy);
     }
 
     /* Pasado */
-    var py2 = clamp(oy + 68, 14, H - 10);
+    var py2 = clamp(oy + 60, 14, H - 10);
     if (py2 > oy + 20) {
-      var ptxt1 = 'PASADO CAUSAL';
-      var ptxt2 = '\u0394s\u00b2 > 0  \u00b7  v < c  \u00b7  ya ocurrio';
-      ctx.font = 'bold 12px Consolas, monospace';
-      labelBg(ctx, ptxt1, ox - ctx.measureText(ptxt1).width / 2, py2, 'bold 12px Consolas, monospace', 6, 13);
-      ctx.fillStyle = 'rgba(160,165,200,0.85)';
-      ctx.fillText(ptxt1, ox, py2);
-      ctx.font = '9px Consolas, monospace';
-      labelBg(ctx, ptxt2, ox - ctx.measureText(ptxt2).width / 2, py2 + 14, '9px Consolas, monospace', 4, 10);
-      ctx.fillStyle = 'rgba(160,165,200,0.60)';
-      ctx.fillText(ptxt2, ox, py2 + 14);
+      ctx.font = 'bold 11px Consolas, monospace';
+      ctx.fillStyle = 'rgba(160,165,200,0.80)';
+      ctx.fillText('PASADO  \u0394s\u00b2 > 0', ox, py2);
     }
 
     /* Zonas espaciales */
     var szLx = clamp(ox - 72, 10, W * 0.45 - 10);
     var szRx = clamp(ox + 72, W * 0.55 + 10, W - 10);
-    var spatLxs = [szLx, szRx];
-    for (var si = 0; si < spatLxs.length; si++) {
-      var lx = spatLxs[si];
-      var t1 = 'ESPACIAL', t2 = '\u0394s\u00b2 < 0', t3 = 'no causal';
-      ctx.font = 'bold 11px Consolas, monospace';
-      labelBg(ctx, t1, lx - ctx.measureText(t1).width / 2, oy - 2, 'bold 11px Consolas, monospace', 5, 12);
-      ctx.fillStyle = KP(0.75);
-      ctx.fillText(t1, lx, oy - 2);
-      ctx.font = '9px Consolas, monospace';
-      labelBg(ctx, t2, lx - ctx.measureText(t2).width / 2, oy + 11, '9px Consolas, monospace', 3, 10);
-      ctx.fillStyle = KP(0.50);
-      ctx.fillText(t2, lx, oy + 11);
-      labelBg(ctx, t3, lx - ctx.measureText(t3).width / 2, oy + 23, '9px Consolas, monospace', 3, 10);
-      ctx.fillText(t3, lx, oy + 23);
-    }
+    ctx.font = 'bold 10px Consolas, monospace';
+    ctx.fillStyle = KP(0.70);
+    ctx.fillText('\u0394s\u00b2 < 0', szLx, oy);
+    ctx.fillText('\u0394s\u00b2 < 0', szRx, oy);
 
     ctx.textAlign = 'left';
     ctx.restore();
@@ -622,26 +568,23 @@
     var mx = (ax + bx) / 2;
     var my = (ay + by) / 2;
 
-    var l1 = typeName;
-    var l2 = '\u0394s\u00b2 = ' + fmt(ds2, 3);
-    var l3 = type === 'temporal' ? '\u0394\u03c4 = \u221a(\u0394s\u00b2) = ' + fmt(Math.sqrt(Math.max(0, ds2)), 3)
-           : type === 'espacial' ? '\u0394L = \u221a(\u2212\u0394s\u00b2) = ' + fmt(Math.sqrt(Math.max(0, -ds2)), 3)
-           : '\u0394\u03c4 = 0  (foton)';
+    var l1 = typeName + '  \u0394s\u00b2 = ' + fmt(ds2, 3);
+    var l2 = type === 'temporal' ? '\u0394\u03c4 = ' + fmt(Math.sqrt(Math.max(0, ds2)), 2)
+           : type === 'espacial' ? '\u0394L = '    + fmt(Math.sqrt(Math.max(0, -ds2)), 2)
+           : '\u0394\u03c4 = 0  (fot\u00f3n)';
 
-    ctx.font = 'bold 11px Consolas, monospace';
-    var bw = Math.max(ctx.measureText(l1).width, ctx.measureText(l2).width, ctx.measureText(l3).width) + 20;
-    var bh = 50;
+    ctx.font = 'bold 10px Consolas, monospace';
+    var bw = Math.max(ctx.measureText(l1).width, ctx.measureText(l2).width) + 20;
+    var bh = 34;
     ctx.fillStyle = PAL.overlay;
     ctx.beginPath(); ctx.roundRect(mx - bw / 2, my - bh / 2, bw, bh, 5); ctx.fill();
 
     ctx.fillStyle = color;
     ctx.textAlign = 'center';
-    ctx.font = 'bold 11px Consolas, monospace';
-    ctx.fillText(l1, mx, my - 13);
     ctx.font = 'bold 10px Consolas, monospace';
-    ctx.fillText(l2, mx, my);
+    ctx.fillText(l1, mx, my - 7);
     ctx.font = '10px Consolas, monospace';
-    ctx.fillText(l3, mx, my + 13);
+    ctx.fillText(l2, mx, my + 7);
     ctx.textAlign = 'left';
 
     ctx.restore();
@@ -691,18 +634,15 @@
       ctx.setLineDash([]);
       ctx.shadowBlur = 0;
 
-      var lblK = 't_' + lblList[ki] + ' = ' + ev.ct.toFixed(2) + '  (en K)';
-      var lfontK = 'bold 10px Consolas, monospace';
-      labelBg(ctx, lblK, 8, pyK - 2, lfontK, 4, 11);
-      ctx.fillStyle = K(0.95);
-      ctx.font = lfontK;
-      ctx.fillText(lblK, 8, pyK - 2);
+      ctx.font = 'bold 10px Consolas, monospace';
+      ctx.fillStyle = K(0.90);
+      ctx.fillText('t_' + lblList[ki] + ' = ' + ev.ct.toFixed(2), 8, pyK - 3);
     }
 
     /* Mensaje simultaneos K */
     if (simultK) {
       var pyKs = toCanvas(d, 0, A.ct).py;
-      var msgK = '\u2713  Simultaneos en K  (misma linea horizontal)';
+      var msgK = '\u2713 Simult\u00e1neos en K';
       var mfontK = 'bold 11px Consolas, monospace';
       ctx.font = mfontK;
       var mwK = ctx.measureText(msgK).width;
@@ -741,19 +681,16 @@
         ctx.setLineDash([]);
         ctx.shadowBlur = 0;
 
-        var lblKP = "t'_" + lblList[kpi] + ' = ' + ctpKP.toFixed(2) + "  (en K')";
-        var lfontKP = 'bold 10px Consolas, monospace';
         var lxKP = clamp(epxKP + 30, 6, W - 180);
         var lyKP = clamp(epyKP - beta * 30 - 2, 14, H - 10);
-        labelBg(ctx, lblKP, lxKP, lyKP, lfontKP, 4, 11);
-        ctx.fillStyle = KP(0.95);
-        ctx.font = lfontKP;
-        ctx.fillText(lblKP, lxKP, lyKP);
+        ctx.font = 'bold 10px Consolas, monospace';
+        ctx.fillStyle = KP(0.90);
+        ctx.fillText("t'_" + lblList[kpi] + ' = ' + ctpKP.toFixed(2), lxKP, lyKP);
       }
 
       /* Mensaje simultaneos K' */
       if (simultKp) {
-        var msgKP = "\u2713  Simultaneos en K'  (misma linea inclinada)";
+        var msgKP = "\u2713 Simult\u00e1neos en K'";
         var mfontKP = 'bold 11px Consolas, monospace';
         ctx.font = mfontKP;
         var mwKP = ctx.measureText(msgKP).width;
@@ -768,27 +705,18 @@
     }
 
     /* == Panel de formula (esquina superior derecha) == */
-    var panW = 248, panH = 90;
+    var panW = 240, panH = 54;
     ctx.fillStyle = PAL.overlay;
     ctx.beginPath(); ctx.roundRect(W - panW - 6, 6, panW, panH, 5); ctx.fill();
 
-    ctx.font = 'bold 10px Consolas, monospace';
-    ctx.fillStyle = PAL.white;
-    ctx.fillText('Transformacion de tiempo:', W - panW, 22);
-
-    ctx.font = '11px Consolas, monospace';
-    ctx.fillStyle = KP(0.95);
-    ctx.fillText("  \u0394t' = \u03b3(\u0394t \u2212 \u03b2\u00b7\u0394x)", W - panW, 38);
-
     ctx.font = '10px Consolas, monospace';
-    ctx.fillStyle = PAL.white;
-    ctx.fillText('  \u03b2 = ' + fmt(beta, 3) + '   \u03b3 = ' + fmt(gamma, 3), W - panW, 54);
+    ctx.fillStyle = KP(0.95);
+    ctx.fillText("\u0394t' = \u03b3(\u0394t \u2212 \u03b2\u00b7\u0394x)   \u03b2=" + fmt(beta,2) + ' \u03b3=' + fmt(gamma,2), W - panW + 4, 24);
 
     ctx.fillStyle = K(0.90);
-    ctx.fillText('  \u0394t  = ' + fmt(dtK,  3) + '  (en K)', W - panW, 68);
-
+    ctx.fillText('\u0394t  = ' + fmt(dtK,  3), W - panW + 4, 42);
     ctx.fillStyle = KP(0.90);
-    ctx.fillText("  \u0394t' = " + fmt(dtKp, 3) + "  (en K')", W - panW, 83);
+    ctx.fillText("\u0394t' = " + fmt(dtKp, 3), W - panW + 4 + panW / 2 - 10, 42);
 
     /* Segmento A-B tenue */
     var paAB = toCanvas(d, A.x, A.ct);
